@@ -32,8 +32,10 @@ public class RobotMap {
 	public static int minVelocity; // lower values will be treated as this value, RPM
 	public static int maxVelocity; // maximum velocity when sticks are fully forward (value of 1), RPM
 	public static int maxAcceleration;
+	public static int topGearSolenoid1;
+	public static int topGearSolenoid2;
 	public static final boolean tuningMode = false;
-	public static final RobotType robot = RobotType.PRACTICE;
+	public static final RobotType robot = RobotType.ROBOT_2017;
 	
 	public RobotMap() {
 		switch (robot) {
@@ -53,9 +55,11 @@ public class RobotMap {
 			leftMaster = 15;
 			leftSlave = 0;
 			leftSlave2 = 1;
-			maxVelocity = 525;
-			minVelocity = 20;
+			maxVelocity = 3284; // 525 RPM
+			minVelocity = 135; // 20 RPM
 			maxAcceleration = 300;
+			topGearSolenoid1 = 3;
+			topGearSolenoid2 = 2;
 			break;
 		case ROBOT_2018:
 			break;

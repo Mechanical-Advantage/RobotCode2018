@@ -7,6 +7,8 @@
 
 package org.usfirst.frc.team6328.robot;
 
+import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend;
+import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 
@@ -62,6 +64,8 @@ public class OI {
 	private Button sniperMode = new JoystickButton(rightController, 1);
 	private Button openLoopDrive = new JoystickButton(oiController1, 10);
 	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
+	private Button pnuematicsExtend = new JoystickButton(oiController2, 5);
+	private Button pnuematicsRetract = new JoystickButton(oiController2, 6);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -70,7 +74,8 @@ public class OI {
 		joysticksBackward.whenPressed(new SetCamera(false));
 		joysticksForward.whenPressed(new ReverseJoysticks(false));
 		joysticksBackward.whenPressed(new ReverseJoysticks(true));
-
+		pnuematicsExtend.whenPressed(new PnuematicsTestExtend());
+		pnuematicsRetract.whenPressed(new PnuematicsTestRetract());
 	}
 	
 	public double getLeftAxis() {

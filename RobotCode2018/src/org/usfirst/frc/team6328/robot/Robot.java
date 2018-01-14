@@ -10,6 +10,7 @@ package org.usfirst.frc.team6328.robot;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -31,6 +32,7 @@ public class Robot extends IterativeRobot {
 	public static final RobotMap robotMap = new RobotMap();
 	
 	public static final DriveTrain driveSubsystem = new DriveTrain();
+	public static final PnuematicsTest pnuematicsTest = new PnuematicsTest();
 	
 	public static OI oi;
 	public static AHRS ahrs = new AHRS(SPI.Port.kMXP);
