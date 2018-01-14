@@ -107,7 +107,7 @@ public class DriveTrain extends Subsystem {
 			ticksPerRotation = 4096;
 			wheelDiameter = 4.1791666667; // before worlds
 //			wheelDiameter = 4.24881941; // 7:48 AM worlds
-			reverseSensorRight = false;
+			reverseSensorRight = true;
 			reverseSensorLeft = true;
 			reverseOutputLeft = false;
 			reverseOutputRight = true;
