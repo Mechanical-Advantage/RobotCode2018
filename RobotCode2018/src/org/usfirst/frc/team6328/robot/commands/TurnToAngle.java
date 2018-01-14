@@ -37,22 +37,27 @@ public class TurnToAngle extends Command implements PIDOutput {
         // limit input to -180 to 180
         targetAngle = (angle>180) ? 180 : angle;
         targetAngle = (targetAngle<-180) ? -180 : targetAngle;
-        if (RobotMap.robot == RobotType.PRACTICE) {
-        	kP = 0.01;
-        	kI = 0;
-        	kD = 0.003;
-        	kF = 0;
-        	kToleranceDegrees = 1.0;
-        	kToleranceBufSamples = 10;
-        	updatePeriod = 0.05;
-        } else {
-        	kP = 0.0077; // 0.008
-        	kI = 0;
-        	kD = 0.0137; // 0.014
-        	kF = 0;
-        	kToleranceDegrees = 1.0;
-        	kToleranceBufSamples = 10;
-        	updatePeriod = 0.02;
+        switch (RobotMap.robot) {
+        case PRACTICE:
+	        	kP = 0.01;
+	        	kI = 0;
+	        	kD = 0.003;
+	        	kF = 0;
+	        	kToleranceDegrees = 1.0;
+	        	kToleranceBufSamples = 10;
+	        	updatePeriod = 0.05;
+	        	break;
+        case ROBOT_2017:
+	        	kP = 0.0077; // 0.008
+	        	kI = 0;
+	        	kD = 0.0137; // 0.014
+	        	kF = 0;
+	        	kToleranceDegrees = 1.0;
+	        	kToleranceBufSamples = 10;
+	        	updatePeriod = 0.02;
+	        	break;
+        case ROBOT_2018:
+        		break;
         }
     }
 

@@ -68,28 +68,33 @@ public class DriveDistanceOnHeading extends Command {
     	targetAngle = (heading>180) ? 180 : heading;
         targetAngle = (targetAngle<-180) ? -180 : targetAngle;
         useStartingYaw = false;
-        if (RobotMap.robot == RobotType.PRACTICE) {
-        	kPDistance = 0.017;
-        	kIDistance = 0;
-        	kDDistance = 0;
-        	kFDistance = 0.5;
-        	kToleranceInches = 0.5;
-        	kPAngle = 0.07;
-        	kIAngle = 0;
-        	kDAngle = 0;
-        	kFAngle = 0;
-        	kToleranceDegrees = 0.5;
-        } else {
-        	kPDistance = 0.032;
-        	kIDistance = 0.000000;
-        	kDDistance = 0;
-        	kFDistance = 0;
-        	kToleranceInches = 0.5;
-        	kPAngle = 0.05;
-        	kIAngle = 0;
-        	kDAngle = 0;
-        	kFAngle = 0;
-        	kToleranceDegrees = 1;
+        switch (RobotMap.robot) {
+        	case PRACTICE:
+	        	kPDistance = 0.017;
+	        	kIDistance = 0;
+	        	kDDistance = 0;
+	        	kFDistance = 0.5;
+	        	kToleranceInches = 0.5;
+	        	kPAngle = 0.07;
+	        	kIAngle = 0;
+	        	kDAngle = 0;
+	        	kFAngle = 0;
+	        	kToleranceDegrees = 0.5;
+	        	break;
+        	case ROBOT_2017:
+	        	kPDistance = 0.032;
+	        	kIDistance = 0.000000;
+	        	kDDistance = 0;
+	        	kFDistance = 0;
+	        	kToleranceInches = 0.5;
+	        	kPAngle = 0.05;
+	        	kIAngle = 0;
+	        	kDAngle = 0;
+	        	kFAngle = 0;
+	        	kToleranceDegrees = 1;
+	        	break;
+        	case ROBOT_2018:
+        		break;
         }
     }
 

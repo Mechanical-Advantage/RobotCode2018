@@ -49,9 +49,11 @@ public class RunMotionProfileOnRio extends Command {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		requires(Robot.driveSubsystem);
-    		if (RobotMap.robot == RobotType.PRACTICE) {
+    		switch (RobotMap.robot) {
+    		case PRACTICE:
     			// not tuned
-    		} else {
+    			break;
+    		case ROBOT_2017:
     			// tuned using max velocity: 100, accel: 55, jerk: 2700
     			kP = 80;
     			kD = 0;
@@ -61,6 +63,9 @@ public class RunMotionProfileOnRio extends Command {
     			AngleErrorThreshold = 1;
     			wheelbase = 21; // 18 measured
     			kPAngle = 0.8*60 * (1.0/80.0);
+    			break;
+    		case ROBOT_2018:
+    			break;
     		}
     		trajectoryLength = trajectory.length();
     		TankModifier modifier = new TankModifier(trajectory);

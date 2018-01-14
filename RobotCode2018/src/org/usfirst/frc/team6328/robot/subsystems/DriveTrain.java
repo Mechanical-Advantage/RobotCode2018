@@ -32,32 +32,18 @@ public class DriveTrain extends Subsystem {
 	 * 
 	 * See Talon SRX Software Reference Manual sections 17.1, 17.2
 	 */
-	
-	private static final double kPPractice = 2;
-	private static final double kIPractice = 0;
-	private static final double kDPractice = 40;
-	private static final double kFPractice = 1.07;
-	private static final int kIZonePractice = 0;
-	private static final double kPPracticeMP = 2; // the MP settings are also used for distance close loop
-	private static final double kIPracticeMP = 0;
-	private static final double kDPracticeMP = 40;
-	private static final double kFPracticeMP = 1.0768;
-	private static final int kIZonePracticeMP = 0;
-	private static final int kAllowableErrorPracticeDistance = 8; // ticks sent to talon as allowable error for distance close loop
-	
-	private static final double kPCompetition = 0.6;
-	private static final double kICompetition = 0.0007;
-	private static final double kDCompetition = 6;
-	private static final double kFCompetition = 0.2842;
-	private static final int kIZoneCompetition = 4096*50/600; // 4096: encoder ticks per rotation; 25: rpm, set this; 600: converting minute to 100ms
-	private static final double kPCompetitionMP = 2;
-//	private static final double kPCompetitionMP = 0.6;
-	private static final double kICompetitionMP = 0.0007;
-	private static final double kDCompetitionMP = 45;
-//	private static final double kDCompetitionMP = 6;
-	private static final double kFCompetitionMP = 0.2842;
-	private static final int kIZoneCompetitionMP = 4096*50/600;
-	private static final int kAllowableErrorCompetitionDistance = 24; // ticks sent to talon as allowable error for distance close loop
+		
+	private double kP;
+	private double kI;
+	private double kD;
+	private double kF;
+	private int kIZone;
+	private double kPMP; // the MP settings are also used for distance close loop
+	private double kIMP;
+	private double kDMP;
+	private double kFMP;
+	private int kIZoneMP;
+	private int kAllowableErrorDistance; // ticks sent to talon as allowable error for distance close loop
 	
 	private static final double sniperMode = 0.25; // multiplied by velocity in sniper mode
 	private static final boolean sniperModeLocked = false; // when set, sniper mode uses value above, when unset, value comes from throttle control on joystick
@@ -92,7 +78,8 @@ public class DriveTrain extends Subsystem {
 		rightTalonSlave = new TalonSRX(RobotMap.rightSlave);
 		leftTalonMaster = new TalonSRX(RobotMap.leftMaster);
 		leftTalonSlave = new TalonSRX(RobotMap.leftSlave);
-		if (RobotMap.robot == RobotType.PRACTICE) {
+		switch (RobotMap.robot) {
+		case PRACTICE:
 			encoderType = FeedbackDevice.QuadEncoder;
 			ticksPerRotation = 1440;
 			wheelDiameter = 5.9000000002; // 6
@@ -101,9 +88,19 @@ public class DriveTrain extends Subsystem {
 			reverseSensorLeft = false;
 			reverseOutputLeft = false;
 			reverseOutputRight = true;
-			setupMotionProfilePID(kPPracticeMP, kIPracticeMP, kDPracticeMP, kFPracticeMP, kIZonePracticeMP);
-			setPID(kPPractice, kIPractice, kDPractice, kFPractice, kIZonePractice);
-		} else {
+			kP = 2;
+			kI = 0;
+			kD = 40;
+			kF = 1.07;
+			kIZone = 0;
+			kPMP = 2;
+			kIMP = 0;
+			kDMP = 40;
+			kFMP = 1.0768;
+			kIZoneMP = 0;
+			kAllowableErrorDistance = 8;
+			break;
+		case ROBOT_2017:
 			rightTalonSlave2 = new TalonSRX(RobotMap.rightSlave2);
 			leftTalonSlave2 = new TalonSRX(RobotMap.leftSlave2);
 			encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
@@ -116,9 +113,23 @@ public class DriveTrain extends Subsystem {
 			reverseOutputRight = true;
 //			wheelBaseWidth = 22.5; // 18
 			wheelBaseWidth = 18;
-			setupMotionProfilePID(kPCompetitionMP, kICompetitionMP, kDCompetitionMP, kFCompetitionMP, kIZoneCompetitionMP);
-			setPID(kPCompetition, kICompetition, kDCompetition, kFCompetition, kIZoneCompetition);
+			kP = 0.6;
+			kI = 0.0007;
+			kD = 6;
+			kF = 0.2842;
+			kIZone = 4096*50/600;
+			kPMP = 2;
+			kIMP = 0.0007;
+			kDMP = 45;
+			kFMP = 0.2842;
+			kIZoneMP = 4096*50/600;
+			kAllowableErrorDistance = 24;
+			break;
+		case ROBOT_2018:
+			break;
 		}
+		setupMotionProfilePID(kPMP, kIMP, kDMP, kFMP, kIZoneMP);
+		setPID(kP, kI, kD, kF, kIZone);
 		rightTalonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 //		rightTalonMaster.configNominalOutputVoltage(+0.0f, -0.0f); // currently set in useClosedLoop so that motion profiling can change this
 //		rightTalonMaster.configPeakOutputVoltage(+12.0f, -12.0f);
@@ -146,7 +157,7 @@ public class DriveTrain extends Subsystem {
 		leftTalonSlave.enableCurrentLimit(enableCurrentLimit);
 		leftTalonSlave.configContinuousCurrentLimit(currentLimit, configTimeout);
 		leftTalonSlave.setInverted(reverseOutputLeft);
-		if (RobotMap.robot != RobotType.PRACTICE){
+		if (RobotMap.robot == RobotType.ROBOT_2017){
 			rightTalonSlave2.set(ControlMode.Follower, RobotMap.rightMaster);
 			rightTalonSlave2.enableCurrentLimit(enableCurrentLimit);
 			rightTalonSlave2.configContinuousCurrentLimit(currentLimit, configTimeout);
@@ -276,7 +287,7 @@ public class DriveTrain extends Subsystem {
 		leftTalonMaster.setNeutralMode(mode);
 		rightTalonSlave.setNeutralMode(mode);
 		leftTalonSlave.setNeutralMode(mode);
-		if (RobotMap.robot != RobotType.PRACTICE) {
+		if (RobotMap.robot == RobotType.ROBOT_2017) {
 			rightTalonSlave2.setNeutralMode(mode);
 			leftTalonSlave2.setNeutralMode(mode);
 		}
@@ -380,13 +391,8 @@ public class DriveTrain extends Subsystem {
     		leftTalonMaster.configNominalOutputForward(0.08, configTimeout);
     		rightTalonMaster.configNominalOutputReverse(0.08, configTimeout);
     		leftTalonMaster.configNominalOutputReverse(0.08, configTimeout);
-    		if (RobotMap.robot == RobotType.PRACTICE) {
-    			rightTalonMaster.configAllowableClosedloopError(1, kAllowableErrorPracticeDistance, configTimeout);
-    			leftTalonMaster.configAllowableClosedloopError(1, kAllowableErrorPracticeDistance, configTimeout);
-    		} else {
-    			rightTalonMaster.configAllowableClosedloopError(1, kAllowableErrorCompetitionDistance, configTimeout);
-    			leftTalonMaster.configAllowableClosedloopError(1, kAllowableErrorCompetitionDistance, configTimeout);
-    		}
+    		rightTalonMaster.configAllowableClosedloopError(1, kAllowableErrorDistance, configTimeout);
+    		leftTalonMaster.configAllowableClosedloopError(1, kAllowableErrorDistance, configTimeout);
     		ControlMode mode;
     		if (motionMagic) {
     			mode = ControlMode.MotionMagic;
