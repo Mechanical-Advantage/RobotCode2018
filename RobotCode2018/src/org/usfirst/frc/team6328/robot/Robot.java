@@ -7,13 +7,18 @@
 
 package org.usfirst.frc.team6328.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
+import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team6328.robot.commands.ExampleCommand;
-import org.usfirst.frc.team6328.robot.subsystems.ExampleSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,13 +27,18 @@ import org.usfirst.frc.team6328.robot.subsystems.ExampleSubsystem;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
-public class Robot extends TimedRobot {
-	public static final ExampleSubsystem kExampleSubsystem
-			= new ExampleSubsystem();
-	public static OI m_oi;
+public class Robot extends IterativeRobot {
+	public static final RobotMap robotMap = new RobotMap();
+	
+	public static final DriveTrain driveSubsystem = new DriveTrain();
+	
+	public static OI oi;
+	public static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
+	public static SendableChooser<JoystickMode> joystickModeChooser;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -36,10 +46,14 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
-		m_oi = new OI();
-		m_chooser.addDefault("Default Auto", new ExampleCommand());
+		oi = new OI();
+		joystickModeChooser = new SendableChooser<JoystickMode>();
+		m_chooser.addDefault("Default Auto", null);
 		// chooser.addObject("My Auto", new MyAutoCommand());
+		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
+        joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
 		SmartDashboard.putData("Auto mode", m_chooser);
+        SmartDashboard.putData("Control Mode", joystickModeChooser);
 	}
 
 	/**
