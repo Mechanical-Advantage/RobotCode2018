@@ -34,6 +34,8 @@ public class RobotMap {
 	public static int maxAcceleration;
 	public static int topGearSolenoid1;
 	public static int topGearSolenoid2;
+	public static int gearExpellerSolenoid1;
+	public static int gearExpellerSolenoid2;
 	public static final boolean tuningMode = false;
 	public static final RobotType robot = RobotType.ROBOT_2017;
 	
@@ -60,6 +62,8 @@ public class RobotMap {
 			maxAcceleration = 300;
 			topGearSolenoid1 = 3;
 			topGearSolenoid2 = 2;
+			gearExpellerSolenoid1 = 0;
+			gearExpellerSolenoid2 = 1;
 			break;
 		case ROBOT_2018:
 			break;

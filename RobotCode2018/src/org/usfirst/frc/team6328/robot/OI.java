@@ -8,7 +8,9 @@
 package org.usfirst.frc.team6328.robot;
 
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend;
+import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend2;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract;
+import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract2;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 
@@ -66,6 +68,8 @@ public class OI {
 	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
 	private Button pnuematicsExtend = new JoystickButton(oiController2, 5);
 	private Button pnuematicsRetract = new JoystickButton(oiController2, 6);
+	private Button pnuematicsExtend2 = new JoystickButton(oiController2, 2);
+	private Button pnuematicsRetract2 = new JoystickButton(oiController2, 3);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -76,6 +80,8 @@ public class OI {
 		joysticksBackward.whenPressed(new ReverseJoysticks(true));
 		pnuematicsExtend.whenPressed(new PnuematicsTestExtend());
 		pnuematicsRetract.whenPressed(new PnuematicsTestRetract());
+		pnuematicsExtend2.whenPressed(new PnuematicsTestExtend2());
+		pnuematicsRetract2.whenPressed(new PnuematicsTestRetract2());
 	}
 	
 	public double getLeftAxis() {
