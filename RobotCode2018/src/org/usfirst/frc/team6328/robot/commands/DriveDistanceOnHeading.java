@@ -1,11 +1,7 @@
 package org.usfirst.frc.team6328.robot.commands;
 
-import java.util.StringJoiner;
-
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
-import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
-
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -153,10 +149,10 @@ public class DriveDistanceOnHeading extends Command {
     		// subtract from right side, add to left side (drive left on positive)
     		Robot.driveSubsystem.drive(outputVelocity+outputTurnVelocity, outputVelocity-outputTurnVelocity);
     		if (RobotMap.tuningMode) {
-    			SmartDashboard.putString("Distance Graph", genGraphStr(getAverageDistance(), targetDistance));
-    			SmartDashboard.putString("Velocity Graph", genGraphStr(outputVelocity, outputVelocity+outputTurnVelocity, outputVelocity-outputTurnVelocity));
+    			SmartDashboard.putString("Distance Graph", Robot.genGraphStr(getAverageDistance(), targetDistance));
+    			SmartDashboard.putString("Velocity Graph", Robot.genGraphStr(outputVelocity, outputVelocity+outputTurnVelocity, outputVelocity-outputTurnVelocity));
         		SmartDashboard.putNumber("Turn controller output", pidOutputAngle.getPIDRate());
-        		SmartDashboard.putString("Yaw Graph", genGraphStr(targetAngle, Robot.ahrs.getYaw()));
+        		SmartDashboard.putString("Yaw Graph", Robot.genGraphStr(targetAngle, Robot.ahrs.getYaw()));
     		}
     	}
     }
@@ -211,12 +207,4 @@ public class DriveDistanceOnHeading extends Command {
     		PIDRate = output;
     	}
     }
-    
-    private String genGraphStr(double...data) {
-		StringJoiner sj = new StringJoiner(":");
-		for (double item : data) {
-			sj.add(String.valueOf(item));
-		}
-		return sj.toString();
-	}
 }

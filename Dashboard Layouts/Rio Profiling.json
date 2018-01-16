@@ -1,0 +1,171 @@
+{
+  "dividerPosition": 0.004172461752433936,
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "6,0": {
+            "size": [
+              1,
+              5
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Error",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Left Positive",
+                  "_title": "Left Positive"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Left Negative",
+                  "_title": "Left Negative"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Right Positive",
+                  "_title": "Right Positive"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Right Negative",
+                  "_title": "Right Neg."
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Yaw Positive",
+                  "_title": "Yaw Positive"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Error Yaw Negative",
+                  "_title": "Yaw Negative"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Final Error Left",
+                  "_title": "Left Final"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Final Error Right",
+                  "_title": "Right Final"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Final Error Yaw",
+                  "_title": "Yaw Final"
+                }
+              ]
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              5
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Parameters",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile P",
+                  "_title": "P"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile D",
+                  "_title": "D"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Adjust P",
+                  "_title": "Adjust P"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Adjust D",
+                  "_title": "Adjust D"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Angle P",
+                  "_title": "Angle P"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Position Error Threshold",
+                  "_title": "Pos. Toleran."
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Profile Angle Error Threshold",
+                  "_title": "Angle Toleran."
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///Wheelbase",
+                  "_title": "Wheelbase"
+                }
+              ]
+            }
+          },
+          "1,0": {
+            "size": [
+              5,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///Profile Target Position Left",
+              "_source1": "network_table:///Profile Current Position Left",
+              "_source2": "network_table:///Profile Target Position Right",
+              "_source3": "network_table:///Profile Current Position Right",
+              "_title": "Position Graph",
+              "Visible time": 30.0,
+              "Profile Current Position Left visible": true,
+              "Profile Current Position Right visible": true,
+              "Profile Target Position Left visible": true,
+              "Profile Target Position Right visible": true
+            }
+          },
+          "1,3": {
+            "size": [
+              5,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///Profile Target Heading",
+              "_source1": "network_table:///Profile Current Heading",
+              "_title": "Heading Graph",
+              "Visible time": 30.0,
+              "Profile Current Heading visible": true,
+              "Profile Target Heading visible": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {}
+      }
+    }
+  ]
+}

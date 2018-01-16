@@ -2,30 +2,32 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
-import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
+import org.usfirst.frc.team6328.robot.TunableNumber;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.modifiers.TankModifier;
 
 /**
- * Runs a motion profile on the roboRIO. dt of profile must be 0.02.
+ * Runs a motion profile on the roboRIO. dt of profile must be 0.02. 
+ * If using absolute yaw, starting yaw must be close to first point heading
  */
 public class RunMotionProfileOnRio extends Command {
 	
 	private final int sensorFrameRate = 2; // ms
 	// Note: Control frame rate must be defined in CANTalon constructor, so that can't be set
-	private final boolean enableGyroCorrection = false; // false for tuning
+	private final boolean enableGyroCorrection = true; // false for tuning
 	
-	private double kP;
-	private double kD;
-	private double kPAdjust;
-	private double kDAdjust;
-	private double PositionErrorThreshold;
-	private double AngleErrorThreshold;
-	private double wheelbase;
-	private double kPAngle; // standard is 0.8 * (1.0/80.0), add max velocity like: 0.8*60 * (1.0/80.0) (if maxVel is 60)
+	private TunableNumber kP = new TunableNumber("Profile P"); // P and D apply when profile is next started
+	private TunableNumber kD = new TunableNumber("Profile D");
+	private TunableNumber kPAdjust = new TunableNumber("Profile Adjust P");
+	private TunableNumber kDAdjust = new TunableNumber("Profile Adjust D");
+	private TunableNumber PositionErrorThreshold = new TunableNumber("Profile Position Error Threshold");
+	private TunableNumber AngleErrorThreshold = new TunableNumber("Profile Angle Error Threshold");
+	private TunableNumber wheelbase = new TunableNumber("Wheelbase");
+	private TunableNumber kPAngle = new TunableNumber("Profile Angle P"); // standard is 0.8 * (1.0/80.0), add max velocity like: 0.8*60 * (1.0/80.0) (if maxVel is 60)
 	// kPAngle should be positive
 	
 	private CustomDistanceFollower leftFollower, rightFollower;
@@ -35,6 +37,9 @@ public class RunMotionProfileOnRio extends Command {
 	private double positionErrorLeftPositive, positionErrorLeftNegative, positionErrorRightPositive,
 		positionErrorRightNegative, yawErrorPositive, yawErrorNegative;
 	private int trajectoryLength;
+	private TankModifier modifier;
+	private boolean flipLeftRight;
+	private boolean absHeading;
 	
 	/*
      * Tuning Notes:
@@ -44,35 +49,44 @@ public class RunMotionProfileOnRio extends Command {
      * Too much D will overcorrect, robot will go too fast, not much is needed, in my initial test, any causes problems
      */
 
-    public RunMotionProfileOnRio(Trajectory trajectory) {
+    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading) {
     		super("RunMotionProfileOnRio");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		requires(Robot.driveSubsystem);
+    		this.flipLeftRight = flipLeftRight;
+    		this.absHeading = absHeading;
     		switch (RobotMap.robot) {
     		case PRACTICE:
     			// not tuned
     			break;
     		case ROBOT_2017:
     			// tuned using max velocity: 100, accel: 55, jerk: 2700
-    			kP = 80;
-    			kD = 0;
-    			kPAdjust = 3;
-    			kDAdjust = 0;
-    			PositionErrorThreshold = 0.75;
-    			AngleErrorThreshold = 1;
-    			wheelbase = 21; // 18 measured
-    			kPAngle = 0.8*60 * (1.0/80.0);
+    			kP.setDefault(80);
+    			kD.setDefault(0);
+    			kPAdjust.setDefault(3);
+    			kDAdjust.setDefault(0);
+    			PositionErrorThreshold.setDefault(0.75);
+    			AngleErrorThreshold.setDefault(1);
+    			wheelbase.setDefault(21); // 18 measured
+    			kPAngle.setDefault(0.8*60 * (1.0/80.0));
     			break;
     		case ROBOT_2018:
     			break;
     		}
     		trajectoryLength = trajectory.length();
-    		TankModifier modifier = new TankModifier(trajectory);
-    		modifier.modify(wheelbase);
-    		// pathfinder bug swaps left/right trajectories
-    		leftFollower = new CustomDistanceFollower(modifier.getRightTrajectory());
-    		rightFollower = new CustomDistanceFollower(modifier.getLeftTrajectory());
+    		modifier = new TankModifier(trajectory);
+    		leftFollower = new CustomDistanceFollower();
+    		rightFollower = new CustomDistanceFollower();
+    		initFollowers();
+    }
+    
+    // In separate function because this gets run during init if in tuning mode to load new wheelbase
+    private void initFollowers() {
+		modifier.modify(wheelbase.get());
+		// pathfinder bug swaps left/right trajectories
+		leftFollower.setTrajectory(flipLeftRight ? modifier.getLeftTrajectory() : modifier.getRightTrajectory());
+		rightFollower.setTrajectory(flipLeftRight ? modifier.getRightTrajectory() : modifier.getLeftTrajectory());
     }
 
     // Called just before this Command runs the first time
@@ -83,11 +97,14 @@ public class RunMotionProfileOnRio extends Command {
     		positionErrorRightNegative = 0;
     		yawErrorPositive = 0;
     		yawErrorNegative = 0;
-    		leftFollower.configurePIDVA(kP, 0, kD, 1, 0);
-    		rightFollower.configurePIDVA(kP, 0, kD, 1, 0);
+    		if (RobotMap.tuningMode) {
+    			initFollowers();
+    		}
+    		leftFollower.configurePIDVA(kP.get(), 0, kD.get(), 1, 0);
+    		rightFollower.configurePIDVA(kP.get(), 0, kD.get(), 1, 0);
     		leftFollower.reset();
     		rightFollower.reset();
-    		initialYaw = Robot.ahrs.getYaw();
+    		initialYaw = absHeading ? 0 : Robot.ahrs.getYaw(); // if absolute yaw, don't correct
     		initialPositionLeft = Robot.driveSubsystem.getDistanceLeft();
     		initialPositionRight = Robot.driveSubsystem.getDistanceRight();
     		Robot.driveSubsystem.changeStatusRate(sensorFrameRate);
@@ -100,20 +117,21 @@ public class RunMotionProfileOnRio extends Command {
     		
     		gyroHeading = Pathfinder.boundHalfDegrees(Robot.ahrs.getYaw()-initialYaw);
         	double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())); // Pathfinder native headings are in radians
+        	desiredHeading*= flipLeftRight ? -1 : 1;
         	
         	double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading - gyroHeading);
         	double turn = 0;
         	if (enableGyroCorrection) {
-        		turn = kPAngle * angleDifference;
+        		turn = kPAngle.get() * angleDifference;
         	}
         	        	
         	// At end, load less aggressive parameters for final adjustment
         	if (leftFollower.isFinished()) {
         		// set velocity to 0 so last profile velocity is not still applied, in case last velocity is not zero
-        		leftFollower.configurePIDVA(kPAdjust, 0, kDAdjust, 0, 0);
-        		rightFollower.configurePIDVA(kPAdjust, 0, kDAdjust, 0, 0);
+        		leftFollower.configurePIDVA(kPAdjust.get(), 0, kDAdjust.get(), 0, 0);
+        		rightFollower.configurePIDVA(kPAdjust.get(), 0, kDAdjust.get(), 0, 0);
         	} else {
-        		// don't measure final adjust
+        		// in else to avoid measuring measure final adjust
         		double error;
         		error = leftFollower.getLastError();
         		if (error > 0) {
@@ -136,20 +154,35 @@ public class RunMotionProfileOnRio extends Command {
         	}
         	
         	// system so that if yaw is off, correct for that without oscillation of position control
-        	if (leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold &&
-        				rightFollower.getLastError()<=PositionErrorThreshold && enableGyroCorrection) {
+        	if (leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold.get() &&
+        				rightFollower.getLastError()<=PositionErrorThreshold.get() && enableGyroCorrection) {
         		Robot.driveSubsystem.driveInchesPerSec(turn, turn*-1);
         	} else {
         		Robot.driveSubsystem.driveInchesPerSec((r - turn), (l + turn));
         	}
+        	
+        	// Graphing
+        	SmartDashboard.putString("Profile Position Graph", Robot.genGraphStr(
+        			leftFollower.getSegment().position,
+        			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft,
+        			rightFollower.getSegment().position,
+        			Robot.driveSubsystem.getDistanceRight()-initialPositionRight));
+        	SmartDashboard.putNumber("Profile Target Position Left", leftFollower.getSegment().position);
+        	SmartDashboard.putNumber("Profile Target Position Right", rightFollower.getSegment().position);
+        	SmartDashboard.putNumber("Profile Current Position Left", Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
+        	SmartDashboard.putNumber("Profile Current Position Right", Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
+        	SmartDashboard.putString("Profile Heading Graph", Robot.genGraphStr(
+        			leftFollower.getHeading(), gyroHeading));
+        	SmartDashboard.putNumber("Profile Target Heading", leftFollower.getHeading());
+        	SmartDashboard.putNumber("Profile Current Heading", gyroHeading);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
-		return leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold &&
-				rightFollower.getLastError()<=PositionErrorThreshold &&
-				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))<=AngleErrorThreshold;
+		return leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold.get() &&
+				rightFollower.getLastError()<=PositionErrorThreshold.get() &&
+				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))<=AngleErrorThreshold.get();
     }
 
     // Called once after isFinished returns true
@@ -163,6 +196,17 @@ public class RunMotionProfileOnRio extends Command {
     				positionErrorLeftPositive/trajectoryLength, positionErrorLeftNegative/trajectoryLength,
     				positionErrorRightPositive/trajectoryLength, positionErrorRightNegative/trajectoryLength,
     				yawErrorPositive, yawErrorNegative);
+    		SmartDashboard.putNumber("Profile Error Left Positive", positionErrorLeftPositive/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Error Left Negative", positionErrorLeftNegative/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Error Right Positive", positionErrorRightPositive/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Error Right Negative", positionErrorRightNegative/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Error Yaw Positive", yawErrorPositive/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Error Yaw Negative", yawErrorNegative/trajectoryLength);
+    		SmartDashboard.putNumber("Profile Final Error Left", 
+    				Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft-leftFollower.getSegment().position);
+    		SmartDashboard.putNumber("Profile Final Error Right", 
+    				Robot.driveSubsystem.getDistanceRight()-initialPositionRight-rightFollower.getSegment().position);
+    		SmartDashboard.putNumber("Profile Final Error Yaw", gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
     }
 
     // Called when another command which requires one or more of the same
@@ -182,7 +226,8 @@ public class RunMotionProfileOnRio extends Command {
         private int segment;
         private Trajectory trajectory;
 
-        public CustomDistanceFollower(Trajectory traj) {
+        @SuppressWarnings("unused")
+		public CustomDistanceFollower(Trajectory traj) {
             this.trajectory = traj;
         }
 
