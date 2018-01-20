@@ -7,9 +7,14 @@
 
 package org.usfirst.frc.team6328.robot;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.StringJoiner;
 
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
+import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
+import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRioFromFile;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest;
@@ -58,8 +63,27 @@ public class Robot extends IterativeRobot {
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
+        if (RobotMap.tuningMode) {
+        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false));
+        }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
+        
+     // if the current waypoint version is old, re-generate profiles
+        BufferedReader waypointVersionReader;
+        int lastWaypointVersion = 0;
+		try {
+			waypointVersionReader = new BufferedReader(new FileReader("/home/lvuser/lastWaypointVersion"));
+			lastWaypointVersion = Integer.parseInt(waypointVersionReader.readLine());
+			waypointVersionReader.close();
+		} catch (NumberFormatException | IOException e) {
+			// do nothing
+		}
+		if (org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles.waypointVersion > lastWaypointVersion) {
+			GenerateMotionProfiles generateCommand = new GenerateMotionProfiles();
+			generateCommand.setRunWhenDisabled(true);
+			generateCommand.start();
+		}
 	}
 
 	/**

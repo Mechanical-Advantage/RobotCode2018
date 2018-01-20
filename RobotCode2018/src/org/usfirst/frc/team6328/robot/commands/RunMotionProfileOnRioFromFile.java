@@ -42,7 +42,7 @@ public class RunMotionProfileOnRioFromFile extends CommandGroup {
     @Override
     protected void initialize() {
     		if (!initialized) {
-    			File file = new File("motionprofiles/" + filename);
+    			File file = new File("/home/lvuser/motionprofiles/" + filename + ".traj");
     			Trajectory trajectory = Pathfinder.readFromFile(file);
     			addSequential(new RunMotionProfileOnRio(trajectory, flipLeftRight, absHeading));
     		}
