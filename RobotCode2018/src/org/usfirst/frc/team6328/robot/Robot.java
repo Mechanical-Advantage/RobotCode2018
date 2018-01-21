@@ -17,13 +17,20 @@ import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRioFromFile;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
+import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
+import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
 import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest;
 import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest2;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.zephyr.pixy.Pixy;
+import com.zephyr.pixy.PixyDetection;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -44,7 +51,8 @@ public class Robot extends IterativeRobot {
 	public static final PnuematicsTest2 pnuematicsTest2 = new PnuematicsTest2();
 	
 	public static OI oi;
-	public static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
 	Command m_autonomousCommand;
