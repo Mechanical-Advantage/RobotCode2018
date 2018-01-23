@@ -204,7 +204,7 @@ public class DriveTrain extends Subsystem {
      * @param right Right inches per second
      */
     public void driveInchesPerSec(int left, int right) {
-    		driveInchesPerSec((double)left, (double)right);
+    		driveInchesPerSec((double)right, (double)left);
     }
     
     /**
@@ -213,7 +213,7 @@ public class DriveTrain extends Subsystem {
      * @param right Right inches per second
      */
     public void driveInchesPerSec(double left, double right) {
-    		drive((left/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity, (left/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity);
+    		drive((left/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity, (right/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity);
     }
     
     private double calcActualVelocity(double input) {
@@ -299,19 +299,14 @@ public class DriveTrain extends Subsystem {
     }
     
     // values are cast to doubles to prevent integer division
+    // If sensors are reversed, talon reverses reported value so don't need to reverse here
     public double getRotationsLeft() {
     	double rotLeft = (double)leftTalonMaster.getSelectedSensorPosition(0)/(double)ticksPerRotation;
-    	if (reverseSensorLeft) {
-    		rotLeft*=-1;
-    	}
     	return rotLeft;
     }
     
     public double getRotationsRight() {
     	double rotRight = (double)rightTalonMaster.getSelectedSensorPosition(0)/(double)ticksPerRotation;
-    	if (reverseSensorRight) {
-    		rotRight*=-1;
-    	}
     	return rotRight;
     }
     

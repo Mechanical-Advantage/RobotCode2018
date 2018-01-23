@@ -2,49 +2,57 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import java.io.File;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.Command;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 
 /**
- * Runs a motion profile from a file
+ * Runs a motion profile on the rio
  */
-public class RunMotionProfileOnRioFromFile extends CommandGroup {
+public class RunMotionProfileOnRioFromFile extends Command {
 	
-	String filename;
-	boolean flipLeftRight;
-	boolean absHeading;
-	
-	boolean initialized = false;
+	private RunMotionProfileOnRio command;
+	private boolean flipLeftRight;
+	private boolean absHeading;
+	private String filename;
+	private boolean initialized = false;
 
     public RunMotionProfileOnRioFromFile(String filename, boolean flipLeftRight, boolean absHeading) {
-        // Add Commands here:
-        // e.g. addSequential(new Command1());
-        //      addSequential(new Command2());
-        // these will run in order.
-
-        // To run multiple commands at the same time,
-        // use addParallel()
-        // e.g. addParallel(new Command1());
-        //      addSequential(new Command2());
-        // Command1 and Command2 will run in parallel.
-
-        // A command group will require all of the subsystems that each member
-        // would require.
-        // e.g. if Command1 requires chassis, and Command2 requires arm,
-        // a CommandGroup containing them would require both the chassis and the
-        // arm.
-    		this.filename = filename;
+        // Use requires() here to declare subsystem dependencies
+        // eg. requires(chassis);
     		this.flipLeftRight = flipLeftRight;
     		this.absHeading = absHeading;
+    		this.filename = filename;
     }
-    
-    @Override
+
+    // Called just before this Command runs the first time
     protected void initialize() {
     		if (!initialized) {
     			File file = new File("/home/lvuser/motionprofiles/" + filename + ".traj");
     			Trajectory trajectory = Pathfinder.readFromFile(file);
-    			addSequential(new RunMotionProfileOnRio(trajectory, flipLeftRight, absHeading));
+    			command = new RunMotionProfileOnRio(trajectory, flipLeftRight, absHeading);
+    			initialized = true;
     		}
+    		command.start();
+    }
+
+    // Called repeatedly when this Command is scheduled to run
+    protected void execute() {
+    }
+
+    // Make this return true when this Command no longer needs to run execute()
+    protected boolean isFinished() {
+        return !command.isRunning();
+    }
+
+    // Called once after isFinished returns true
+    protected void end() {
+    		command.cancel();
+    }
+
+    // Called when another command which requires one or more of the same
+    // subsystems is scheduled to run
+    protected void interrupted() {
+    		end();
     }
 }

@@ -24,13 +24,9 @@ import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest;
 import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest2;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.zephyr.pixy.Pixy;
-import com.zephyr.pixy.PixyDetection;
-
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -73,6 +69,8 @@ public class Robot extends IterativeRobot {
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
         if (RobotMap.tuningMode) {
         		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false));
+        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRioFromFile("sideToSwitch", false, false));
+        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false));
         }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
@@ -101,7 +99,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
+		Robot.driveSubsystem.enableBrakeMode(false);
 	}
 
 	@Override
@@ -122,6 +120,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		Robot.driveSubsystem.enableBrakeMode(true);
 		m_autonomousCommand = m_chooser.getSelected();
 
 		/*
@@ -147,6 +146,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
+		Robot.driveSubsystem.enableBrakeMode(true);
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove

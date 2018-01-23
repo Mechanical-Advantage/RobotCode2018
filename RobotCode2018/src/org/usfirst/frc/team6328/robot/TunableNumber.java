@@ -33,6 +33,8 @@ public class TunableNumber {
 	 */
 	public void setDefault(double defaultValue) {
 		this.defaultValue = defaultValue;
+		// This makes sure the data is on NetworkTables but will not change it
+		SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
 	}
 	
 	/**
