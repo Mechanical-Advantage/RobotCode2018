@@ -5,6 +5,7 @@ import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick;
 
+import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -368,9 +369,18 @@ public class DriveTrain extends Subsystem {
     		rightTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, ms, configTimeout);
     }
     public void resetSensorRate() {
-    		leftTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, 100, configTimeout);
-		rightTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, 100, configTimeout);
+    		leftTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, 10, configTimeout);
+		rightTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, 10, configTimeout);
     }
+    
+    public void changeControlRate(int ms) {
+		leftTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, ms);
+		rightTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, ms);
+	}
+	public void resetControlRate() {
+		leftTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, 10);
+		rightTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, 10);
+	}
     
     
     /**

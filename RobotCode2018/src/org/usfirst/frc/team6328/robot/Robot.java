@@ -25,8 +25,8 @@ import org.usfirst.frc.team6328.robot.subsystems.PnuematicsTest2;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the build.properties file in the
  * project.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
 	public static final RobotMap robotMap = new RobotMap();
 	
 	public static final DriveTrain driveSubsystem = new DriveTrain();
@@ -61,6 +61,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		this.setPeriod(0.02);
 		oi = new OI();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
 		m_chooser.addDefault("Default Auto", null);

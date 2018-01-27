@@ -17,7 +17,7 @@ import jaci.pathfinder.modifiers.TankModifier;
 public class RunMotionProfileOnRio extends Command {
 	
 	private final int sensorFrameRate = 2; // ms
-	// Note: Control frame rate must be defined in CANTalon constructor, so that can't be set
+	private final int controlFrameRate = 10;
 	private final boolean enableGyroCorrection = true; // false for tuning
 	
 	private TunableNumber kP = new TunableNumber("Profile P"); // P and D apply when profile is next started
@@ -63,13 +63,13 @@ public class RunMotionProfileOnRio extends Command {
     			break;
     		case ROBOT_2017:
     			// tuned using max velocity: 100, accel: 55, jerk: 2700
-    			kP.setDefault(5);
+    			kP.setDefault(11); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
     			kD.setDefault(0);
     			kPAdjust.setDefault(1);
     			kDAdjust.setDefault(0);
     			PositionErrorThreshold.setDefault(1);
     			AngleErrorThreshold.setDefault(1.5);
-    			wheelbase.setDefault(21.5); // 18 measured
+    			wheelbase.setDefault(23); // 18 measured
     			kPAngle.setDefault(1.5);
     			kPAngleAdjust.setDefault(0.1);
     			break;
@@ -102,18 +102,20 @@ public class RunMotionProfileOnRio extends Command {
     		if (RobotMap.tuningMode) {
     			initFollowers();
     		}
-    		leftFollower.configurePIDVA(kP.get(), 0, kD.get(), 1, 0);
-    		rightFollower.configurePIDVA(kP.get(), 0, kD.get(), 1, 0);
+    		leftFollower.configurePIDVA(kP.get(), 0, kD.get(), 0.7, 0.2);
+    		rightFollower.configurePIDVA(kP.get(), 0, kD.get(), 0.7, 0.2);
     		leftFollower.reset();
     		rightFollower.reset();
     		initialYaw = absHeading ? 0 : Robot.ahrs.getYaw(); // if absolute yaw, don't correct
     		initialPositionLeft = Robot.driveSubsystem.getDistanceLeft();
     		initialPositionRight = Robot.driveSubsystem.getDistanceRight();
     		Robot.driveSubsystem.changeStatusRate(sensorFrameRate);
+    		Robot.driveSubsystem.changeControlRate(controlFrameRate);
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() {
+    @SuppressWarnings("unused")
+	protected void execute() {
     		double l = leftFollower.calculate(Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
     		double r = rightFollower.calculate(Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
     		
@@ -194,6 +196,7 @@ public class RunMotionProfileOnRio extends Command {
     protected void end() {
     		Robot.driveSubsystem.stop();
     		Robot.driveSubsystem.resetSensorRate();
+    		Robot.driveSubsystem.resetControlRate();
     		System.out.printf("DLeft: %f, DRight: %f, Yaw: %f, Target Yaw: %f, Target DLeft: %f, Target DRight: %f\n",
 			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft, Robot.driveSubsystem.getDistanceRight()-initialPositionRight, gyroHeading,
 			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), leftFollower.getSegment().position, rightFollower.getSegment().position);

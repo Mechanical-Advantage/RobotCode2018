@@ -18,10 +18,10 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 5;
+	public static final int waypointVersion = 13;
 	
 	private final Trajectory.Config stdConfig = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
-			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 2700);
+			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 200); // jerk actually matters
 	@SuppressWarnings("unused")
 	private Trajectory.Config config; // this can be defined for specific profiles
 	private final String MPDir = "/home/lvuser/motionprofiles/"; // make sure to have slash at end
@@ -29,7 +29,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	private final double robotWidth = 29.25;
 	
 	// Defined points on field
-	private final Waypoint sideStart = new Waypoint(robotLength/2, 150-robotWidth/2, 0);
+	private final Waypoint sideStart = new Waypoint(robotLength/2, 132-robotWidth/2, 0);
 	private final Waypoint switchSide = new Waypoint(168, 76.75+(robotLength/2), Pathfinder.d2r(-90));
 	private final Waypoint switchFront = new Waypoint(168-28-(robotLength/2), 54, 0);
 	
