@@ -63,14 +63,14 @@ public class RunMotionProfileOnRio extends Command {
     			break;
     		case ROBOT_2017:
     			// tuned using max velocity: 100, accel: 55, jerk: 2700
-    			kP.setDefault(11); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
+    			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
     			kD.setDefault(0);
     			kPAdjust.setDefault(1);
     			kDAdjust.setDefault(0);
     			PositionErrorThreshold.setDefault(1);
     			AngleErrorThreshold.setDefault(1.5);
     			wheelbase.setDefault(23); // 18 measured
-    			kPAngle.setDefault(1.5);
+    			kPAngle.setDefault(2.5);
     			kPAngleAdjust.setDefault(0.1);
     			break;
     		case ROBOT_2018:
@@ -155,8 +155,8 @@ public class RunMotionProfileOnRio extends Command {
         	
         	double turn = 0;
         	// system so that if yaw is off, correct for that without oscillation of position control
-        	if (leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold.get() &&
-        				rightFollower.getLastError()<=PositionErrorThreshold.get() && enableGyroCorrection) {
+        	if (leftFollower.isFinished() && /*leftFollower.getLastError()<=PositionErrorThreshold.get() &&
+        				rightFollower.getLastError()<=PositionErrorThreshold.get() && */enableGyroCorrection) {
         		turn = kPAngleAdjust.get() * angleDifference;
         		Robot.driveSubsystem.driveInchesPerSec(turn, turn*-1);
         	} else {
@@ -187,8 +187,8 @@ public class RunMotionProfileOnRio extends Command {
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
-		return leftFollower.isFinished() && leftFollower.getLastError()<=PositionErrorThreshold.get() &&
-				rightFollower.getLastError()<=PositionErrorThreshold.get() &&
+		return leftFollower.isFinished() && /*leftFollower.getLastError()<=PositionErrorThreshold.get() &&
+				rightFollower.getLastError()<=PositionErrorThreshold.get() &&*/
 				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))<=AngleErrorThreshold.get();
     }
 

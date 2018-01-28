@@ -106,8 +106,9 @@ public class DriveTrain extends Subsystem {
 			leftTalonSlave2 = new TalonSRX(RobotMap.leftSlave2);
 			encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 			ticksPerRotation = 4096;
-			wheelDiameter = 4.1791666667; // before worlds
+//			wheelDiameter = 4.1791666667; // before worlds, from end of build season
 //			wheelDiameter = 4.24881941; // 7:48 AM worlds
+			wheelDiameter = 4.0541069007; // Measured 1/27/2018
 			reverseSensorRight = true;
 			reverseSensorLeft = true;
 			reverseOutputLeft = false;

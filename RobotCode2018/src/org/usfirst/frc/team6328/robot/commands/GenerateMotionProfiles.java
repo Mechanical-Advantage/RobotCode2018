@@ -18,10 +18,10 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 13;
+	public static final int waypointVersion = 17;
 	
 	private final Trajectory.Config stdConfig = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
-			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 200); // jerk actually matters
+			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, /*55*/40, 200); // jerk actually matters
 	@SuppressWarnings("unused")
 	private Trajectory.Config config; // this can be defined for specific profiles
 	private final String MPDir = "/home/lvuser/motionprofiles/"; // make sure to have slash at end
