@@ -9,6 +9,7 @@ package org.usfirst.frc.team6328.robot;
 
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend2;
+import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRelease;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract2;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
@@ -72,6 +73,7 @@ public class OI {
 	private Button pnuematicsExtend2 = new JoystickButton(oiController2, 2);
 	private Button pnuematicsRetract2 = new JoystickButton(oiController2, 3);
 	private Button pnuematicsTimed = new JoystickButton(oiController2, 1);
+	private Button pnuematicsRelease = new JoystickButton(oiController2, 4);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -85,6 +87,7 @@ public class OI {
 		pnuematicsExtend2.whenPressed(new PnuematicsTestExtend2());
 		pnuematicsRetract2.whenPressed(new PnuematicsTestRetract2());
 		pnuematicsTimed.whenPressed(new TimedPnuematicRelease());
+		pnuematicsRelease.whenPressed(new PnuematicsTestRelease());
 	}
 	
 	public double getLeftAxis() {
