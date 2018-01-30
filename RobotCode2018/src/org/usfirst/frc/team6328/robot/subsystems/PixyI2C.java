@@ -126,7 +126,7 @@ public class PixyI2C extends Subsystem {
 	@Override
 	protected void initDefaultCommand() {
 		// TODO Auto-generated method stub
-//		setDefaultCommand(new DriveToCube());
+		setDefaultCommand(new DriveToCube());
 	}
 }
 

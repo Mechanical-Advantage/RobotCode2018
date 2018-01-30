@@ -11,16 +11,22 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class DriveToCube extends Command {
 	
-	private static final double cameraHorizFOV = 75;
+	private static final double cameraHorizFOV = 79.84523585564033;
+	private static final double cameraHorizTan = Math.tan(Math.toRadians(cameraHorizFOV/2));
 	private static final double cameraVertFOV = 47;
-	private static final double cameraHeight = 24;
-	private static final double cameraVertAngle = 11; // How far down the camera is pointed
+	private static final double cameraVertTan = Math.tan(Math.toRadians(cameraVertFOV/2));
+	private static final double cameraHeight = 24.5;
+	private static final double cameraVertAngle = 14; // How far down the camera is pointed
+	private static final int cameraWidthPixels = 320; // pixels
+	private static final int halfCameraWidthPixels = cameraWidthPixels/2;
+	private static final int cameraHeightPixels = 200; // 0 at top
+	private static final int halfCameraHeightPixels = cameraHeightPixels/2;
 
     public DriveToCube() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		requires(Robot.pixy);
-    		requires(Robot.driveSubsystem);
+//    		requires(Robot.driveSubsystem);
     }
 
     // Called just before this Command runs the first time
@@ -32,15 +38,22 @@ public class DriveToCube extends Command {
     		try {
 				PixyPacket cube = Robot.pixy.readPacket(1);
 				if (cube != null) {
-					double angleH = (cube.X * (cameraHorizFOV/320)) - (cameraHorizFOV/2);
-					double angleV = ((cube.Y + (cube.Height/2)) * (cameraVertFOV/200)) - (cameraVertFOV/2) - cameraVertAngle;
+					// See: https://math.stackexchange.com/questions/1320285/convert-a-pixel-displacement-to-angular-rotation
+					int cubeBottom = cube.Y + (cube.Height/2);
+					double angleH = Math.toDegrees(
+							Math.atan(((cube.X-halfCameraWidthPixels)*cameraHorizTan
+									/halfCameraWidthPixels)));
+					double angleV = (Math.toDegrees(
+							Math.atan(((cubeBottom-halfCameraHeightPixels)*-1*cameraVertTan
+									/halfCameraHeightPixels)))) - cameraVertAngle;
 					double distance = Math.tan(Math.toRadians(90-Math.abs(angleV))) * cameraHeight;
 					double horizDistance = Math.tan(Math.toRadians(angleH)) * distance;
-					System.out.println("H: " + horizDistance);
-					System.out.println("HA: " + angleH);
-					System.out.println("D: " + distance);
-					System.out.println("X: " + cube.X);
-					System.out.println("Y: " + cube.Y);
+					System.out.print("H: " + horizDistance);
+					System.out.print(" HA: " + angleH);
+					System.out.print(" D: " + distance);
+					System.out.print(" VA: " + angleV);
+					System.out.print(" X: " + cube.X);
+					System.out.println(" Y: " + cubeBottom);
 				}
 			} catch (PixyException e) {
 				// TODO Auto-generated catch block
