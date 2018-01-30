@@ -24,7 +24,6 @@ public class RunMotionProfileOnRio extends Command {
 	private TunableNumber kD = new TunableNumber("Profile D");
 	private TunableNumber kPAdjust = new TunableNumber("Profile Adjust P");
 	private TunableNumber kDAdjust = new TunableNumber("Profile Adjust D");
-	private TunableNumber PositionErrorThreshold = new TunableNumber("Profile Position Error Threshold");
 	private TunableNumber AngleErrorThreshold = new TunableNumber("Profile Angle Error Threshold");
 	private TunableNumber wheelbase = new TunableNumber("Wheelbase");
 	private TunableNumber kPAngle = new TunableNumber("Profile Angle P"); // standard is 0.8 * (1.0/80.0), add max velocity like: 0.8*60 * (1.0/80.0) (if maxVel is 60)
@@ -67,7 +66,6 @@ public class RunMotionProfileOnRio extends Command {
     			kD.setDefault(0);
     			kPAdjust.setDefault(1);
     			kDAdjust.setDefault(0);
-    			PositionErrorThreshold.setDefault(1);
     			AngleErrorThreshold.setDefault(1.5);
     			wheelbase.setDefault(23); // 18 measured
     			kPAngle.setDefault(2.5);
@@ -155,16 +153,11 @@ public class RunMotionProfileOnRio extends Command {
         	
         	double turn = 0;
         	// system so that if yaw is off, correct for that without oscillation of position control
-        	if (leftFollower.isFinished() && /*leftFollower.getLastError()<=PositionErrorThreshold.get() &&
-        				rightFollower.getLastError()<=PositionErrorThreshold.get() && */enableGyroCorrection) {
-        		turn = kPAngleAdjust.get() * angleDifference;
+        	if (leftFollower.isFinished()) {
+        		turn = enableGyroCorrection ? kPAngleAdjust.get() * angleDifference : 0;
         		Robot.driveSubsystem.driveInchesPerSec(turn, turn*-1);
         	} else {
-        		if (enableGyroCorrection && !leftFollower.isFinished()) {
-            		turn = kPAngle.get() * angleDifference;
-            	} else if (enableGyroCorrection) {
-            		turn = kPAngleAdjust.get() * angleDifference;
-            	}
+        		turn = enableGyroCorrection ? kPAngle.get() * angleDifference : 0;
         		Robot.driveSubsystem.driveInchesPerSec((l + turn), (r - turn));
         	}
         	
@@ -187,9 +180,9 @@ public class RunMotionProfileOnRio extends Command {
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
-		return leftFollower.isFinished() && /*leftFollower.getLastError()<=PositionErrorThreshold.get() &&
-				rightFollower.getLastError()<=PositionErrorThreshold.get() &&*/
-				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))<=AngleErrorThreshold.get();
+		return leftFollower.isFinished() && (enableGyroCorrection &&
+				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
+				<=AngleErrorThreshold.get());
     }
 
     // Called once after isFinished returns true
