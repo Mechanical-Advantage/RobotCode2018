@@ -2,8 +2,6 @@ package org.usfirst.frc.team6328.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-import org.usfirst.frc.team6328.robot.commands.DriveToCube;
-
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -126,7 +124,7 @@ public class PixyI2C extends Subsystem {
 	@Override
 	protected void initDefaultCommand() {
 		// TODO Auto-generated method stub
-		setDefaultCommand(new DriveToCube());
+//		setDefaultCommand(new DriveToCube());
 	}
 }
 

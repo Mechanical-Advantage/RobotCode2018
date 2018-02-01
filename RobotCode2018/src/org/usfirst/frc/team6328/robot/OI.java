@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team6328.robot;
 
+import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend2;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRelease;
@@ -74,6 +75,7 @@ public class OI {
 	private Button pnuematicsRetract2 = new JoystickButton(oiController2, 3);
 	private Button pnuematicsTimed = new JoystickButton(oiController2, 1);
 	private Button pnuematicsRelease = new JoystickButton(oiController2, 4);
+	private Button driveToCube = new JoystickButton(oiController2, 9);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -88,6 +90,7 @@ public class OI {
 		pnuematicsRetract2.whenPressed(new PnuematicsTestRetract2());
 		pnuematicsTimed.whenPressed(new TimedPnuematicRelease());
 		pnuematicsRelease.whenPressed(new PnuematicsTestRelease());
+		driveToCube.whileHeld(new DriveToCube());
 	}
 	
 	public double getLeftAxis() {
