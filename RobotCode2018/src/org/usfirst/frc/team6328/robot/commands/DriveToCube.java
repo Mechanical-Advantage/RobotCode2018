@@ -20,6 +20,8 @@ public class DriveToCube extends Command {
 	private static final double cameraVertFOV = 47;
 	private static final double cameraHeight = 24.5;
 	private static final double cameraVertAngle = 14; // How far down the camera is pointed
+	private static final double cameraHorizAngle = 0; // How far to the right the camera is pointer
+	private static final double cameraHorizOffset = -12; // How far to the right the camera is shifted
 	private static final int cameraWidthPixels = 320; // pixels
 	private static final int cameraHeightPixels = 200; // 0 at top
 
@@ -100,26 +102,27 @@ public class DriveToCube extends Command {
 	}
 
 	// Called repeatedly when this Command is scheduled to run
+	@SuppressWarnings("unused")
 	protected void execute() {
 		try {
 			PixyPacket cube = Robot.pixy.readPacket(1);
 			if (cube != null) {
 				// See: https://math.stackexchange.com/questions/1320285/convert-a-pixel-displacement-to-angular-rotation
 				int cubeBottom = cube.Y + (cube.Height/2);
-				angle = Math.toDegrees(
+				double angleH = (Math.toDegrees(
 						Math.atan(((cube.X-halfCameraWidthPixels)*cameraHorizTan
-								/halfCameraWidthPixels)));
+								/halfCameraWidthPixels)))) - cameraHorizAngle;
 				double angleV = (Math.toDegrees(
 						Math.atan(((cubeBottom-halfCameraHeightPixels)*-1*cameraVertTan
 								/halfCameraHeightPixels)))) - cameraVertAngle;
 				distance = Math.tan(Math.toRadians(90-Math.abs(angleV))) * cameraHeight;
-				double horizDistance = Math.tan(Math.toRadians(angle)) * distance;
-				System.out.print("H: " + horizDistance);
-				System.out.print(" HA: " + angle);
-				System.out.print(" D: " + distance);
-				System.out.print(" VA: " + angleV);
-				System.out.print(" X: " + cube.X);
-				System.out.println(" Y: " + cubeBottom);
+				if (cameraHorizOffset != 0) {
+					double horizDistance = Math.tan(Math.toRadians(angleH)) * distance;
+					horizDistance += cameraHorizOffset;
+					angle = Math.toDegrees(Math.atan(horizDistance/distance));
+				} else {
+					angle = angleH;
+				}
 			}
 		} catch (PixyException e) {
 			// TODO Auto-generated catch block
