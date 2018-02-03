@@ -12,9 +12,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringJoiner;
 
+import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRioFromFile;
+import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
@@ -72,6 +74,8 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false));
         		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRioFromFile("sideToSwitch", false, false));
         		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false));
+        		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
+        		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);

@@ -1,0 +1,86 @@
+{
+  "dividerPosition": 0.1835883171070932,
+  "tabPane": [
+    {
+      "title": "Velocity PID Tuning",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              1,
+              4
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Parameters",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Drive PID/P",
+                  "_title": "P"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Drive PID/I",
+                  "_title": "I"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Drive PID/D",
+                  "_title": "D"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/Drive PID/F",
+                  "_title": "F"
+                }
+              ]
+            }
+          },
+          "1,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drive PID/setpoint",
+              "_title": "Setpoint"
+            }
+          },
+          "1,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Switch",
+              "_source0": "network_table:///SmartDashboard/Drive PID/enabled",
+              "_title": "Drive"
+            }
+          },
+          "2,0": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Drive velocity",
+              "_source1": "network_table:///SmartDashboard/Drive PID/setpoint",
+              "_title": "Graph",
+              "Visible time": 10.0,
+              "SmartDashboard/Drive PID/setpoint visible": true,
+              "SmartDashboard/Drive velocity visible": true
+            }
+          }
+        }
+      }
+    }
+  ]
+}

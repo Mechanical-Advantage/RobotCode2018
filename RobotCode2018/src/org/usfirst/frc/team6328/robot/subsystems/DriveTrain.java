@@ -326,7 +326,7 @@ public class DriveTrain extends Subsystem {
      * @return current velocity in inches per second
      */
     public double getVelocityRight() {
-    		return rightTalonMaster.getSelectedSensorVelocity(0)/ticksPerRotation*wheelDiameter*Math.PI*10;
+    		return (double)rightTalonMaster.getSelectedSensorVelocity(0)/(double)ticksPerRotation*wheelDiameter*Math.PI*10;
     }
     
     /**
@@ -334,7 +334,7 @@ public class DriveTrain extends Subsystem {
      * @return current velocity in inches per second
      */
     public double getVelocityLeft() {
-    		return leftTalonMaster.getSelectedSensorVelocity(0)/ticksPerRotation*wheelDiameter*Math.PI*10;
+    		return (double)leftTalonMaster.getSelectedSensorVelocity(0)/(double)ticksPerRotation*wheelDiameter*Math.PI*10;
     }
     
     // average current of left and right masters
@@ -365,7 +365,39 @@ public class DriveTrain extends Subsystem {
     		leftTalonMaster.config_IntegralZone(profile, iZone, configTimeout);
     }
     
-    public void changeStatusRate(int ms) {
+    public double getP() {
+		return kP;
+	}
+
+	public double getI() {
+		return kI;
+	}
+
+	public double getD() {
+		return kD;
+	}
+
+	public double getF() {
+		return kF;
+	}
+
+	public void setP(double kP) {
+		this.kP = kP;
+	}
+
+	public void setI(double kI) {
+		this.kI = kI;
+	}
+
+	public void setD(double kD) {
+		this.kD = kD;
+	}
+
+	public void setF(double kF) {
+		this.kF = kF;
+	}
+
+	public void changeStatusRate(int ms) {
     		leftTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, ms, configTimeout);
     		rightTalonMaster.setStatusFramePeriod(StatusFrame.Status_1_General, ms, configTimeout);
     }
