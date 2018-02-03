@@ -29,14 +29,22 @@ public class RobotMap {
 	public static int leftMaster;
 	public static int leftSlave;
 	public static int leftSlave2;
-	public static int minVelocity; // lower values will be treated as this value, RPM
-	public static int maxVelocity; // maximum velocity when sticks are fully forward (value of 1), RPM
+	public static int minVelocityLow; // lower values will be treated as this value, RPM
+	public static int maxVelocityLow; // maximum velocity when sticks are fully forward (value of 1), RPM
+	public static int maxVelocityHigh;
+	public static int minVelocityHigh;
 	public static int maxAcceleration;
 	public static int topGearSolenoid1;
 	public static int topGearSolenoid2;
 	public static int gearExpellerSolenoid1;
 	public static int gearExpellerSolenoid2;
-	public static final boolean tuningMode = false;
+	public static int leftDriveGearSolenoid1;
+	public static int leftDriveGearSolenoid2;
+	public static int leftDriveGearPCM;
+	public static int rightDriveGearSolenoid1;
+	public static int rightDriveGearSolenoid2;
+	public static int rightDriveGearPCM;
+	public static final boolean tuningMode = true;
 	public static final RobotType robot = RobotType.ROBOT_2017;
 	
 	public RobotMap() {
@@ -46,8 +54,8 @@ public class RobotMap {
 			rightSlave = 2;
 			leftMaster = 3;
 			leftSlave = 4;
-			maxVelocity = 950; // 950 native units per 100ms
-			minVelocity = 40; // 40 native units per 100ms
+			maxVelocityLow = 950; // 950 native units per 100ms
+			minVelocityLow = 40; // 40 native units per 100ms
 			maxAcceleration = 300;
 			break;
 		case ROBOT_2017:
@@ -57,8 +65,8 @@ public class RobotMap {
 			leftMaster = 15;
 			leftSlave = 0;
 			leftSlave2 = 1;
-			maxVelocity = 3284; // 525 RPM
-			minVelocity = 135; // 20 RPM
+			maxVelocityLow = 3284; // 525 RPM
+			minVelocityLow = 135; // 20 RPM
 			maxAcceleration = 300;
 			topGearSolenoid1 = 3;
 			topGearSolenoid2 = 2;

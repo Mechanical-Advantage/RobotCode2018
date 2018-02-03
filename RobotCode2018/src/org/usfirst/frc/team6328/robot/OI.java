@@ -15,7 +15,9 @@ import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract;
 import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract2;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
+import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.commands.TimedPnuematicRelease;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -76,6 +78,8 @@ public class OI {
 	private Button pnuematicsTimed = new JoystickButton(oiController2, 1);
 	private Button pnuematicsRelease = new JoystickButton(oiController2, 4);
 	private Button driveToCube = new JoystickButton(oiController2, 9);
+	private Button highGear = new JoystickButton(leftController, 5);
+	private Button lowGear = new JoystickButton(leftController, 4);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -91,6 +95,8 @@ public class OI {
 		pnuematicsTimed.whenPressed(new TimedPnuematicRelease());
 		pnuematicsRelease.whenPressed(new PnuematicsTestRelease());
 		driveToCube.whileHeld(new DriveToCube());
+		highGear.whenPressed(new SwitchGear(DriveGear.HIGH));
+		lowGear.whenPressed(new SwitchGear(DriveGear.LOW));
 	}
 	
 	public double getLeftAxis() {

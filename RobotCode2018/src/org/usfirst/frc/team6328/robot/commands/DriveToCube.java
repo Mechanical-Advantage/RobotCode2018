@@ -2,6 +2,7 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
 
@@ -40,6 +41,8 @@ public class DriveToCube extends Command {
 
 	// PID output will be limited to negative to positive this. Multiplied by RobotMap maxVelocity to get target
 	static final double kMaxOutput = 0.9;
+	
+	private DriveGear gear;
 
 	// Calculated constants
 	private static final int halfCameraHeightPixels = cameraHeightPixels/2;
@@ -83,6 +86,7 @@ public class DriveToCube extends Command {
 			kFAngle = 0;
 			break;
 		case ROBOT_2018:
+			Robot.driveSubsystem.switchGear(gear);
 			break;
 		}
 		distanceController = new PIDController(kPDistance, kIDistance, kDDistance, kFDistance, pidSourceDistance, pidOutputDistance, kUpdatePeriodDistance);

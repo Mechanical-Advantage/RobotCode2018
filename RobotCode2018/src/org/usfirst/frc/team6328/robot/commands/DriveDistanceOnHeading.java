@@ -2,6 +2,8 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
+
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -35,7 +37,9 @@ public class DriveDistanceOnHeading extends Command {
     // PID output will be limited to negative to positive this. Multiplied by RobotMap maxVelocity to get target
     static final double kMaxOutput = 0.9;
     // Limit change in one iteration to this - % of max output
-    static final double kMaxChange = 0.03; 
+    static final double kMaxChange = 0.03;
+    
+    private DriveGear gear;
 
     static final double maxOutputVelocityChange = kMaxOutput * kMaxChange;
     private PIDController distanceController;
@@ -83,13 +87,14 @@ public class DriveDistanceOnHeading extends Command {
 	        	kDDistance = 0;
 	        	kFDistance = 0;
 	        	kToleranceInches = 0.5;
-	        	kPAngle = 0.05;
+	        	kPAngle = 0.0; // was 0.05, disabled due to WPILib Tolerance buffer phase lag
 	        	kIAngle = 0;
 	        	kDAngle = 0;
 	        	kFAngle = 0;
 	        	kToleranceDegrees = 1;
 	        	break;
         	case ROBOT_2018:
+        		Robot.driveSubsystem.switchGear(gear);
         		break;
         }
     }

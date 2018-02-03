@@ -12,7 +12,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Robot Drive Train
@@ -33,12 +36,25 @@ public class DriveTrain extends Subsystem {
 	 * 
 	 * See Talon SRX Software Reference Manual sections 17.1, 17.2
 	 */
+	
+	/*
+	 * Talon Slots:
+	 * 0: Velocity Low Gear
+	 * 1: Velocity High Gear
+	 * 2: Motion profiling/magic
+	 * Low gear used on single speed robots
+	 */
 		
-	private double kP;
-	private double kI;
-	private double kD;
-	private double kF;
-	private int kIZone;
+	private double kPLow;
+	private double kILow;
+	private double kDLow;
+	private double kFLow;
+	private int kIZoneLow;
+	private double kPHigh;
+	private double kIHigh;
+	private double kDHigh;
+	private double kFHigh;
+	private int kIZoneHigh;
 	private double kPMP; // the MP settings are also used for distance close loop
 	private double kIMP;
 	private double kDMP;
@@ -60,6 +76,8 @@ public class DriveTrain extends Subsystem {
 	private TalonSRX leftTalonMaster;
 	private TalonSRX leftTalonSlave;
 	private TalonSRX leftTalonSlave2;
+	private DoubleSolenoid leftGearSolenoid;
+	private DoubleSolenoid rightGearSolenoid;
 	private FeedbackDevice encoderType;
 	private int ticksPerRotation; // getEncPosition values in one turn
 	private double wheelDiameter; // inches
@@ -70,6 +88,7 @@ public class DriveTrain extends Subsystem {
 	private boolean reverseOutputLeft;
 	private boolean reverseOutputRight;
 	private DriveControlMode currentControlMode = DriveControlMode.STANDARD_DRIVE; // enum defined at end of file
+	private DriveGear currentGear;
 //	private ProcessTalonMotionProfileBuffer processTalonMotionProfile = new ProcessTalonMotionProfileBuffer();
 //	private Notifier processMotionProfileNotifier = new Notifier(processTalonMotionProfile);
 //	private double motionProfileNotifierUpdateTime;
@@ -89,11 +108,11 @@ public class DriveTrain extends Subsystem {
 			reverseSensorLeft = false;
 			reverseOutputLeft = false;
 			reverseOutputRight = true;
-			kP = 2;
-			kI = 0;
-			kD = 40;
-			kF = 1.07;
-			kIZone = 0;
+			kPLow = 2;
+			kILow = 0;
+			kDLow = 40;
+			kFLow = 1.07;
+			kIZoneLow = 0;
 			kPMP = 2;
 			kIMP = 0;
 			kDMP = 40;
@@ -115,11 +134,11 @@ public class DriveTrain extends Subsystem {
 			reverseOutputRight = true;
 //			wheelBaseWidth = 22.5; // 18
 			wheelBaseWidth = 18;
-			kP = 0.6;
-			kI = 0.0007;
-			kD = 6;
-			kF = 0.2842;
-			kIZone = 4096*50/600;
+			kPLow = 0.6;
+			kILow = 0.0007;
+			kDLow = 6;
+			kFLow = 0.2842;
+			kIZoneLow = 4096*50/600;
 			kPMP = 2;
 			kIMP = 0.0007;
 			kDMP = 45;
@@ -128,16 +147,20 @@ public class DriveTrain extends Subsystem {
 			kAllowableErrorDistance = 24;
 			break;
 		case ROBOT_2018:
+			leftGearSolenoid = new DoubleSolenoid(RobotMap.leftDriveGearPCM, RobotMap.leftDriveGearSolenoid1, RobotMap.leftDriveGearSolenoid2);
+			rightGearSolenoid = new DoubleSolenoid(RobotMap.rightDriveGearPCM, RobotMap.rightDriveGearSolenoid1, RobotMap.rightDriveGearSolenoid2);
+			setPID(1, kPHigh, kIHigh, kDHigh, kFHigh, kIZoneHigh);
+			switchGear(DriveGear.LOW);
 			break;
 		}
-		setupMotionProfilePID(kPMP, kIMP, kDMP, kFMP, kIZoneMP);
-		setPID(kP, kI, kD, kF, kIZone);
+		setPID(2, kPMP, kIMP, kDMP, kFMP, kIZoneMP);
+		setPID(0, kPLow, kILow, kDLow, kFLow, kIZoneLow);
 		rightTalonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 //		rightTalonMaster.configNominalOutputVoltage(+0.0f, -0.0f); // currently set in useClosedLoop so that motion profiling can change this
 //		rightTalonMaster.configPeakOutputVoltage(+12.0f, -12.0f);
 		rightTalonMaster.enableCurrentLimit(enableCurrentLimit);
 		rightTalonMaster.configContinuousCurrentLimit(currentLimit, configTimeout);
-		rightTalonMaster.configMotionCruiseVelocity(RobotMap.maxVelocity, configTimeout);
+		rightTalonMaster.configMotionCruiseVelocity(RobotMap.maxVelocityLow, configTimeout);
 		rightTalonMaster.configMotionAcceleration(RobotMap.maxAcceleration, configTimeout);
 		rightTalonMaster.setInverted(reverseOutputRight);
 		rightTalonMaster.setSensorPhase(reverseSensorRight);
@@ -146,7 +169,7 @@ public class DriveTrain extends Subsystem {
 //		leftTalonMaster.configPeakOutputVoltage(+12.0f, -12.0f);
 		leftTalonMaster.enableCurrentLimit(enableCurrentLimit);
 		leftTalonMaster.configContinuousCurrentLimit(currentLimit, configTimeout);
-		leftTalonMaster.configMotionCruiseVelocity(RobotMap.maxVelocity, configTimeout);
+		leftTalonMaster.configMotionCruiseVelocity(RobotMap.maxVelocityLow, configTimeout);
 		leftTalonMaster.configMotionAcceleration(RobotMap.maxAcceleration, configTimeout);
 		leftTalonMaster.setInverted(reverseOutputLeft);
 		leftTalonMaster.setSensorPhase(reverseSensorLeft);
@@ -176,23 +199,6 @@ public class DriveTrain extends Subsystem {
 		leftTalonMaster.setSafetyEnabled(false);
 		leftTalonSlave.setSafetyEnabled(false);*/
 	}
-	
-	private void setupMotionProfilePID(double p, double i, double d, double f, int iZone) {
-		// motion profiling PID is stored in slot 1, main PID is slot 0
-//		rightTalonMaster.setPID(p, i, d, f, iZone, 0, 1);
-//		leftTalonMaster.setPID(p, i, d, f, iZone, 0, 1);
-		rightTalonMaster.config_kF(1, f, configTimeout);
-		rightTalonMaster.config_kP(1, p, configTimeout);
-		rightTalonMaster.config_kI(1, i, configTimeout);
-		rightTalonMaster.config_kD(1, d, configTimeout);
-		rightTalonMaster.config_IntegralZone(1, iZone, configTimeout);
-		leftTalonMaster.config_kF(1, f, configTimeout);
-		leftTalonMaster.config_kP(1, p, configTimeout);
-		leftTalonMaster.config_kI(1, i, configTimeout);
-		leftTalonMaster.config_kD(1, d, configTimeout);
-		leftTalonMaster.config_IntegralZone(1, iZone, configTimeout);
-		// make sure profile gets set back, it does not select it and just uses it
-	}
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -215,18 +221,30 @@ public class DriveTrain extends Subsystem {
      * @param right Right inches per second
      */
     public void driveInchesPerSec(double left, double right) {
-    		drive((left/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity, (right/(wheelDiameter*Math.PI))*ticksPerRotation/10/RobotMap.maxVelocity);
+    		int maxVelocity;
+		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+			maxVelocity = RobotMap.maxVelocityLow;
+		} else {
+			maxVelocity = RobotMap.maxVelocityHigh;
+		}
+    		drive((left/(wheelDiameter*Math.PI))*ticksPerRotation/10/maxVelocity, (right/(wheelDiameter*Math.PI))*ticksPerRotation/10/maxVelocity);
     }
     
     private double calcActualVelocity(double input) {
+    		int minVelocity;
+		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+			minVelocity = RobotMap.minVelocityLow;
+		} else {
+			minVelocity = RobotMap.minVelocityHigh;
+		}
 	    	if (input>=-0.1 && input<=0.1) {
 	    		return 0;
 	    	}
-	    	else if (input>0.1 && input<RobotMap.minVelocity) {
-	    		return RobotMap.minVelocity;
+	    	else if (input>0.1 && input<minVelocity) {
+	    		return minVelocity;
 	    	}
-	    	else if (input<-0.1 && input>RobotMap.minVelocity*-1) {
-	    		return RobotMap.minVelocity*-1;
+	    	else if (input<-0.1 && input>minVelocity*-1) {
+	    		return minVelocity*-1;
 	    	}
 	    	else {
 	    		return input;
@@ -249,14 +267,20 @@ public class DriveTrain extends Subsystem {
 	    				right*=Robot.oi.getSniperLevel();
 	    			}
 	    		}
-	    		left*=RobotMap.maxVelocity;
-	    		right*=RobotMap.maxVelocity;
+	    		int maxVelocity;
+	    		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+	    			maxVelocity = RobotMap.maxVelocityLow;
+	    		} else {
+	    			maxVelocity = RobotMap.maxVelocityHigh;
+	    		}
+	    		left*=maxVelocity;
+	    		right*=maxVelocity;
 	    		left = calcActualVelocity(left);
 	    		right = calcActualVelocity(right);
 	    		
 	    		if (Robot.oi.getOpenLoop()) {
-	    			rightTalonMaster.set(ControlMode.PercentOutput, right/RobotMap.maxVelocity);
-	    			leftTalonMaster.set(ControlMode.PercentOutput, left/RobotMap.maxVelocity);
+	    			rightTalonMaster.set(ControlMode.PercentOutput, right/maxVelocity);
+	    			leftTalonMaster.set(ControlMode.PercentOutput, left/maxVelocity);
 	    		} else {
 	    			rightTalonMaster.set(ControlMode.Velocity, right);
 	    			leftTalonMaster.set(ControlMode.Velocity, left);
@@ -345,56 +369,69 @@ public class DriveTrain extends Subsystem {
     /**
      * Sets the PID parameters for the current control mode, useful for tuning.
      * Calling this effects everything using the subsystem, use with care.
-     * @param p
-     * @param i
-     * @param d
-     * @param f
-     * @param iZone
+     * @param p P
+     * @param i I
+     * @param d D
+     * @param f F
+     * @param iZone Integral zone
      */
     public void setPID(double p, double i, double d, double f, int iZone) {
-    		int profile = currentControlMode == DriveControlMode.STANDARD_DRIVE ? 0 : 1;
-    		rightTalonMaster.config_kP(profile, p, configTimeout);
-    		rightTalonMaster.config_kI(profile, i, configTimeout);
-    		rightTalonMaster.config_kD(profile, d, configTimeout);
-    		rightTalonMaster.config_kF(profile, f, configTimeout);
-    		rightTalonMaster.config_IntegralZone(profile, iZone, configTimeout);
-    		leftTalonMaster.config_kP(profile, p, configTimeout);
-    		leftTalonMaster.config_kI(profile, i, configTimeout);
-    		leftTalonMaster.config_kD(profile, d, configTimeout);
-    		leftTalonMaster.config_kF(profile, f, configTimeout);
-    		leftTalonMaster.config_IntegralZone(profile, iZone, configTimeout);
+    		int slot = currentControlMode == DriveControlMode.STANDARD_DRIVE ? 0 : 1;
+    		setPID(slot, p, i, d, f, iZone);
+    }
+    
+    /**
+     * Sets the PID parameters for the given slot on the talon, used during setup
+     * @param slotIdx Which slot to write to
+     * @param p P
+     * @param i I
+     * @param d D
+     * @param f F
+     * @param iZone Integral zone
+     */
+    private void setPID(int slotIdx, double p, double i, double d, double f, int iZone) {
+    		rightTalonMaster.config_kP(slotIdx, p, configTimeout);
+		rightTalonMaster.config_kI(slotIdx, i, configTimeout);
+		rightTalonMaster.config_kD(slotIdx, d, configTimeout);
+		rightTalonMaster.config_kF(slotIdx, f, configTimeout);
+		rightTalonMaster.config_IntegralZone(slotIdx, iZone, configTimeout);
+		leftTalonMaster.config_kP(slotIdx, p, configTimeout);
+		leftTalonMaster.config_kI(slotIdx, i, configTimeout);
+		leftTalonMaster.config_kD(slotIdx, d, configTimeout);
+		leftTalonMaster.config_kF(slotIdx, f, configTimeout);
+		leftTalonMaster.config_IntegralZone(slotIdx, iZone, configTimeout);
     }
     
     public double getP() {
-		return kP;
+		return kPLow;
 	}
 
 	public double getI() {
-		return kI;
+		return kILow;
 	}
 
 	public double getD() {
-		return kD;
+		return kDLow;
 	}
 
 	public double getF() {
-		return kF;
+		return kFLow;
 	}
 
 	public void setP(double kP) {
-		this.kP = kP;
+		this.kPLow = kP;
 	}
 
 	public void setI(double kI) {
-		this.kI = kI;
+		this.kILow = kI;
 	}
 
 	public void setD(double kD) {
-		this.kD = kD;
+		this.kDLow = kD;
 	}
 
 	public void setF(double kF) {
-		this.kF = kF;
+		this.kFLow = kF;
 	}
 
 	public void changeStatusRate(int ms) {
@@ -413,6 +450,39 @@ public class DriveTrain extends Subsystem {
 	public void resetControlRate() {
 		leftTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, 10);
 		rightTalonMaster.setControlFramePeriod(ControlFrame.Control_3_General, 10);
+	}
+	
+	public void switchGear(DriveGear gear) {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			switch (gear) {
+			case HIGH:
+				leftGearSolenoid.set(Value.kForward);
+				rightGearSolenoid.set(Value.kForward);
+				leftTalonMaster.selectProfileSlot(1, 0);
+				rightTalonMaster.selectProfileSlot(1, 0);
+				currentGear = DriveGear.HIGH;
+				SmartDashboard.putBoolean("High Gear", true);
+				break;
+			case LOW:
+				leftGearSolenoid.set(Value.kReverse);
+				rightGearSolenoid.set(Value.kReverse);
+				leftTalonMaster.selectProfileSlot(0, 0);
+				rightTalonMaster.selectProfileSlot(0, 0);
+				currentGear = DriveGear.LOW;
+				SmartDashboard.putBoolean("High Gear", false);
+				break;
+			case UNSUPPORTED:
+			default:
+				break;
+			}
+		}
+	}
+	public DriveGear getCurrentGear() {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			return currentGear;
+		} else {
+			return DriveGear.UNSUPPORTED;
+		}
 	}
     
     
@@ -623,6 +693,10 @@ public class DriveTrain extends Subsystem {
     
     private enum DriveControlMode {
     	STANDARD_DRIVE, MOTION_PROFILE, DISTANCE_CLOSE_LOOP
+    }
+    
+    public enum DriveGear {
+    		HIGH, LOW, UNSUPPORTED
     }
 }
 

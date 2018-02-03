@@ -3,6 +3,7 @@ package org.usfirst.frc.team6328.robot.commands;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -21,6 +22,7 @@ public class TurnToAngle extends Command implements PIDOutput {
     private double kToleranceDegrees;
     private int kToleranceBufSamples;
     private double updatePeriod;
+    private DriveGear gear;
     private PIDController turnController;
     private double targetAngle;
     private boolean resetCompleted;
@@ -57,6 +59,7 @@ public class TurnToAngle extends Command implements PIDOutput {
 	        	updatePeriod = 0.02;
 	        	break;
         case ROBOT_2018:
+        		Robot.driveSubsystem.switchGear(gear);
         		break;
         }
     }
