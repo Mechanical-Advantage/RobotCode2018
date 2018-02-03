@@ -29,6 +29,19 @@ public class RobotMap {
 	public static int leftMaster;
 	public static int leftSlave;
 	public static int leftSlave2;
+	public static int elevatorMaster;
+	public static int elevatorSlave1;
+	public static int elevatorSlave2;
+	public static int elevatorSlave3;
+	public static int elevatorBrakeSolenoid1;
+	public static int elevatorBrakeSolenoid2;
+	public static int elevatorBrakePCM;
+	public static int elevatorStageLockSolenoid1;
+	public static int elevatorStageLockSolenoid2;
+	public static int elevatorStageLockPCM;
+	public static int elevatorGearSolenoid1;
+	public static int elevatorGearSolenoid2;
+	public static int elevatorGearPCM;
 	public static int minVelocityLow; // lower values will be treated as this value, RPM
 	public static int maxVelocityLow; // maximum velocity when sticks are fully forward (value of 1), RPM
 	public static int maxVelocityHigh;

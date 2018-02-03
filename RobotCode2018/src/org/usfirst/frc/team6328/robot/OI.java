@@ -55,6 +55,13 @@ public class OI {
 	// Start the command when the button is released and let it run the command
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
+	
+	/*
+	 * Controls needed:
+	 * Elevator gear switch
+	 * Elevator joystick
+	 * Elevator positions
+	 */
 	private boolean joysticksReversed = false;
 	
 	// map left stick to ID 0 and right to ID 1 in driver station
@@ -147,5 +154,9 @@ public class OI {
 	
 	public void reverseJoysticks(boolean reverse) {
 		joysticksReversed = reverse;
+	}
+	
+	public double getElevatorJoystick() {
+		return 0;
 	}
 }
