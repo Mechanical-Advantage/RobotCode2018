@@ -44,6 +44,7 @@ public class Elevator extends Subsystem {
 	private static final double allowableError = 0;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
+	private static final double resetSpeed = -0.5;
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -55,13 +56,14 @@ public class Elevator extends Subsystem {
 	DoubleSolenoid brake;
 	DoubleSolenoid gearSwitch;
 	double targetPosition;
+	boolean resetCompleted = false;
 	
 	public Elevator() {
 		if (RobotMap.robot == RobotType.ROBOT_2018) {
 			talonMaster = new TalonSRX(RobotMap.elevatorMaster);
 			talonSlave1 = new TalonSRX(RobotMap.elevatorSlave1);
 			talonSlave2 = new TalonSRX(RobotMap.elevatorSlave2);
-			talonSlave2 = new TalonSRX(RobotMap.elevatorSlave2);
+			talonSlave3 = new TalonSRX(RobotMap.elevatorSlave3);
 			climbLock = new DoubleSolenoid(RobotMap.elevatorStageLockPCM, RobotMap.elevatorStageLockSolenoid1, RobotMap.elevatorStageLockSolenoid2);
 			brake = new DoubleSolenoid(RobotMap.elevatorBrakePCM, RobotMap.elevatorBrakeSolenoid1, RobotMap.elevatorBrakeSolenoid2);
 			gearSwitch = new DoubleSolenoid(RobotMap.elevatorGearPCM, RobotMap.elevatorGearSolenoid1, RobotMap.elevatorGearSolenoid2);
@@ -112,6 +114,9 @@ public class Elevator extends Subsystem {
 			brake.set(Value.kReverse);
 			climbLock.set(Value.kReverse);
 			switchGear(ElevatorGear.HIGH);
+			
+			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
+			brake.set(Value.kReverse);
 		}
 	}
 
@@ -119,6 +124,13 @@ public class Elevator extends Subsystem {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
 		setDefaultCommand(new JoystickElevatorControl());
+	}
+	
+	@Override
+	public void periodic() {
+		if (!resetCompleted && getLimitSwitch()) {
+			resetCompleted = true;
+		}
 	}
 	
 	private void setPID(int slotIdx, double p, double i, double d, double f, int iZone) {
@@ -129,10 +141,20 @@ public class Elevator extends Subsystem {
 		talonMaster.config_IntegralZone(slotIdx, iZone, configTimeout);
 	}
 	
-	public void setPosition(double position) {
-		brake.set(Value.kReverse);
-		talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
-		targetPosition = position;
+	/**
+	 * Set the target position of the elevator
+	 * @param position Target position in inches
+	 * @return Whether the target position was actually applied
+	 */
+	public boolean setPosition(double position) {
+		if (resetCompleted) {
+			brake.set(Value.kReverse);
+			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
+			targetPosition = position;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public double getPosition() {
@@ -145,15 +167,31 @@ public class Elevator extends Subsystem {
 	
 	/**
 	 * Cause the elevator to stop motor output and engage brake.
+	 * @return Whether the hold actually applied
 	 */
-	public void holdPosition() {
-		talonMaster.neutralOutput();
-		brake.set(Value.kForward);
+	public boolean holdPosition() {
+		if (resetCompleted) {
+			talonMaster.neutralOutput();
+			brake.set(Value.kForward);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
-	public void driveOpenLoop(double percent) {
-		brake.set(Value.kReverse);
-		talonMaster.set(ControlMode.PercentOutput, percent);
+	/**
+	 * Set a percent speed for the elevator
+	 * @param percent The percent speed
+	 * @return Whether the change succeeded
+	 */
+	public boolean driveOpenLoop(double percent) {
+		if (resetCompleted) {
+			brake.set(Value.kReverse);
+			talonMaster.set(ControlMode.PercentOutput, percent);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void switchGear(ElevatorGear gear) {
@@ -183,6 +221,10 @@ public class Elevator extends Subsystem {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean getLimitSwitch() {
+		return talonMaster.getSensorCollection().isRevLimitSwitchClosed();
 	}
 	
 	public enum ElevatorGear {
