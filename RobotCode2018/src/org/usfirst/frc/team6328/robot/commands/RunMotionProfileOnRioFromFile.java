@@ -14,14 +14,16 @@ public class RunMotionProfileOnRioFromFile extends Command {
 	private RunMotionProfileOnRio command;
 	private boolean flipLeftRight;
 	private boolean absHeading;
+	private boolean backwards;
 	private String filename;
 	private boolean initialized = false;
 
-    public RunMotionProfileOnRioFromFile(String filename, boolean flipLeftRight, boolean absHeading) {
+    public RunMotionProfileOnRioFromFile(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		this.flipLeftRight = flipLeftRight;
     		this.absHeading = absHeading;
+    		this.backwards = backwards;
     		this.filename = filename;
     }
 
@@ -30,7 +32,7 @@ public class RunMotionProfileOnRioFromFile extends Command {
     		if (!initialized) {
     			File file = new File("/home/lvuser/motionprofiles/" + filename + ".traj");
     			Trajectory trajectory = Pathfinder.readFromFile(file);
-    			command = new RunMotionProfileOnRio(trajectory, flipLeftRight, absHeading);
+    			command = new RunMotionProfileOnRio(trajectory, flipLeftRight, absHeading, backwards);
     			initialized = true;
     		}
     		command.start();

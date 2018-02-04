@@ -12,7 +12,8 @@ import jaci.pathfinder.modifiers.TankModifier;
 
 /**
  * Runs a motion profile on the roboRIO. dt of profile must be 0.02. 
- * If using absolute yaw, starting yaw must be close to first point heading
+ * If using absolute yaw, starting yaw must be close to first point heading. 
+ * If running backwards, profile should be generated as if going forwards.
  */
 public class RunMotionProfileOnRio extends Command {
 	
@@ -40,6 +41,7 @@ public class RunMotionProfileOnRio extends Command {
 	private TankModifier modifier;
 	private boolean flipLeftRight;
 	private boolean absHeading;
+	private boolean backwards;
 	
 	/*
      * Tuning Notes:
@@ -49,13 +51,14 @@ public class RunMotionProfileOnRio extends Command {
      * Too much D will overcorrect, robot will go too fast, not much is needed, in my initial test, any causes problems
      */
 
-    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading) {
+    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards) {
     		super("RunMotionProfileOnRio");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		requires(Robot.driveSubsystem);
     		this.flipLeftRight = flipLeftRight;
     		this.absHeading = absHeading;
+    		this.backwards = backwards;
     		switch (RobotMap.robot) {
     		case PRACTICE:
     			// not tuned
@@ -114,8 +117,8 @@ public class RunMotionProfileOnRio extends Command {
     // Called repeatedly when this Command is scheduled to run
     @SuppressWarnings("unused")
 	protected void execute() {
-    		double l = leftFollower.calculate(Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
-    		double r = rightFollower.calculate(Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
+    		double l = leftFollower.calculate((Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft) * (backwards ? -1 : 1));
+    		double r = rightFollower.calculate((Robot.driveSubsystem.getDistanceRight()-initialPositionRight) * (backwards ? -1 : 1));
     		
     		gyroHeading = Pathfinder.boundHalfDegrees(Robot.ahrs.getYaw()-initialYaw);
         	double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())); // Pathfinder native headings are in radians

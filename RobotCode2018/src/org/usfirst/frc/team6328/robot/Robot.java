@@ -75,9 +75,9 @@ public class Robot extends TimedRobot {
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
         if (RobotMap.tuningMode) {
-        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false));
-        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRioFromFile("sideToSwitch", false, false));
-        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false));
+        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false, false));
+        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRioFromFile("sideToSwitch", false, false, false));
+        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false, false));
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         }
