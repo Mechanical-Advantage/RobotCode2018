@@ -20,6 +20,7 @@ import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator;
+import org.usfirst.frc.team6328.robot.subsystems.Intake;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
 	
 	public static final DriveTrain driveSubsystem = new DriveTrain();
 	public static final Elevator elevator = new Elevator();
+	public static final Intake intake = new Intake();
 	public static final PnuematicsTest pnuematicsTest = new PnuematicsTest();
 	public static final PnuematicsTest2 pnuematicsTest2 = new PnuematicsTest2();
 	

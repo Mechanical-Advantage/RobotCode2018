@@ -61,6 +61,10 @@ public class OI {
 	 * Elevator gear switch
 	 * Elevator joystick
 	 * Elevator positions
+	 * Intake manual force intake
+	 * Intake manual grab
+	 * Intake eject
+	 * Intake normal intake+hold? (Might also be default command)
 	 */
 	private boolean joysticksReversed = false;
 	
