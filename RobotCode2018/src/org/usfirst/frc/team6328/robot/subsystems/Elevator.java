@@ -128,7 +128,7 @@ public class Elevator extends Subsystem {
 	
 	@Override
 	public void periodic() {
-		if (!resetCompleted && getLimitSwitch()) {
+		if (!resetCompleted && RobotMap.robot == RobotType.ROBOT_2018 && getLimitSwitch()) {
 			resetCompleted = true;
 		}
 	}
