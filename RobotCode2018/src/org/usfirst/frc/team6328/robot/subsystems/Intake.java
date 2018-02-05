@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  * Intake subsystem
  */
 public class Intake extends Subsystem {
-	
+
 	private static final boolean enableCurrentLimit = false;
 	private static final int continuousCurrentLimit = 0;
 	private static final int peakCurrentLimit = 0;
@@ -36,7 +36,7 @@ public class Intake extends Subsystem {
 	DoubleSolenoid weakGrab2;
 	Solenoid strongGrab;
 	DigitalInput proximitySensor;
-	
+
 	public Intake() {
 		if (RobotMap.robot == RobotType.ROBOT_2018) {
 			leftTalon = new TalonSRX(RobotMap.intakeLeft);
@@ -45,7 +45,7 @@ public class Intake extends Subsystem {
 			weakGrab2 = new DoubleSolenoid(RobotMap.intakeWeak2PCM, RobotMap.intakeWeak2Solenoid1, RobotMap.intakeWeak2Solenoid2);
 			strongGrab = new Solenoid(RobotMap.intakeStrongPCM, RobotMap.intakeStrongSolenoid);
 			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
-			
+
 			leftTalon.enableCurrentLimit(enableCurrentLimit);
 			leftTalon.configContinuousCurrentLimit(continuousCurrentLimit, configTimeout);
 			leftTalon.configPeakCurrentLimit(peakCurrentLimit, configTimeout);
@@ -66,52 +66,68 @@ public class Intake extends Subsystem {
 		//setDefaultCommand(new MySpecialCommand());
 		setDefaultCommand(new IntakeAndHoldCube());
 	}
-	
+
 	public void intake() {
-		leftTalon.set(ControlMode.PercentOutput, intakeSpeed);
-		rightTalon.set(ControlMode.PercentOutput, intakeSpeed);
-	}
-	
-	public void eject() {
-		leftTalon.set(ControlMode.PercentOutput, ejectSpeed);
-		rightTalon.set(ControlMode.PercentOutput, ejectSpeed);
-	}
-	
-	public void stop() {
-		leftTalon.neutralOutput();
-		rightTalon.neutralOutput();
-	}
-	
-	public boolean getSensor() {
-		return proximitySensor.get();
-	}
-	
-	public void setGrabState(GrabState state) {
-		switch(state) {
-		case RETRACTED:
-			weakGrab1.set(Value.kReverse);
-			weakGrab2.set(Value.kReverse);
-			strongGrab.set(false);
-			break;
-		case STRONG:
-			weakGrab1.set(Value.kForward);
-			weakGrab2.set(Value.kForward);
-			strongGrab.set(true);
-			break;
-		case WEAK:
-			weakGrab1.set(Value.kForward);
-			weakGrab2.set(Value.kForward);
-			strongGrab.set(false);
-			break;
-		default:
-			break;
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			leftTalon.set(ControlMode.PercentOutput, intakeSpeed);
+			rightTalon.set(ControlMode.PercentOutput, intakeSpeed);
 		}
 	}
-	
-	public double getCurrent() {
-		return (leftTalon.getOutputCurrent() + rightTalon.getOutputCurrent()) / 2;
+
+	public void eject() {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			leftTalon.set(ControlMode.PercentOutput, ejectSpeed);
+			rightTalon.set(ControlMode.PercentOutput, ejectSpeed);
+		}
 	}
-	
+
+	public void stop() {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			leftTalon.neutralOutput();
+			rightTalon.neutralOutput();
+		}
+	}
+
+	public boolean getSensor() {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			return proximitySensor.get();
+		} else {
+			return false;
+		}
+	}
+
+	public void setGrabState(GrabState state) {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			switch(state) {
+			case RETRACTED:
+				weakGrab1.set(Value.kReverse);
+				weakGrab2.set(Value.kReverse);
+				strongGrab.set(false);
+				break;
+			case STRONG:
+				weakGrab1.set(Value.kForward);
+				weakGrab2.set(Value.kForward);
+				strongGrab.set(true);
+				break;
+			case WEAK:
+				weakGrab1.set(Value.kForward);
+				weakGrab2.set(Value.kForward);
+				strongGrab.set(false);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	public double getCurrent() {
+		if (RobotMap.robot == RobotType.ROBOT_2018) {
+			return (leftTalon.getOutputCurrent() + rightTalon.getOutputCurrent()) / 2;
+		} else {
+			return 0;
+		}
+	}
+
 	public enum GrabState {
 		RETRACTED, WEAK, STRONG
 	}
