@@ -33,6 +33,7 @@ public class RunMotionProfileOnRio extends Command {
 	
 	private CustomDistanceFollower leftFollower, rightFollower;
 	private double initialYaw;
+	private double initialProfileYaw;
 	private double initialPositionLeft, initialPositionRight;
 	private double gyroHeading;
 	private double positionErrorLeftPositive, positionErrorLeftNegative, positionErrorRightPositive,
@@ -87,9 +88,34 @@ public class RunMotionProfileOnRio extends Command {
     // In separate function because this gets run during init if in tuning mode to load new wheelbase
     private void initFollowers() {
 		modifier.modify(wheelbase.get());
+		Trajectory leftTrajectory;
+		Trajectory rightTrajectory;
+		if (backwards) {
+			// If running backwards, sides should be switched
+			leftTrajectory = modifier.getRightTrajectory();
+			rightTrajectory = modifier.getLeftTrajectory();
+			int i;
+			for (i=0; i<leftTrajectory.length(); i++) {
+				leftTrajectory.segments[i].heading+=Math.PI;
+				leftTrajectory.segments[i].position*=-1;
+				leftTrajectory.segments[i].velocity*=-1;
+				leftTrajectory.segments[i].acceleration*=-1;
+				leftTrajectory.segments[i].jerk*=-1;
+			}
+			for (i=0; i<rightTrajectory.length(); i++) {
+				rightTrajectory.segments[i].heading+=Math.PI;
+				rightTrajectory.segments[i].position*=-1;
+				rightTrajectory.segments[i].velocity*=-1;
+				rightTrajectory.segments[i].acceleration*=-1;
+				rightTrajectory.segments[i].jerk*=-1;
+			}
+		} else {
+			leftTrajectory = modifier.getLeftTrajectory();
+			rightTrajectory = modifier.getRightTrajectory();
+		}
 		// pathfinder bug swaps left/right trajectories
-		leftFollower.setTrajectory(flipLeftRight ? modifier.getLeftTrajectory() : modifier.getRightTrajectory());
-		rightFollower.setTrajectory(flipLeftRight ? modifier.getRightTrajectory() : modifier.getLeftTrajectory());
+		leftFollower.setTrajectory(flipLeftRight ? leftTrajectory : rightTrajectory);
+		rightFollower.setTrajectory(flipLeftRight ? rightTrajectory : leftTrajectory);
     }
 
     // Called just before this Command runs the first time
@@ -108,6 +134,8 @@ public class RunMotionProfileOnRio extends Command {
     		leftFollower.reset();
     		rightFollower.reset();
     		initialYaw = absHeading ? 0 : Robot.ahrs.getYaw(); // if absolute yaw, don't correct
+    		// getHeading only updates when calling calculate so get it from the segment instead
+    		initialProfileYaw = absHeading ? 0 : leftFollower.getSegment().heading;
     		initialPositionLeft = Robot.driveSubsystem.getDistanceLeft();
     		initialPositionRight = Robot.driveSubsystem.getDistanceRight();
     		Robot.driveSubsystem.changeStatusRate(sensorFrameRate);
@@ -117,14 +145,14 @@ public class RunMotionProfileOnRio extends Command {
     // Called repeatedly when this Command is scheduled to run
     @SuppressWarnings("unused")
 	protected void execute() {
-    		double l = leftFollower.calculate((Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft) * (backwards ? -1 : 1));
-    		double r = rightFollower.calculate((Robot.driveSubsystem.getDistanceRight()-initialPositionRight) * (backwards ? -1 : 1));
+    		double l = leftFollower.calculate(Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
+    		double r = rightFollower.calculate(Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
     		
     		gyroHeading = Pathfinder.boundHalfDegrees(Robot.ahrs.getYaw()-initialYaw);
-        	double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())); // Pathfinder native headings are in radians
+        	double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)); // Pathfinder native headings are in radians
         	desiredHeading*= flipLeftRight ? -1 : 1;
         	
-        	double angleDifference = desiredHeading - gyroHeading;
+        	double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading - gyroHeading);
         	
         	// At end, load less aggressive parameters for final adjustment
         	if (leftFollower.isFinished()) {
@@ -195,7 +223,7 @@ public class RunMotionProfileOnRio extends Command {
     		Robot.driveSubsystem.resetControlRate();
     		System.out.printf("DLeft: %f, DRight: %f, Yaw: %f, Target Yaw: %f, Target DLeft: %f, Target DRight: %f\n",
 			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft, Robot.driveSubsystem.getDistanceRight()-initialPositionRight, gyroHeading,
-			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), leftFollower.getSegment().position, rightFollower.getSegment().position);
+			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)), leftFollower.getSegment().position, rightFollower.getSegment().position);
     		System.out.printf("Errors: Lp: %f, Ln: %f, Rp: %f, Rn: %f, Yp: %f, Yn: %f\n",
     				positionErrorLeftPositive/trajectoryLength, positionErrorLeftNegative/trajectoryLength,
     				positionErrorRightPositive/trajectoryLength, positionErrorRightNegative/trajectoryLength,

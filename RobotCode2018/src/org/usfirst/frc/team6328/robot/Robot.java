@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false, false));
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
+        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRioFromFile("backwardsTest", false, false, true));
         }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
