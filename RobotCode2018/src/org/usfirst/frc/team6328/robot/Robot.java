@@ -15,7 +15,8 @@ import java.util.StringJoiner;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
-import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRioFromFile;
+import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
+import org.usfirst.frc.team6328.robot.commands.SideAuto;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
@@ -75,12 +76,13 @@ public class Robot extends TimedRobot {
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
         if (RobotMap.tuningMode) {
-        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRioFromFile("test10forward5right", false, false, false));
-        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRioFromFile("sideToSwitch", false, false, false));
-        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRioFromFile("sideToSwitchFront", false, false, false));
+        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRio("test10forward5right", false, false, false));
+        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false));
+        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false));
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
-        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRioFromFile("backwardsTest", false, false, true));
+        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true));
+        		m_chooser.addObject("Side Auto right", new SideAuto(false));
         }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
@@ -131,6 +133,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		Robot.driveSubsystem.enableBrakeMode(true);
+		ahrs.zeroYaw();
 		m_autonomousCommand = m_chooser.getSelected();
 
 		/*

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.TimedCommand;
  */
 public class EjectCube extends TimedCommand {
 	
-	private static final double time = 0;
+	private static final double time = 0.5;
 
 	public EjectCube() {
 		super(time);

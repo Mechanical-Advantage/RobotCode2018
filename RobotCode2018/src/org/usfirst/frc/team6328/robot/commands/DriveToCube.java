@@ -19,10 +19,10 @@ public class DriveToCube extends Command {
 
 	private static final double cameraHorizFOV = 79.84523585564033;
 	private static final double cameraVertFOV = 47;
-	private static final double cameraHeight = 24.5;
-	private static final double cameraVertAngle = 14; // How far down the camera is pointed
+	private static final double cameraHeight = 27.625;
+	private static final double cameraVertAngle = 35; // How far down the camera is pointed
 	private static final double cameraHorizAngle = 0; // How far to the right the camera is pointer
-	private static final double cameraHorizOffset = -12; // How far to the right the camera is shifted
+	private static final double cameraHorizOffset = 0; // How far to the right the camera is shifted
 	private static final int cameraWidthPixels = 320; // pixels
 	private static final int cameraHeightPixels = 200; // 0 at top
 
@@ -137,17 +137,20 @@ public class DriveToCube extends Command {
 		double outputVelocity = pidOutputDistance.getPIDRate()*(kMaxOutput-kTurnCorrectionAmount)*-1;
 		double outputTurnVelocity = pidOutputAngle.getPIDRate()*kTurnCorrectionAmount;
 		Robot.driveSubsystem.drive(outputVelocity-outputTurnVelocity, outputVelocity+outputTurnVelocity);
+		
+		System.out.println("D: " + distance);
 	}
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return false;
+		return distance<=18;
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
 		turnController.disable();
 		distanceController.disable();
+		Robot.driveSubsystem.stop();
 	}
 
 	// Called when another command which requires one or more of the same

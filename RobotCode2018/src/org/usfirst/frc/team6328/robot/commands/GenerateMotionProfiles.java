@@ -18,7 +18,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 19;
+	public static final int waypointVersion = 21;
 	
 	private final Trajectory.Config stdConfig = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, /*55*/40, 200); // jerk actually matters
@@ -32,6 +32,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	private final Waypoint sideStart = new Waypoint(robotLength/2, 132-robotWidth/2, 0);
 	private final Waypoint switchSide = new Waypoint(168, 76.75+(robotLength/2), Pathfinder.d2r(-90));
 	private final Waypoint switchFront = new Waypoint(168-28-(robotLength/2), 54, 0);
+	@SuppressWarnings("unused")
 	private final Waypoint switchBack = new Waypoint(168+28+(robotLength/2), 54, Pathfinder.d2r(180));
 	private final Waypoint scaleFront = new Waypoint(300-(robotLength/2), 90-12, 0);
 	private final Waypoint scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, 0);
@@ -76,6 +77,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
+	    			new Waypoint(168, 76.75+18+(robotWidth/2), 0), // Left edge of robot 18 in. from switch
 	    			scaleFront
 	    	};
 	    	generateProfile("sideToScale");
@@ -94,13 +96,13 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	
 	    	points = new Waypoint[] {
 	    			sideSwitchPrepareCrossingPoint,
-	    			new Waypoint(228.735, -24, Pathfinder.d2r(-90))
+	    			new Waypoint(228.735, -24, Pathfinder.d2r(-90)) // -24 is a guess
 	    	};
 	    	generateProfile("sideSwitchCross");
 	    	
 	    	points = new Waypoint[] {
 	    			scaleFront,
-	    			new Waypoint(228.735, 150-(robotLength/2), Pathfinder.d2r(-90))
+	    			new Waypoint(228.735, 150-(robotLength/2), Pathfinder.d2r(-90)) // 150 is a guess
 	    	};
 	    	generateProfile("scalePrepareCrossing");
 	    	

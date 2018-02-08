@@ -36,12 +36,16 @@ public class SideAuto extends InstantCommand {
 		Command sideAutoCommand;
 		if (side == switchSide && side == scaleSide) {
 			sideAutoCommand = new BothSameSide();
+			System.out.println("Running both same side auto");
 		} else if (side == switchSide) {
 			sideAutoCommand = new SwitchSameSide();
+			System.out.println("Running switch same side auto");
 		} else if (side == scaleSide) {
 			sideAutoCommand = new ScaleSameSide();
+			System.out.println("Running scale same side auto");
 		} else {
 			sideAutoCommand = new BothOppositeSide();
+			System.out.println("Running both opposite side auto");
 		}
 		
 		sideAutoCommand.start();
@@ -50,7 +54,7 @@ public class SideAuto extends InstantCommand {
 	private class BothSameSide extends CommandGroup {
 		public BothSameSide() {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
-			addSequential(new RunMotionProfileOnRioFromFile("sideToScale", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false));
 			addSequential(new EjectCube());
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
@@ -64,7 +68,7 @@ public class SideAuto extends InstantCommand {
 	private class BothOppositeSide extends CommandGroup {
 		public BothOppositeSide() {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
-			addSequential(new RunMotionProfileOnRioFromFile("sideToOppositeScale", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false));
 			addSequential(new EjectCube());
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
@@ -78,11 +82,11 @@ public class SideAuto extends InstantCommand {
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide() {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
-			addSequential(new RunMotionProfileOnRioFromFile("sideToSwitch", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false));
 			addSequential(new EjectCube());
-			addSequential(new RunMotionProfileOnRioFromFile("sideSwitchPrepareCrossing", leftSide, true, true));
+			addSequential(new RunMotionProfileOnRio("sideSwitchPrepareCrossing", leftSide, true, true));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
-			addSequential(new RunMotionProfileOnRioFromFile("sideSwitchCross", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideSwitchCross", leftSide, true, false));
 			addSequential(new DriveToCube());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
 			addSequential(new TurnToAngle(0, true));
@@ -95,9 +99,9 @@ public class SideAuto extends InstantCommand {
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide() {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
-			addSequential(new RunMotionProfileOnRioFromFile("sideToScale", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false));
 			addSequential(new EjectCube());
-			addSequential(new RunMotionProfileOnRioFromFile("scalePrepareCrossing", leftSide, true, true));
+			addSequential(new RunMotionProfileOnRio("scalePrepareCrossing", leftSide, true, true));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new DriveDistanceOnHeading(scaleCrossDistance, -90));
 			addSequential(new DriveToCube());
