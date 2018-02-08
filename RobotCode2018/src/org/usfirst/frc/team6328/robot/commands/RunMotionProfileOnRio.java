@@ -1,5 +1,7 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import java.io.File;
+
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.TunableNumber;
@@ -43,6 +45,8 @@ public class RunMotionProfileOnRio extends Command {
 	private boolean flipLeftRight;
 	private boolean absHeading;
 	private boolean backwards;
+	private boolean trajectoryLoaded = false;
+	private String filename;
 	
 	/*
      * Tuning Notes:
@@ -56,33 +60,50 @@ public class RunMotionProfileOnRio extends Command {
     		super("RunMotionProfileOnRio");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-    		requires(Robot.driveSubsystem);
     		this.flipLeftRight = flipLeftRight;
     		this.absHeading = absHeading;
     		this.backwards = backwards;
+    		initCommand();
+    		initTrajectory(trajectory);
+    }
+    
+    public RunMotionProfileOnRio(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards) {
+    		this.flipLeftRight = flipLeftRight;
+		this.absHeading = absHeading;
+		this.backwards = backwards;
+		this.filename = filename;
+		initCommand();
+    }
+    
+    private void initCommand() {
+    		requires(Robot.driveSubsystem);
     		switch (RobotMap.robot) {
-    		case PRACTICE:
-    			// not tuned
-    			break;
-    		case ROBOT_2017:
-    			// tuned using max velocity: 100, accel: 55, jerk: 2700
-    			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
-    			kD.setDefault(0);
-    			kPAdjust.setDefault(1);
-    			kDAdjust.setDefault(0);
-    			AngleErrorThreshold.setDefault(1.5);
-    			wheelbase.setDefault(23); // 18 measured
-    			kPAngle.setDefault(2.5);
-    			kPAngleAdjust.setDefault(0.1);
-    			break;
-    		case ROBOT_2018:
-    			break;
-    		}
+		case PRACTICE:
+			// not tuned
+			break;
+		case ROBOT_2017:
+			// tuned using max velocity: 100, accel: 55, jerk: 2700
+			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
+			kD.setDefault(0);
+			kPAdjust.setDefault(1);
+			kDAdjust.setDefault(0);
+			AngleErrorThreshold.setDefault(1.5);
+			wheelbase.setDefault(23); // 18 measured
+			kPAngle.setDefault(2.5);
+			kPAngleAdjust.setDefault(0.1);
+			break;
+		case ROBOT_2018:
+			break;
+		}
+    }
+    
+    private void initTrajectory(Trajectory trajectory) {
     		trajectoryLength = trajectory.length();
-    		modifier = new TankModifier(trajectory);
-    		leftFollower = new CustomDistanceFollower();
-    		rightFollower = new CustomDistanceFollower();
-    		initFollowers();
+		modifier = new TankModifier(trajectory);
+		leftFollower = new CustomDistanceFollower();
+		rightFollower = new CustomDistanceFollower();
+		initFollowers();
+		trajectoryLoaded = true;
     }
     
     // In separate function because this gets run during init if in tuning mode to load new wheelbase
@@ -126,6 +147,11 @@ public class RunMotionProfileOnRio extends Command {
     		positionErrorRightNegative = 0;
     		yawErrorPositive = 0;
     		yawErrorNegative = 0;
+    		if (!trajectoryLoaded) {
+    			// Load from file
+    			File file = new File("/home/lvuser/motionprofiles/" + filename + ".traj");
+    			initTrajectory(Pathfinder.readFromFile(file));
+    		}
     		if (RobotMap.tuningMode) {
     			initFollowers();
     		}
