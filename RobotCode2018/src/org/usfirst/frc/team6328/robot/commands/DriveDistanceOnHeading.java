@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.PIDControllerFixed;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
@@ -42,8 +43,8 @@ public class DriveDistanceOnHeading extends Command {
     private DriveGear gear;
 
     static final double maxOutputVelocityChange = kMaxOutput * kMaxChange;
-    private PIDController distanceController;
-    private PIDController turnController;
+    private PIDControllerFixed distanceController;
+    private PIDControllerFixed turnController;
 	private double targetDistance;
 	private double targetAngle;
 	private boolean useStartingYaw;
@@ -87,7 +88,7 @@ public class DriveDistanceOnHeading extends Command {
 	        	kDDistance = 0;
 	        	kFDistance = 0;
 	        	kToleranceInches = 0.5;
-	        	kPAngle = 0.0; // was 0.05, disabled due to WPILib Tolerance buffer phase lag
+	        	kPAngle = 0.05; // was 0.05, disabled due to WPILib Tolerance buffer phase lag
 	        	kIAngle = 0;
 	        	kDAngle = 0;
 	        	kFAngle = 0;
@@ -105,13 +106,12 @@ public class DriveDistanceOnHeading extends Command {
     		targetAngle = Robot.ahrs.getYaw();
     	}
     	
-    	distanceController = new PIDController(kPDistance, kIDistance, kDDistance, kFDistance, pidSourceDistance, pidOutputDistance, kUpdatePeriodDistance);
-    	turnController = new PIDController(kPAngle, kIAngle, kDAngle, kFAngle, Robot.ahrs, pidOutputAngle);
+    	distanceController = new PIDControllerFixed(kPDistance, kIDistance, kDDistance, kFDistance, pidSourceDistance, pidOutputDistance, kUpdatePeriodDistance);
+    	turnController = new PIDControllerFixed(kPAngle, kIAngle, kDAngle, kFAngle, Robot.ahrs, pidOutputAngle);
     	distanceController.setOutputRange(-1, 1);
     	turnController.setOutputRange(-1, 1);
     	distanceController.setAbsoluteTolerance(kToleranceInches);
         distanceController.setToleranceBuffer(kToleranceBufSamplesDistance);
-        distanceController.setContinuous(false);
         distanceController.setSetpoint(targetDistance);
         turnController.setInputRange(-180.0f,  180.0f);
         turnController.setOutputRange(-1.0, 1.0);
