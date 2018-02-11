@@ -1,0 +1,77 @@
+{
+  "dividerPosition": 0.1835883171070932,
+  "tabPane": [
+    {
+      "title": "DriveDistanceOnHeading tuning",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Current Distance",
+              "_source1": "network_table:///SmartDashboard/Target Distance",
+              "_title": "Distance Graph",
+              "Visible time": 30.0,
+              "SmartDashboard/Current Distance visible": true,
+              "SmartDashboard/Target Distance visible": true
+            }
+          },
+          "4,0": {
+            "size": [
+              4,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Center Velocity",
+              "_source1": "network_table:///SmartDashboard/Left Velocity",
+              "_source2": "network_table:///SmartDashboard/Right Velocity",
+              "_title": "Velocity Graph",
+              "Visible time": 30.0,
+              "SmartDashboard/Center Velocity visible": true,
+              "SmartDashboard/Left Velocity visible": true,
+              "SmartDashboard/Right Velocity visible": true
+            }
+          },
+          "0,3": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Target yaw",
+              "_source1": "network_table:///SmartDashboard/Current Angle",
+              "_title": "Angle Graph",
+              "Visible time": 30.0,
+              "SmartDashboard/Current Angle visible": true,
+              "SmartDashboard/Target yaw visible": true
+            }
+          },
+          "4,3": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Turn controller output",
+              "_title": "Turn controller output",
+              "Visible time": 30.0,
+              "SmartDashboard/Turn controller output visible": true
+            }
+          }
+        }
+      }
+    }
+  ]
+}
