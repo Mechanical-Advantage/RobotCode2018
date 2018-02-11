@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.usfirst.frc.team6328.robot.RobotMap;
+
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
@@ -20,8 +22,10 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// the robot will re-generate profiles if this is greater than saved
 	public static final int waypointVersion = 27;
 	
-	private final Trajectory.Config stdConfig = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
+	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, /*100*/25, /*55*/40, 200); // jerk actually matters
+	private final Trajectory.Config stdConfigPractice = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, 
+			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 30, 200);
 	@SuppressWarnings("unused")
 	private Trajectory.Config config; // this can be defined for specific profiles
 	private final String MPDir = "/home/lvuser/motionprofiles/"; // make sure to have slash at end
@@ -143,7 +147,18 @@ public class GenerateMotionProfiles extends InstantCommand {
     }
 
     private void generateProfile(String fileName) {
-    		generateProfile(stdConfig, fileName);
+    		switch (RobotMap.robot) {
+			case EVERYBOT_2018:
+				break;
+			case ORIGINAL_ROBOT_2018:
+				break;
+			case PRACTICE:
+				generateProfile(stdConfigPractice, fileName);
+				break;
+			case ROBOT_2017:
+				generateProfile(stdConfig2017, fileName);
+				break;
+    		}
     }
     
     private void generateProfile(Trajectory.Config config, String fileName) {

@@ -25,8 +25,6 @@ public class RunMotionProfileOnRio extends Command {
 	
 	private TunableNumber kP = new TunableNumber("Profile P"); // P and D apply when profile is next started
 	private TunableNumber kD = new TunableNumber("Profile D");
-	private TunableNumber kPAdjust = new TunableNumber("Profile Adjust P");
-	private TunableNumber kDAdjust = new TunableNumber("Profile Adjust D");
 	private TunableNumber AngleErrorThreshold = new TunableNumber("Profile Angle Error Threshold");
 	private TunableNumber wheelbase = new TunableNumber("Wheelbase");
 	private TunableNumber kPAngle = new TunableNumber("Profile Angle P"); // standard is 0.8 * (1.0/80.0), add max velocity like: 0.8*60 * (1.0/80.0) (if maxVel is 60)
@@ -79,14 +77,17 @@ public class RunMotionProfileOnRio extends Command {
     		requires(Robot.driveSubsystem);
     		switch (RobotMap.robot) {
 		case PRACTICE:
-			// not tuned
+			kP.setDefault(10);
+			kD.setDefault(0);
+			AngleErrorThreshold.setDefault(1.5);
+			wheelbase.setDefault(26.3);
+			kPAngle.setDefault(2);
+			kPAngleAdjust.setDefault(0.1);
 			break;
 		case ROBOT_2017:
 			// tuned using max velocity: 100, accel: 55, jerk: 2700
 			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
 			kD.setDefault(0);
-			kPAdjust.setDefault(1);
-			kDAdjust.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
 			wheelbase.setDefault(/*23*/19.5); // 18 measured
 			kPAngle.setDefault(2.5);
@@ -185,11 +186,7 @@ public class RunMotionProfileOnRio extends Command {
         	double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading - gyroHeading);
         	
         	// At end, load less aggressive parameters for final adjustment
-        	if (leftFollower.isFinished()) {
-        		// set velocity to 0 so last profile velocity is not still applied, in case last velocity is not zero
-        		leftFollower.configurePIDVA(kPAdjust.get(), 0, kDAdjust.get(), 0, 0);
-        		rightFollower.configurePIDVA(kPAdjust.get(), 0, kDAdjust.get(), 0, 0);
-        	} else {
+        	if (!leftFollower.isFinished()) {
         		// in else to avoid measuring measure final adjust
         		double error;
         		error = leftFollower.getLastError();
@@ -241,6 +238,7 @@ public class RunMotionProfileOnRio extends Command {
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
+    		// At end of profile only correct angle
 		return leftFollower.isFinished() && (enableGyroCorrection &&
 				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
 				<=AngleErrorThreshold.get());
