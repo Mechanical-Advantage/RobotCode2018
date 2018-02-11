@@ -38,7 +38,7 @@ public class Intake extends Subsystem {
 	DigitalInput proximitySensor;
 
 	public Intake() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftTalon = new TalonSRX(RobotMap.intakeLeft);
 			rightTalon = new TalonSRX(RobotMap.intakeRight);
 			weakGrab1 = new DoubleSolenoid(RobotMap.intakeWeak1PCM, RobotMap.intakeWeak1Solenoid1, RobotMap.intakeWeak1Solenoid2);
@@ -68,28 +68,28 @@ public class Intake extends Subsystem {
 	}
 
 	public void intake() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, intakeSpeed);
 			rightTalon.set(ControlMode.PercentOutput, intakeSpeed);
 		}
 	}
 
 	public void eject() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, ejectSpeed);
 			rightTalon.set(ControlMode.PercentOutput, ejectSpeed);
 		}
 	}
 
 	public void stop() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftTalon.neutralOutput();
 			rightTalon.neutralOutput();
 		}
 	}
 
 	public boolean getSensor() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return proximitySensor.get();
 		} else {
 			return false;
@@ -97,7 +97,7 @@ public class Intake extends Subsystem {
 	}
 
 	public void setGrabState(GrabState state) {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			switch(state) {
 			case RETRACTED:
 				weakGrab1.set(Value.kReverse);
@@ -121,7 +121,7 @@ public class Intake extends Subsystem {
 	}
 
 	public double getCurrent() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return (leftTalon.getOutputCurrent() + rightTalon.getOutputCurrent()) / 2;
 		} else {
 			return 0;

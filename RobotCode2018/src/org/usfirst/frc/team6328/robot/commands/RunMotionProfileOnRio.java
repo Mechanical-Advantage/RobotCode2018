@@ -88,13 +88,17 @@ public class RunMotionProfileOnRio extends Command {
 			kPAdjust.setDefault(1);
 			kDAdjust.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
-			wheelbase.setDefault(23); // 18 measured
+			wheelbase.setDefault(/*23*/19.5); // 18 measured
 			kPAngle.setDefault(2.5);
 			kPAngleAdjust.setDefault(0.1);
 			break;
-		case ROBOT_2018:
+		case ORIGINAL_ROBOT_2018:
 			break;
-		}
+		case EVERYBOT_2018:
+			break;
+		default:
+			break;
+    		}
     }
     
     private void initTrajectory(Trajectory trajectory) {

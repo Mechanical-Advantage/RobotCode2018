@@ -146,11 +146,34 @@ public class DriveTrain extends Subsystem {
 			kIZoneMP = 4096*50/600;
 			kAllowableErrorDistance = 24;
 			break;
-		case ROBOT_2018:
+		case ORIGINAL_ROBOT_2018:
 			leftGearSolenoid = new DoubleSolenoid(RobotMap.leftDriveGearPCM, RobotMap.leftDriveGearSolenoid1, RobotMap.leftDriveGearSolenoid2);
 			rightGearSolenoid = new DoubleSolenoid(RobotMap.rightDriveGearPCM, RobotMap.rightDriveGearSolenoid1, RobotMap.rightDriveGearSolenoid2);
 			setPID(1, kPHigh, kIHigh, kDHigh, kFHigh, kIZoneHigh);
 			switchGear(DriveGear.LOW);
+			break;
+		case EVERYBOT_2018:
+			encoderType = FeedbackDevice.QuadEncoder;
+			ticksPerRotation = 1440;
+			wheelDiameter = 5.9000000002; // 6
+			wheelBaseWidth = 26.3; // 27.875
+			reverseSensorRight = false;
+			reverseSensorLeft = false;
+			reverseOutputLeft = false;
+			reverseOutputRight = true;
+			kPLow = 2;
+			kILow = 0;
+			kDLow = 40;
+			kFLow = 1.07;
+			kIZoneLow = 0;
+			kPMP = 2;
+			kIMP = 0;
+			kDMP = 40;
+			kFMP = 1.0768;
+			kIZoneMP = 0;
+			kAllowableErrorDistance = 8;
+			break;
+		default:
 			break;
 		}
 		setPID(2, kPMP, kIMP, kDMP, kFMP, kIZoneMP);
@@ -222,7 +245,7 @@ public class DriveTrain extends Subsystem {
      */
     public void driveInchesPerSec(double left, double right) {
     		int maxVelocity;
-		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || currentGear == DriveGear.LOW) {
 			maxVelocity = RobotMap.maxVelocityLow;
 		} else {
 			maxVelocity = RobotMap.maxVelocityHigh;
@@ -232,7 +255,7 @@ public class DriveTrain extends Subsystem {
     
     private double calcActualVelocity(double input) {
     		int minVelocity;
-		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || currentGear == DriveGear.LOW) {
 			minVelocity = RobotMap.minVelocityLow;
 		} else {
 			minVelocity = RobotMap.minVelocityHigh;
@@ -268,7 +291,7 @@ public class DriveTrain extends Subsystem {
 	    			}
 	    		}
 	    		int maxVelocity;
-	    		if (RobotMap.robot != RobotType.ROBOT_2018 || currentGear == DriveGear.LOW) {
+	    		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || currentGear == DriveGear.LOW) {
 	    			maxVelocity = RobotMap.maxVelocityLow;
 	    		} else {
 	    			maxVelocity = RobotMap.maxVelocityHigh;
@@ -453,7 +476,7 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public void switchGear(DriveGear gear) {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			switch (gear) {
 			case HIGH:
 				leftGearSolenoid.set(Value.kForward);
@@ -478,7 +501,7 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 	public DriveGear getCurrentGear() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return currentGear;
 		} else {
 			return DriveGear.UNSUPPORTED;

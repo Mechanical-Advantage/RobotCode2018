@@ -59,7 +59,7 @@ public class Elevator extends Subsystem {
 	boolean resetCompleted = false;
 	
 	public Elevator() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster = new TalonSRX(RobotMap.elevatorMaster);
 			talonSlave1 = new TalonSRX(RobotMap.elevatorSlave1);
 			talonSlave2 = new TalonSRX(RobotMap.elevatorSlave2);
@@ -128,7 +128,7 @@ public class Elevator extends Subsystem {
 	
 	@Override
 	public void periodic() {
-		if (!resetCompleted && RobotMap.robot == RobotType.ROBOT_2018 && getLimitSwitch()) {
+		if (!resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && getLimitSwitch()) {
 			resetCompleted = true;
 		}
 	}
@@ -147,7 +147,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the target position was actually applied
 	 */
 	public boolean setPosition(double position) {
-		if (resetCompleted && RobotMap.robot == RobotType.ROBOT_2018) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			brake.set(Value.kReverse);
 			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
 			targetPosition = position;
@@ -158,14 +158,14 @@ public class Elevator extends Subsystem {
 	}
 	
 	public double getPosition() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return talonMaster.getSelectedSensorPosition(0)/ticksPerRotation*distancePerRotation;
 		}
 		return 0;
 	}
 	
 	public boolean onTarget() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return Math.abs(getPosition()-targetPosition) <= allowableError && talonMaster.getControlMode() == ControlMode.MotionMagic;
 		}
 		return false;
@@ -176,7 +176,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the hold actually applied
 	 */
 	public boolean holdPosition() {
-		if (resetCompleted && RobotMap.robot == RobotType.ROBOT_2018) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
 			brake.set(Value.kForward);
 			return true;
@@ -191,7 +191,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the change succeeded
 	 */
 	public boolean driveOpenLoop(double percent) {
-		if (resetCompleted && RobotMap.robot == RobotType.ROBOT_2018) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			brake.set(Value.kReverse);
 			talonMaster.set(ControlMode.PercentOutput, percent);
 			return true;
@@ -201,7 +201,7 @@ public class Elevator extends Subsystem {
 	}
 
 	public void switchGear(ElevatorGear gear) {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			switch (gear) {
 			case HIGH:
 				gearSwitch.set(Value.kForward);
@@ -223,7 +223,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the change succeeded
 	 */
 	public boolean enableClimbLock(boolean enable) {
-		if (getPosition() <= maxClimbLockHeight && RobotMap.robot == RobotType.ROBOT_2018) {
+		if (getPosition() <= maxClimbLockHeight && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			climbLock.set(enable ? Value.kForward : Value.kReverse);
 			return true;
 		} else {
@@ -232,7 +232,7 @@ public class Elevator extends Subsystem {
 	}
 	
 	public boolean getLimitSwitch() {
-		if (RobotMap.robot == RobotType.ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return talonMaster.getSensorCollection().isRevLimitSwitchClosed();
 		}
 		return false;

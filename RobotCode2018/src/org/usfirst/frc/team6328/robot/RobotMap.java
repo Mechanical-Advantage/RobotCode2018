@@ -97,7 +97,7 @@ public class RobotMap {
 			gearExpellerSolenoid1 = 0;
 			gearExpellerSolenoid2 = 1;
 			break;
-		case ROBOT_2018:
+		case ORIGINAL_ROBOT_2018:
 			break;
 		default:
 			break;
@@ -105,7 +105,8 @@ public class RobotMap {
 	}
 	
 	public enum RobotType {
-		ROBOT_2018,
+		ORIGINAL_ROBOT_2018,
+		EVERYBOT_2018,
 		ROBOT_2017,
 		PRACTICE
 	}

@@ -61,9 +61,20 @@ public class TurnToAngle extends Command implements PIDOutput {
 	        	kToleranceBufSamples = 10;
 	        	updatePeriod = 0.02;
 	        	break;
-        case ROBOT_2018:
+        case ORIGINAL_ROBOT_2018:
         		Robot.driveSubsystem.switchGear(gear);
         		break;
+		case EVERYBOT_2018:
+			kP = 0.01;
+			kI = 0;
+			kD = 0.003;
+			kF = 0;
+			kToleranceDegrees = 1.0;
+			kToleranceBufSamples = 10;
+			updatePeriod = 0.05;
+			break;
+		default:
+			break;
         }
         this.absoluteAngle = absoluteAngle;
     }

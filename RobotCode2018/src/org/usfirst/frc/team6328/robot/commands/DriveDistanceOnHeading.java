@@ -94,9 +94,23 @@ public class DriveDistanceOnHeading extends Command {
 	        	kFAngle = 0;
 	        	kToleranceDegrees = 1;
 	        	break;
-        	case ROBOT_2018:
+        	case ORIGINAL_ROBOT_2018:
         		Robot.driveSubsystem.switchGear(gear);
         		break;
+		case EVERYBOT_2018:
+			kPDistance = 0.017;
+	        	kIDistance = 0;
+	        	kDDistance = 0;
+	        	kFDistance = 0.5;
+	        	kToleranceInches = 0.5;
+	        	kPAngle = 0.07;
+	        	kIAngle = 0;
+	        	kDAngle = 0;
+	        	kFAngle = 0;
+	        	kToleranceDegrees = 0.5;
+			break;
+		default:
+			break;
         }
     }
 
