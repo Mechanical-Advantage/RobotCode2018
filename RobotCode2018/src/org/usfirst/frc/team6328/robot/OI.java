@@ -8,15 +8,9 @@
 package org.usfirst.frc.team6328.robot;
 
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
-import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend;
-import org.usfirst.frc.team6328.robot.commands.PnuematicsTestExtend2;
-import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRelease;
-import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract;
-import org.usfirst.frc.team6328.robot.commands.PnuematicsTestRetract2;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
-import org.usfirst.frc.team6328.robot.commands.TimedPnuematicRelease;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -82,12 +76,6 @@ public class OI {
 	private Button sniperMode = new JoystickButton(rightController, 1);
 	private Button openLoopDrive = new JoystickButton(oiController1, 10);
 	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
-	private Button pnuematicsExtend = new JoystickButton(oiController2, 5);
-	private Button pnuematicsRetract = new JoystickButton(oiController2, 6);
-	private Button pnuematicsExtend2 = new JoystickButton(oiController2, 2);
-	private Button pnuematicsRetract2 = new JoystickButton(oiController2, 3);
-	private Button pnuematicsTimed = new JoystickButton(oiController2, 1);
-	private Button pnuematicsRelease = new JoystickButton(oiController2, 4);
 	private Button driveToCube = new JoystickButton(oiController2, 9);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
@@ -99,12 +87,6 @@ public class OI {
 		joysticksBackward.whenPressed(new SetCamera(false));
 		joysticksForward.whenPressed(new ReverseJoysticks(false));
 		joysticksBackward.whenPressed(new ReverseJoysticks(true));
-		pnuematicsExtend.whenPressed(new PnuematicsTestExtend());
-		pnuematicsRetract.whenPressed(new PnuematicsTestRetract());
-		pnuematicsExtend2.whenPressed(new PnuematicsTestExtend2());
-		pnuematicsRetract2.whenPressed(new PnuematicsTestRetract2());
-		pnuematicsTimed.whenPressed(new TimedPnuematicRelease());
-		pnuematicsRelease.whenPressed(new PnuematicsTestRelease());
 		driveToCube.whileHeld(new DriveToCube());
 		highGear.whenPressed(new SwitchGear(DriveGear.HIGH));
 		lowGear.whenPressed(new SwitchGear(DriveGear.LOW));
