@@ -155,9 +155,16 @@ public class DriveDistanceOnHeading extends Command {
     		Robot.driveSubsystem.drive(outputVelocity+outputTurnVelocity, outputVelocity-outputTurnVelocity);
     		if (RobotMap.tuningMode) {
     			SmartDashboard.putString("Distance Graph", Robot.genGraphStr(getAverageDistance(), targetDistance));
+    			SmartDashboard.putNumber("Current Distance", getAverageDistance());
+    			SmartDashboard.putNumber("Target Distance", targetDistance);
     			SmartDashboard.putString("Velocity Graph", Robot.genGraphStr(outputVelocity, outputVelocity+outputTurnVelocity, outputVelocity-outputTurnVelocity));
+    			SmartDashboard.putNumber("Center Velocity", outputVelocity);
+    			SmartDashboard.putNumber("Left Velocity", outputVelocity+outputTurnVelocity);
+    			SmartDashboard.putNumber("Right Velocity", outputVelocity-outputTurnVelocity);
         		SmartDashboard.putNumber("Turn controller output", pidOutputAngle.getPIDRate());
         		SmartDashboard.putString("Yaw Graph", Robot.genGraphStr(targetAngle, Robot.ahrs.getYaw()));
+        		SmartDashboard.putNumber("Target yaw", targetAngle);
+        		SmartDashboard.putNumber("Current Angle", Robot.ahrs.getYaw());
     		}
     	}
     }
