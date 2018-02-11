@@ -16,7 +16,7 @@ import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
-import org.usfirst.frc.team6328.robot.commands.SideAuto;
+import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
@@ -77,7 +77,7 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true));
-        		m_chooser.addObject("Side Auto right", new SideAuto(false));
+        		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
         }
 		SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);

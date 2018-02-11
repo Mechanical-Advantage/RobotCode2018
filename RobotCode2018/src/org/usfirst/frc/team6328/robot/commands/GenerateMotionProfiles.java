@@ -33,14 +33,16 @@ public class GenerateMotionProfiles extends InstantCommand {
 	private double robotWidth;
 	
 	// Defined points on field
-	private  Waypoint sideStart;
-	private  Waypoint switchSide;
-	private  Waypoint switchFront;
+	private Waypoint sideStart;
+	private Waypoint centerStart;
+	private Waypoint switchSide;
+	private Waypoint switchFront;
+	private Waypoint switchFrontOpposite;
 	@SuppressWarnings("unused")
-	private  Waypoint switchBack;
-	private  Waypoint scaleFront;
-	private  Waypoint scaleFrontOpposite;
-	private  Waypoint sideSwitchPrepareCrossingPoint;
+	private Waypoint switchBack;
+	private Waypoint scaleFront;
+	private Waypoint scaleFrontOpposite;
+	private Waypoint sideSwitchPrepareCrossingPoint;
 	
 	Waypoint[] points;
 
@@ -67,8 +69,10 @@ public class GenerateMotionProfiles extends InstantCommand {
     
     private void defineWaypoints() {
 	    	 sideStart = new Waypoint(robotLength/2, 132-robotWidth/2, 0);
+	    	 centerStart = new Waypoint(robotLength/2, (robotWidth/2)-12, 0);
 	    	 switchSide = new Waypoint(168, 76.75+(robotLength/2), Pathfinder.d2r(-90));
 	    	 switchFront = new Waypoint(168-28-(robotLength/2), 54, 0);
+	    	 switchFrontOpposite = new Waypoint(168-28-(robotLength/2), 54*-1, 0);
 	    	 switchBack = new Waypoint(168+28+(robotLength/2), 54, Pathfinder.d2r(180));
 	    	 scaleFront = new Waypoint(300-(robotLength/2), 90-12, 0);
 	    	 scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, 0);
@@ -97,6 +101,14 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    			switchSide
 	    	};
 	    	generateProfile("sideToSwitch");
+	    	
+	    	points = new Waypoint[] {
+	    			sideStart,
+	    			new Waypoint(168, 76.75+36+(robotWidth/2), 0), // Left edge of robot 36 in. from switch
+	    			new Waypoint(168+28+25.5, 0, Pathfinder.d2r(-90)),
+	    			new Waypoint(168, (76.75+(robotWidth/2)+18)*-1, Pathfinder.d2r(180)) // Edge of robot 18 in. from switch
+	    	};
+	    	generateProfile("sideToOppositeSwitch");
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
@@ -145,6 +157,18 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    			sideStart
 	    	};
 	    	generateProfile("backwardsTest");
+	    	
+	    	points = new Waypoint[] {
+	    			centerStart,
+	    			switchFront
+	    	};
+	    	generateProfile("centerToRightSwitch");
+	    	
+	    	points = new Waypoint[] {
+	    			centerStart,
+	    			switchFrontOpposite
+	    	};
+	    	generateProfile("centerToLeftSwitch");
     	
 //    	Example custom config
 //    	config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC,

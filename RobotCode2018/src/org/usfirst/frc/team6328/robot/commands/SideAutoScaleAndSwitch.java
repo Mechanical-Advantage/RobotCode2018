@@ -12,7 +12,7 @@ import openrio.powerup.MatchData.OwnedSide;
 /**
  * Runs a side auto
  */
-public class SideAuto extends InstantCommand {
+public class SideAutoScaleAndSwitch extends InstantCommand {
 	
 	private static final double cubePickUpToSwitchDistance = 12;
 	private static final double cubePickUpToScaleDistance = 20;
@@ -21,7 +21,7 @@ public class SideAuto extends InstantCommand {
 	
 	private boolean leftSide;
 
-	public SideAuto(boolean leftSide) {
+	public SideAutoScaleAndSwitch(boolean leftSide) {
 		super();
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
