@@ -134,6 +134,15 @@ public class Robot extends TimedRobot {
 	public void autonomousInit() {
 		Robot.driveSubsystem.enableBrakeMode(true);
 		ahrs.zeroYaw();
+		double startingUpdates = ahrs.getUpdateCount();
+		while (ahrs.getUpdateCount()<startingUpdates+3) {
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		m_autonomousCommand = m_chooser.getSelected();
 
 		/*
