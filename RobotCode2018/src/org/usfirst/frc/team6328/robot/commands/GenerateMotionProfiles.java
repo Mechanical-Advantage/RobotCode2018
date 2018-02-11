@@ -20,7 +20,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 27;
+	public static final int waypointVersion = 28;
 	
 	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, /*100*/25, /*55*/40, 200); // jerk actually matters
@@ -29,18 +29,18 @@ public class GenerateMotionProfiles extends InstantCommand {
 	@SuppressWarnings("unused")
 	private Trajectory.Config config; // this can be defined for specific profiles
 	private final String MPDir = "/home/lvuser/motionprofiles/"; // make sure to have slash at end
-	private final double robotLength = 31.5;
-	private final double robotWidth = 29.25;
+	private double robotLength;
+	private double robotWidth;
 	
 	// Defined points on field
-	private final Waypoint sideStart = new Waypoint(robotLength/2, 132-robotWidth/2, 0);
-	private final Waypoint switchSide = new Waypoint(168, 76.75+(robotLength/2), Pathfinder.d2r(-90));
-	private final Waypoint switchFront = new Waypoint(168-28-(robotLength/2), 54, 0);
+	private  Waypoint sideStart;
+	private  Waypoint switchSide;
+	private  Waypoint switchFront;
 	@SuppressWarnings("unused")
-	private final Waypoint switchBack = new Waypoint(168+28+(robotLength/2), 54, Pathfinder.d2r(180));
-	private final Waypoint scaleFront = new Waypoint(300-(robotLength/2), 90-12, 0);
-	private final Waypoint scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, 0);
-	private final Waypoint sideSwitchPrepareCrossingPoint = new Waypoint(168+36, 76.75+42.625, Pathfinder.d2r(-135));
+	private  Waypoint switchBack;
+	private  Waypoint scaleFront;
+	private  Waypoint scaleFrontOpposite;
+	private  Waypoint sideSwitchPrepareCrossingPoint;
 	
 	Waypoint[] points;
 
@@ -48,6 +48,31 @@ public class GenerateMotionProfiles extends InstantCommand {
         super("GenerateMotionProfiles");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
+        switch (RobotMap.robot) {
+		case EVERYBOT_2018:
+			break;
+		case ORIGINAL_ROBOT_2018:
+			break;
+		case PRACTICE:
+			robotLength = 36;
+			robotWidth = 35;
+			break;
+		case ROBOT_2017:
+			robotLength = 31.5;
+			robotWidth = 29.25;
+			break;
+        }
+        defineWaypoints();
+    }
+    
+    private void defineWaypoints() {
+	    	 sideStart = new Waypoint(robotLength/2, 132-robotWidth/2, 0);
+	    	 switchSide = new Waypoint(168, 76.75+(robotLength/2), Pathfinder.d2r(-90));
+	    	 switchFront = new Waypoint(168-28-(robotLength/2), 54, 0);
+	    	 switchBack = new Waypoint(168+28+(robotLength/2), 54, Pathfinder.d2r(180));
+	    	 scaleFront = new Waypoint(300-(robotLength/2), 90-12, 0);
+	    	 scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, 0);
+	    	 sideSwitchPrepareCrossingPoint = new Waypoint(168+36, 76.75+42.625, Pathfinder.d2r(-135));
     }
 
     // Called once when the command executes

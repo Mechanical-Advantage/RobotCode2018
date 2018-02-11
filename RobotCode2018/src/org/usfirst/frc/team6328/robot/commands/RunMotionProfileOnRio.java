@@ -80,7 +80,7 @@ public class RunMotionProfileOnRio extends Command {
 			kP.setDefault(10);
 			kD.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
-			wheelbase.setDefault(26.3);
+			wheelbase.setDefault(30);
 			kPAngle.setDefault(2);
 			kPAngleAdjust.setDefault(0.1);
 			break;
