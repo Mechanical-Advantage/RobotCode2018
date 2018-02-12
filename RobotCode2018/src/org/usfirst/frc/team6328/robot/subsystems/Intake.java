@@ -39,12 +39,14 @@ public class Intake extends Subsystem {
 
 	public Intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			leftTalon = new TalonSRX(RobotMap.intakeLeft);
-			rightTalon = new TalonSRX(RobotMap.intakeRight);
 			weakGrab1 = new DoubleSolenoid(RobotMap.intakeWeak1PCM, RobotMap.intakeWeak1Solenoid1, RobotMap.intakeWeak1Solenoid2);
 			weakGrab2 = new DoubleSolenoid(RobotMap.intakeWeak2PCM, RobotMap.intakeWeak2Solenoid1, RobotMap.intakeWeak2Solenoid2);
 			strongGrab = new Solenoid(RobotMap.intakeStrongPCM, RobotMap.intakeStrongSolenoid);
 			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
+		}
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
+			leftTalon = new TalonSRX(RobotMap.intakeLeft);
+			rightTalon = new TalonSRX(RobotMap.intakeRight);
 
 			leftTalon.enableCurrentLimit(enableCurrentLimit);
 			leftTalon.configContinuousCurrentLimit(continuousCurrentLimit, configTimeout);
@@ -64,25 +66,25 @@ public class Intake extends Subsystem {
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
-		setDefaultCommand(new IntakeAndHoldCube());
+//		setDefaultCommand(new IntakeAndHoldCube());
 	}
 
 	public void intake() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, intakeSpeed);
 			rightTalon.set(ControlMode.PercentOutput, intakeSpeed);
 		}
 	}
 
 	public void eject() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, ejectSpeed);
 			rightTalon.set(ControlMode.PercentOutput, ejectSpeed);
 		}
 	}
 
 	public void stop() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.neutralOutput();
 			rightTalon.neutralOutput();
 		}
@@ -121,7 +123,7 @@ public class Intake extends Subsystem {
 	}
 
 	public double getCurrent() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			return (leftTalon.getOutputCurrent() + rightTalon.getOutputCurrent()) / 2;
 		} else {
 			return 0;
