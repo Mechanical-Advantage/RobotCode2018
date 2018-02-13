@@ -55,7 +55,6 @@ public class Robot extends TimedRobot {
 	public static OI oi;
 	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
-	
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
 	Command m_autonomousCommand;
