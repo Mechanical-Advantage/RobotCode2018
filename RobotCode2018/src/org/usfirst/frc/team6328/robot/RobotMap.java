@@ -29,6 +29,7 @@ public class RobotMap {
 	public static int leftMaster;
 	public static int leftSlave;
 	public static int leftSlave2;
+	public static int scoringArm;
 	public static int elevatorMaster;
 	public static int elevatorSlave1;
 	public static int elevatorSlave2;
@@ -70,6 +71,7 @@ public class RobotMap {
 	public static int rightDriveGearPCM;
 	public static final boolean tuningMode = true;
 	public static final RobotType robot = RobotType.ROBOT_2017;
+	
 	
 	public RobotMap() {
 		switch (robot) {

@@ -25,7 +25,10 @@ import org.usfirst.frc.team6328.robot.subsystems.Intake;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
+import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
+
 import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -47,10 +50,12 @@ public class Robot extends TimedRobot {
 	public static final DriveTrain driveSubsystem = new DriveTrain();
 	public static final Elevator elevator = new Elevator();
 	public static final Intake intake = new Intake();
+	public static final ScoringArm scoringArm = new ScoringArm();
 	
 	public static OI oi;
 	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
+	
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
 	Command m_autonomousCommand;
