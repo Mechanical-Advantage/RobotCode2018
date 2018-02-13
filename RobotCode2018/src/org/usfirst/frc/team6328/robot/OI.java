@@ -107,6 +107,10 @@ public class OI {
 		}
 	}
 	
+	public double getArmAxis() {
+		return oiController1.getY();
+	}
+	
 	// reversing the joysticks should not change which joystick to use for straight drive, use
 	// different function to make that correct
 	// Note: Brian is left-handed

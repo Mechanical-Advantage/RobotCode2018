@@ -29,6 +29,7 @@ public class RobotMap {
 	public static int leftMaster;
 	public static int leftSlave;
 	public static int leftSlave2;
+	public static int scoringArm;
 	public static int elevatorMaster;
 	public static int elevatorSlave1;
 	public static int elevatorSlave2;
