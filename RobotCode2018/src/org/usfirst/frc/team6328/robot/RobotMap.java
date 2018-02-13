@@ -72,7 +72,6 @@ public class RobotMap {
 	public static final boolean tuningMode = true;
 	public static final RobotType robot = RobotType.ROBOT_2017;
 	
-	
 	public RobotMap() {
 		switch (robot) {
 		case PRACTICE:
