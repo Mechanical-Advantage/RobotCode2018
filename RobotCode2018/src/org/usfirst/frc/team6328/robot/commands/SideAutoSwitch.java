@@ -13,14 +13,19 @@ import openrio.powerup.MatchData.OwnedSide;
 public class SideAutoSwitch extends InstantCommand {
 	
 	private static final double switchSideDriveDistance = 12;
+	private static final double crossLineDistance = 60;
 	
 	private boolean leftSide;
+	private boolean switchFront;
+	private boolean enableCross;
 
-	public SideAutoSwitch(boolean leftSide) {
-		super();
+	public SideAutoSwitch(boolean leftSide, boolean switchFront, boolean enableCross) {
+		super("SideAutoSwitch");
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		this.leftSide = leftSide;
+		this.switchFront = switchFront;
+		this.enableCross = enableCross;
 	}
 
 	// Called once when the command executes
@@ -29,24 +34,39 @@ public class SideAutoSwitch extends InstantCommand {
 		OwnedSide robotSide = leftSide ? OwnedSide.LEFT : OwnedSide.RIGHT;
 		Command autoCommand;
 		if (switchSide == robotSide) {
-			autoCommand = new SameSideSwitch(leftSide);
+			if (switchFront) {
+				autoCommand = new SameSideSwitchFront(leftSide);
+			} else {
+				autoCommand = new SameSideSwitchEnd(leftSide);
+			}
 		} else {
-			autoCommand = new OppositeSideSwitch(leftSide);
+			if (enableCross) {
+				autoCommand = new OppositeSideSwitch(leftSide);
+			} else {
+				autoCommand = new DriveDistanceOnHeading(crossLineDistance, 0);
+			}
 		}
 		autoCommand.start();
 	}
 
-	private class SameSideSwitch extends CommandGroup {
-		public SameSideSwitch(boolean leftSide) {
+	private class SameSideSwitchEnd extends CommandGroup {
+		public SameSideSwitchEnd(boolean leftSide) {
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false));
+		}
+	}
+	
+	private class SameSideSwitchFront extends CommandGroup {
+		public SameSideSwitchFront(boolean leftSide) {
+			addSequential(new RunMotionProfileOnRio("sideToSwitchFront", leftSide, true, false));
 		}
 	}
 	
 	private class OppositeSideSwitch extends CommandGroup {
 		public OppositeSideSwitch(boolean leftSide) {
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false));
-			addSequential(new TurnToAngle(-90, true));
-			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, -90));
+			double heading = leftSide ? -90 : 90;
+			addSequential(new TurnToAngle(heading, true));
+			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading));
 		}
 	}
 }

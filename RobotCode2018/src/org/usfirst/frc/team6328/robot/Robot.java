@@ -12,11 +12,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringJoiner;
 
+import org.usfirst.frc.team6328.robot.commands.CenterAuto;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
 import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch;
+import org.usfirst.frc.team6328.robot.commands.SideAutoSwitch;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
@@ -66,7 +68,7 @@ public class Robot extends TimedRobot {
 		this.setPeriod(0.02);
 		oi = new OI();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
-		m_chooser.addDefault("Default Auto", null);
+		m_chooser.addDefault("Do Nothing", null);
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
@@ -79,7 +81,17 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true));
         		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
         }
-		SmartDashboard.putData("Auto mode", m_chooser);
+        m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(60, 0));
+        m_chooser.addObject("Center auto", new CenterAuto());
+        m_chooser.addObject("Right side end of switch no cross", new SideAutoSwitch(false, false, false));
+        m_chooser.addObject("Right side front of switch no cross", new SideAutoSwitch(false, true, false));
+        m_chooser.addObject("Right side end of switch + cross", new SideAutoSwitch(false, false, true));
+        m_chooser.addObject("Right side front of switch + cross", new SideAutoSwitch(false, true, true));
+        m_chooser.addObject("Left side end of switch no cross", new SideAutoSwitch(true, false, false));
+        m_chooser.addObject("Left side front of switch no cross", new SideAutoSwitch(true, true, false));
+        m_chooser.addObject("Left side end of switch + cross", new SideAutoSwitch(true, false, true));
+        m_chooser.addObject("Left side front of switch + cross", new SideAutoSwitch(true, true, true));
+        SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
         
      // if the current waypoint version is old, re-generate profiles
