@@ -1,11 +1,11 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.PIDControllerFixed;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +23,7 @@ public class TurnToAngle extends Command implements PIDOutput {
     private int kToleranceBufSamples;
     private double updatePeriod;
     private DriveGear gear;
-    private PIDController turnController;
+    private PIDControllerFixed turnController;
     private double targetAngle;
     private boolean absoluteAngle;
     
@@ -81,7 +81,7 @@ public class TurnToAngle extends Command implements PIDOutput {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	turnController = new PIDController(kP, kI, kD, kF, Robot.ahrs, this, updatePeriod);
+    	turnController = new PIDControllerFixed(kP, kI, kD, kF, Robot.ahrs, this, updatePeriod);
     	turnController.setInputRange(-180.0f,  180.0f);
         turnController.setOutputRange(-1.0, 1.0);
         turnController.setAbsoluteTolerance(kToleranceDegrees);
