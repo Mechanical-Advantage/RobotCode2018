@@ -77,12 +77,12 @@ public class Robot extends TimedRobot {
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
         if (RobotMap.tuningMode) {
-        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRio("test10forward5right", false, false, false));
-        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false));
-        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false));
+        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRio("test10forward5right", false, false, false, true));
+        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false, true));
+        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false, true));
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
-        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true));
+        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
         		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
         }
         m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(60, 0));

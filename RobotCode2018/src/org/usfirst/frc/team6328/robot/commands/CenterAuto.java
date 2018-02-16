@@ -41,13 +41,13 @@ public class CenterAuto extends InstantCommand {
 
 	private class LeftSwitch extends CommandGroup {
 		public LeftSwitch() {
-			addSequential(new RunMotionProfileOnRio("centerToLeftSwitch", false, true, false));
+			addSequential(new RunMotionProfileOnRio("centerToLeftSwitch", false, true, false, true));
 		}
 	}
 	
 	private class RightSwitch extends CommandGroup {
 		public RightSwitch() {
-			addSequential(new RunMotionProfileOnRio("centerToRightSwitch", false, true, false));
+			addSequential(new RunMotionProfileOnRio("centerToRightSwitch", false, true, false, true));
 		}
 	}
 }

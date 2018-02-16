@@ -43,6 +43,7 @@ public class RunMotionProfileOnRio extends Command {
 	private boolean flipLeftRight;
 	private boolean absHeading;
 	private boolean backwards;
+	private boolean endConverge;
 	private boolean trajectoryLoaded = false;
 	private String filename;
 	
@@ -54,22 +55,24 @@ public class RunMotionProfileOnRio extends Command {
      * Too much D will overcorrect, robot will go too fast, not much is needed, in my initial test, any causes problems
      */
 
-    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards) {
+    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards, boolean endConverge) {
     		super("RunMotionProfileOnRio");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     		this.flipLeftRight = flipLeftRight;
     		this.absHeading = absHeading;
     		this.backwards = backwards;
+    		this.endConverge = endConverge;
     		initCommand();
     		initTrajectory(trajectory);
     }
     
-    public RunMotionProfileOnRio(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards) {
+    public RunMotionProfileOnRio(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards, boolean endConverge) {
     		this.flipLeftRight = flipLeftRight;
 		this.absHeading = absHeading;
 		this.backwards = backwards;
 		this.filename = filename;
+		this.endConverge = endConverge;
 		initCommand();
     }
     
@@ -82,14 +85,14 @@ public class RunMotionProfileOnRio extends Command {
 			AngleErrorThreshold.setDefault(1.5);
 			wheelbase.setDefault(30);
 			kPAngle.setDefault(2);
-			kPAngleAdjust.setDefault(0.1);
+			kPAngleAdjust.setDefault(1);
 			break;
 		case ROBOT_2017:
 			// tuned using max velocity: 100, accel: 55, jerk: 2700
 			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
 			kD.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
-			wheelbase.setDefault(/*23*/19.5); // 18 measured
+			wheelbase.setDefault(/*23*/21); // 18 measured, 19.5 at low speed
 			kPAngle.setDefault(2.5);
 			kPAngleAdjust.setDefault(0.1);
 			break;
@@ -239,9 +242,9 @@ public class RunMotionProfileOnRio extends Command {
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
     		// At end of profile only correct angle
-		return leftFollower.isFinished() && (enableGyroCorrection &&
+		return leftFollower.isFinished() && (!endConverge || (enableGyroCorrection &&
 				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
-				<=AngleErrorThreshold.get());
+				<=AngleErrorThreshold.get()));
     }
 
     // Called once after isFinished returns true

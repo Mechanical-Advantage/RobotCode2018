@@ -51,19 +51,19 @@ public class SideAutoSwitch extends InstantCommand {
 
 	private class SameSideSwitchEnd extends CommandGroup {
 		public SameSideSwitchEnd(boolean leftSide) {
-			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
 		}
 	}
 	
 	private class SameSideSwitchFront extends CommandGroup {
 		public SameSideSwitchFront(boolean leftSide) {
-			addSequential(new RunMotionProfileOnRio("sideToSwitchFront", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToSwitchFront", leftSide, true, false, true));
 		}
 	}
 	
 	private class OppositeSideSwitch extends CommandGroup {
 		public OppositeSideSwitch(boolean leftSide) {
-			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false));
+			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
 			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading));
