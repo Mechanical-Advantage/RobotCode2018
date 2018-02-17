@@ -52,12 +52,14 @@ public class SideAutoSwitch extends InstantCommand {
 	private class SameSideSwitchEnd extends CommandGroup {
 		public SameSideSwitchEnd(boolean leftSide) {
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
+			addSequential(new ArmMoveAndReset());
 		}
 	}
 	
 	private class SameSideSwitchFront extends CommandGroup {
 		public SameSideSwitchFront(boolean leftSide) {
 			addSequential(new RunMotionProfileOnRio("sideToSwitchFront", leftSide, true, false, true));
+			addSequential(new ArmMoveAndReset());
 		}
 	}
 	
@@ -67,6 +69,7 @@ public class SideAutoSwitch extends InstantCommand {
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
 			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading));
+			addSequential(new ArmMoveAndReset());
 		}
 	}
 }
