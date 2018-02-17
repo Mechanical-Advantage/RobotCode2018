@@ -7,6 +7,7 @@ import org.usfirst.frc.team6328.robot.commands.ArmJoystickControl;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -21,9 +22,14 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class ScoringArm extends Subsystem {
 	
+	private static final boolean enableCurrentLimit = false;
+	private static final int continuousCurrentLimit = 50;
+	private static final int peakCurrentLimit = 100;
+	private static final int peakCurrentDuration = 100;
+	private static final NeutralMode brakeMode = NeutralMode.Brake;
+	private static final int configTimeout = 0;
+	
 	TalonSRX armTalon;
-	// Put methods for controlling this subsystem
-	// here. Call these from Commands.
 
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
@@ -34,25 +40,33 @@ public class ScoringArm extends Subsystem {
 	public ScoringArm() {
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			armTalon = new TalonSRX(RobotMap.scoringArm);
-			armTalon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
-			armTalon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0);
+			armTalon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, configTimeout);
+			armTalon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, configTimeout);
+			armTalon.configContinuousCurrentLimit(continuousCurrentLimit, configTimeout);
+			armTalon.configPeakCurrentLimit(peakCurrentLimit, configTimeout);
+			armTalon.configPeakCurrentDuration(peakCurrentDuration, configTimeout);
+			armTalon.enableCurrentLimit(enableCurrentLimit);
+			armTalon.setNeutralMode(brakeMode);
 		}
 	}
 
 	public void moveArm(double speed) {
-		if(RobotMap.robot == RobotType.EVERYBOT_2018)
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			armTalon.set(ControlMode.PercentOutput, speed);
+		}
 	}
 
 	public boolean getForwardLimit() {
-		if(RobotMap.robot == RobotType.EVERYBOT_2018)
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			return armTalon.getSensorCollection().isFwdLimitSwitchClosed();
+		}
 		return false;
 	}
 
 	public boolean getBackwardLimit() {
-		if(RobotMap.robot == RobotType.EVERYBOT_2018)
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			return armTalon.getSensorCollection().isRevLimitSwitchClosed();
+		}
 		return false;
 	}
 }
