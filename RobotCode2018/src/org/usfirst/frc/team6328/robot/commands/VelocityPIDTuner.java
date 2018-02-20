@@ -38,10 +38,7 @@ public class VelocityPIDTuner extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		Robot.driveSubsystem.setP(P.get());
-		Robot.driveSubsystem.setI(I.get());
-		Robot.driveSubsystem.setD(D.get());
-		Robot.driveSubsystem.setF(F.get());
+		Robot.driveSubsystem.setPID(P.get(), I.get(), D.get(), F.get(), 0);
 		if (SmartDashboard.getBoolean("Drive PID/enabled", false)) {
 			Robot.driveSubsystem.driveInchesPerSec(setpoint.get(), setpoint.get() * (spin ? -1 : 1));
 			SmartDashboard.putNumber("Drive velocity", (Robot.driveSubsystem.getVelocityLeft() + Robot.driveSubsystem.getVelocityRight())/2);

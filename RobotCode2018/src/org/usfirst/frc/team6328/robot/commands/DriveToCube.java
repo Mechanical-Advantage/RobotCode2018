@@ -2,6 +2,7 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
+import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
@@ -86,7 +87,6 @@ public class DriveToCube extends Command {
 			kFAngle = 0;
 			break;
 		case ORIGINAL_ROBOT_2018:
-			Robot.driveSubsystem.switchGear(gear);
 			break;
 		case EVERYBOT_2018:
 			kPDistance = 0.017;
@@ -115,6 +115,9 @@ public class DriveToCube extends Command {
 	protected void initialize() {
 		turnController.enable();
 		distanceController.enable();
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			Robot.driveSubsystem.switchGear(gear);
+		}
 	}
 
 	// Called repeatedly when this Command is scheduled to run

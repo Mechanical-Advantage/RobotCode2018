@@ -10,8 +10,10 @@ package org.usfirst.frc.team6328.robot;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
+import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
+import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -79,6 +81,8 @@ public class OI {
 	private Button driveToCube = new JoystickButton(oiController2, 9);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
+	private Button highElevatorGear = new JoystickButton(rightController, 11);
+	private Button lowElevatorGear = new JoystickButton(rightController, 10);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -90,6 +94,8 @@ public class OI {
 		driveToCube.whileHeld(new DriveToCube());
 		highGear.whenPressed(new SwitchGear(DriveGear.HIGH));
 		lowGear.whenPressed(new SwitchGear(DriveGear.LOW));
+		highElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.HIGH));
+		lowElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.LOW));
 	}
 	
 	public double getLeftAxis() {
@@ -147,6 +153,6 @@ public class OI {
 	}
 	
 	public double getElevatorJoystick() {
-		return 0;
+		return oiController1.getRawAxis(1);
 	}
 }

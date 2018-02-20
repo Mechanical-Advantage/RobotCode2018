@@ -39,9 +39,9 @@ public class Intake extends Subsystem {
 
 	public Intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			weakGrab1 = new DoubleSolenoid(RobotMap.intakeWeak1PCM, RobotMap.intakeWeak1Solenoid1, RobotMap.intakeWeak1Solenoid2);
-			weakGrab2 = new DoubleSolenoid(RobotMap.intakeWeak2PCM, RobotMap.intakeWeak2Solenoid1, RobotMap.intakeWeak2Solenoid2);
-			strongGrab = new Solenoid(RobotMap.intakeStrongPCM, RobotMap.intakeStrongSolenoid);
+//			weakGrab1 = new DoubleSolenoid(RobotMap.intakeWeak1PCM, RobotMap.intakeWeak1Solenoid1, RobotMap.intakeWeak1Solenoid2);
+//			weakGrab2 = new DoubleSolenoid(RobotMap.intakeWeak2PCM, RobotMap.intakeWeak2Solenoid1, RobotMap.intakeWeak2Solenoid2);
+//			strongGrab = new Solenoid(RobotMap.intakeStrongPCM, RobotMap.intakeStrongSolenoid);
 			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
 		}
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {

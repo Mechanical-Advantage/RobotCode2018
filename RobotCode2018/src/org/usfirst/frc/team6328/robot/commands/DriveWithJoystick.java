@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveWithJoystick extends Command {
 	
 	private final double deadband = 0.05;
+	private static final boolean alwaysUseHighMaxVel = true; // Whether to always use the max velocity of high gear or of current gear
 
     public DriveWithJoystick() {
         // Use requires() here to declare subsystem dependencies
@@ -44,7 +45,7 @@ public class DriveWithJoystick extends Command {
     			joystickLeft = joystickLeft > 1 ? 1 : joystickLeft;
     			break;
     		}
-    		Robot.driveSubsystem.drive(joystickLeft, joystickRight);
+    		Robot.driveSubsystem.drive(joystickLeft, joystickRight, alwaysUseHighMaxVel);
     		//System.out.println("Left: " + Robot.oi.getLeftAxis() + " Right: " + Robot.oi.getRightAxis());
     }
 

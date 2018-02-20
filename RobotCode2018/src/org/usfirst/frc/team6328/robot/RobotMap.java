@@ -43,6 +43,7 @@ public class RobotMap {
 	public static int elevatorGearSolenoid1;
 	public static int elevatorGearSolenoid2;
 	public static int elevatorGearPCM;
+	public static int elevatorLimitSwitch;
 	public static int intakeLeft;
 	public static int intakeRight;
 	public static int intakeWeak1Solenoid1;
@@ -59,10 +60,6 @@ public class RobotMap {
 	public static int maxVelocityHigh;
 	public static int minVelocityHigh;
 	public static int maxAcceleration;
-	public static int topGearSolenoid1;
-	public static int topGearSolenoid2;
-	public static int gearExpellerSolenoid1;
-	public static int gearExpellerSolenoid2;
 	public static int leftDriveGearSolenoid1;
 	public static int leftDriveGearSolenoid2;
 	public static int leftDriveGearPCM;
@@ -70,7 +67,7 @@ public class RobotMap {
 	public static int rightDriveGearSolenoid2;
 	public static int rightDriveGearPCM;
 	public static final boolean tuningMode = true;
-	public static final RobotType robot = RobotType.ROBOT_2017;
+	public static final RobotType robot = RobotType.ORIGINAL_ROBOT_2018;
 	
 	public RobotMap() {
 		switch (robot) {
@@ -93,12 +90,32 @@ public class RobotMap {
 			maxVelocityLow = 3284; // 525 RPM
 			minVelocityLow = 135; // 20 RPM
 			maxAcceleration = 300;
-			topGearSolenoid1 = 3;
-			topGearSolenoid2 = 2;
-			gearExpellerSolenoid1 = 0;
-			gearExpellerSolenoid2 = 1;
 			break;
 		case ORIGINAL_ROBOT_2018:
+			rightMaster = 2;
+			rightSlave = 0;
+			leftMaster = 12;
+			leftSlave = 13;
+			intakeLeft = 11;
+			intakeRight = 4;
+			elevatorMaster = 3;
+			elevatorSlave1 = 1;
+			elevatorSlave2 = 14;
+			elevatorSlave3 = 15;
+			leftDriveGearSolenoid1 = 0;
+			leftDriveGearSolenoid2 = 1;
+			leftDriveGearPCM = 1;
+			rightDriveGearSolenoid1 = 2;
+			rightDriveGearSolenoid2 = 3;
+			rightDriveGearPCM = 0;
+			elevatorGearSolenoid1 = 0;
+			elevatorGearSolenoid2 = 1;
+			elevatorGearPCM = 0;
+			maxVelocityHigh = 7056; // ~230 in/s
+			maxVelocityLow = 3252; // 106 in/s
+			minVelocityLow = 100;
+			minVelocityHigh = 400;
+			elevatorLimitSwitch = 9;
 			break;
 		default:
 			break;

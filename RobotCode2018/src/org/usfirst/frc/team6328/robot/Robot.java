@@ -19,6 +19,7 @@ import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
 import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch;
 import org.usfirst.frc.team6328.robot.commands.SideAutoSwitch;
+import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
@@ -31,6 +32,8 @@ import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -81,9 +84,13 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false, true));
         		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false, true));
         		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
+        		m_chooser.addObject("15 foot straight line", new DriveDistanceOnHeading(180));
+        		m_chooser.addObject("10 foot straight line", new DriveDistanceOnHeading(120));
+        		m_chooser.addObject("5 foot straight line", new DriveDistanceOnHeading(60));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
         		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
+        		m_chooser.addObject("Turn 90 degrees", new TurnToAngle(90));
         }
         m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(60, 0));
         m_chooser.addObject("Center auto", new CenterAuto());
@@ -113,6 +120,10 @@ public class Robot extends TimedRobot {
 			generateCommand.setRunWhenDisabled(true);
 			generateCommand.start();
 		}
+		DoubleSolenoid solenoid1 = new DoubleSolenoid(1, 4, 5);
+		solenoid1.set(Value.kReverse);
+		DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
+		solenoid2.set(Value.kReverse);
 	}
 
 	/**
@@ -122,12 +133,14 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		Robot.driveSubsystem.enableBrakeMode(false);
 	}
 
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		if (driveSubsystem.getVelocityLeft() <= 2 && driveSubsystem.getVelocityRight() <= 2) {
+			Robot.driveSubsystem.enableBrakeMode(false);
+		}
 	}
 
 	/**

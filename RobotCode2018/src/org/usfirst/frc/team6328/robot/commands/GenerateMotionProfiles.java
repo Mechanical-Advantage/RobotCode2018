@@ -20,12 +20,14 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 41;
+	public static final int waypointVersion = 43;
 	
 	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, /*100*/50, /*55*/40, 200); // jerk actually matters
 	private final Trajectory.Config stdConfigPractice = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, 
 			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 30, 200);
+	private final Trajectory.Config stdConfigOrig2018 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC, 
+			Trajectory.Config.SAMPLES_HIGH, 0.02, 150, 30, 200);
 	
 	// Constants for field positions
 	private static final double switchCenterDistance = 168; // Distance from wall to center of switch
@@ -64,6 +66,8 @@ public class GenerateMotionProfiles extends InstantCommand {
 		case EVERYBOT_2018:
 			break;
 		case ORIGINAL_ROBOT_2018:
+			robotLength = 32+6;
+			robotWidth = 27+6;
 			break;
 		case PRACTICE:
 			robotLength = 36;
@@ -212,6 +216,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 			case EVERYBOT_2018:
 				break;
 			case ORIGINAL_ROBOT_2018:
+				generateProfile(stdConfigOrig2018, fileName);
 				break;
 			case PRACTICE:
 				generateProfile(stdConfigPractice, fileName);

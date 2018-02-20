@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -31,8 +32,8 @@ public class Elevator extends Subsystem {
 	private static final double kDHigh = 0;
 	private static final double kFHigh = 0;
 	private static final int kIZoneHigh = 0;
-	private static final double distancePerRotation = 0;
-	private static final int ticksPerRotation = 0;
+	private static final double distancePerRotation = 180/25.4;
+	private static final int ticksPerRotation = 4096;
 	private static final int cruiseVelocity = 0;
 	private static final double acceleration = 0;
 	private static final double topSoftLimit = 0;
@@ -44,7 +45,7 @@ public class Elevator extends Subsystem {
 	private static final double allowableError = 0;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
-	private static final double resetSpeed = -0.5;
+	private static final double resetSpeed = -0.2;
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -55,8 +56,9 @@ public class Elevator extends Subsystem {
 	DoubleSolenoid climbLock;
 	DoubleSolenoid brake;
 	DoubleSolenoid gearSwitch;
+	DigitalInput lowerLimit;
 	double targetPosition;
-	boolean resetCompleted = false;
+	boolean resetCompleted = true;
 	
 	public Elevator() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -64,13 +66,19 @@ public class Elevator extends Subsystem {
 			talonSlave1 = new TalonSRX(RobotMap.elevatorSlave1);
 			talonSlave2 = new TalonSRX(RobotMap.elevatorSlave2);
 			talonSlave3 = new TalonSRX(RobotMap.elevatorSlave3);
-			climbLock = new DoubleSolenoid(RobotMap.elevatorStageLockPCM, RobotMap.elevatorStageLockSolenoid1, RobotMap.elevatorStageLockSolenoid2);
-			brake = new DoubleSolenoid(RobotMap.elevatorBrakePCM, RobotMap.elevatorBrakeSolenoid1, RobotMap.elevatorBrakeSolenoid2);
+//			climbLock = new DoubleSolenoid(RobotMap.elevatorStageLockPCM, RobotMap.elevatorStageLockSolenoid1, RobotMap.elevatorStageLockSolenoid2);
+//			brake = new DoubleSolenoid(RobotMap.elevatorBrakePCM, RobotMap.elevatorBrakeSolenoid1, RobotMap.elevatorBrakeSolenoid2);
 			gearSwitch = new DoubleSolenoid(RobotMap.elevatorGearPCM, RobotMap.elevatorGearSolenoid1, RobotMap.elevatorGearSolenoid2);
+			lowerLimit = new DigitalInput(RobotMap.elevatorLimitSwitch);
 			
 			talonSlave1.set(ControlMode.Follower, RobotMap.elevatorMaster);
 			talonSlave2.set(ControlMode.Follower, RobotMap.elevatorMaster);
 			talonSlave3.set(ControlMode.Follower, RobotMap.elevatorMaster);
+			
+			talonMaster.setInverted(false);
+			talonSlave1.setInverted(false);
+			talonSlave2.setInverted(true);
+			talonSlave3.setInverted(true);
 			
 			// Current limit setup
 			talonMaster.enableCurrentLimit(enableCurrentLimit);
@@ -99,10 +107,8 @@ public class Elevator extends Subsystem {
 			talonMaster.configMotionCruiseVelocity((int) (cruiseVelocity/distancePerRotation*ticksPerRotation*10), configTimeout);
 			talonMaster.configMotionAcceleration((int) (acceleration/distancePerRotation*ticksPerRotation*10), configTimeout);
 			
-			talonMaster.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, configTimeout);
-			talonMaster.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, configTimeout);
 			talonMaster.configForwardSoftLimitThreshold((int) (topSoftLimit/distancePerRotation*ticksPerRotation), configTimeout);
-			talonMaster.configForwardSoftLimitEnable(true, configTimeout);
+			talonMaster.configForwardSoftLimitEnable(false, configTimeout);
 			
 			talonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 			
@@ -111,12 +117,12 @@ public class Elevator extends Subsystem {
 			talonMaster.configAllowableClosedloopError(0, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
 			talonMaster.configAllowableClosedloopError(1, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
 			
-			brake.set(Value.kReverse);
-			climbLock.set(Value.kReverse);
+//			brake.set(Value.kReverse);
+//			climbLock.set(Value.kReverse);
 			switchGear(ElevatorGear.HIGH);
 			
-			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
-			brake.set(Value.kReverse);
+//			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
+//			brake.set(Value.kReverse);
 		}
 	}
 
@@ -128,8 +134,10 @@ public class Elevator extends Subsystem {
 	
 	@Override
 	public void periodic() {
-		if (!resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && getLimitSwitch()) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && getLimitSwitch()) {
 			resetCompleted = true;
+			talonMaster.neutralOutput();
+			talonMaster.setSelectedSensorPosition(0, 0, configTimeout);
 		}
 	}
 	
@@ -178,7 +186,7 @@ public class Elevator extends Subsystem {
 	public boolean holdPosition() {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
-			brake.set(Value.kForward);
+//			brake.set(Value.kForward);
 			return true;
 		} else {
 			return false;
@@ -191,8 +199,8 @@ public class Elevator extends Subsystem {
 	 * @return Whether the change succeeded
 	 */
 	public boolean driveOpenLoop(double percent) {
-		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			brake.set(Value.kReverse);
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && (!getLimitSwitch() && percent < 0)) {
+//			brake.set(Value.kReverse);
 			talonMaster.set(ControlMode.PercentOutput, percent);
 			return true;
 		} else {
@@ -233,7 +241,7 @@ public class Elevator extends Subsystem {
 	
 	public boolean getLimitSwitch() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			return talonMaster.getSensorCollection().isRevLimitSwitchClosed();
+			return !lowerLimit.get();
 		}
 		return false;
 	}

@@ -4,7 +4,9 @@ import java.io.File;
 
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
+import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.TunableNumber;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,6 +48,7 @@ public class RunMotionProfileOnRio extends Command {
 	private boolean endConverge;
 	private boolean trajectoryLoaded = false;
 	private String filename;
+	private DriveGear gear;
 	
 	/*
      * Tuning Notes:
@@ -97,6 +100,13 @@ public class RunMotionProfileOnRio extends Command {
 			kPAngleAdjust.setDefault(0.1);
 			break;
 		case ORIGINAL_ROBOT_2018:
+			kP.setDefault(17);
+			kD.setDefault(0);
+			AngleErrorThreshold.setDefault(1.5);
+			wheelbase.setDefault(29);
+			kPAngle.setDefault(4);
+			kPAngleAdjust.setDefault(0.2);
+			gear = DriveGear.HIGH;
 			break;
 		case EVERYBOT_2018:
 			break;
@@ -172,6 +182,9 @@ public class RunMotionProfileOnRio extends Command {
     		initialProfileYaw = absHeading ? 0 : leftFollower.getSegment().heading;
     		initialPositionLeft = Robot.driveSubsystem.getDistanceLeft();
     		initialPositionRight = Robot.driveSubsystem.getDistanceRight();
+    		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+    			Robot.driveSubsystem.switchGear(gear);
+    		}
     		Robot.driveSubsystem.changeStatusRate(sensorFrameRate);
     		Robot.driveSubsystem.changeControlRate(controlFrameRate);
     }

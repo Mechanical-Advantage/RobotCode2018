@@ -3,6 +3,7 @@ package org.usfirst.frc.team6328.robot.commands;
 import org.usfirst.frc.team6328.robot.PIDControllerFixed;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
+import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -95,7 +96,17 @@ public class DriveDistanceOnHeading extends Command {
 	        	kToleranceDegrees = 1;
 	        	break;
         	case ORIGINAL_ROBOT_2018:
-        		Robot.driveSubsystem.switchGear(gear);
+	        	kPDistance = 0.02;
+	        	kIDistance = 0.000000;
+	        	kDDistance = 0;
+	        	kFDistance = 0;
+	        	kToleranceInches = 0.5;
+	        	kPAngle = 0.05; // was 0.05, disabled due to WPILib Tolerance buffer phase lag
+	        	kIAngle = 0;
+	        	kDAngle = 0;
+	        	kFAngle = 0;
+	        	kToleranceDegrees = 1;
+	        	gear = DriveGear.HIGH;
         		break;
 		case EVERYBOT_2018:
 			kPDistance = 0.017;
@@ -116,6 +127,9 @@ public class DriveDistanceOnHeading extends Command {
 
 	// Called just before this Command runs the first time
     protected void initialize() {
+    	if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+    		Robot.driveSubsystem.switchGear(gear);
+    	}
     	if (useStartingYaw) {
     		targetAngle = Robot.ahrs.getYaw();
     	}

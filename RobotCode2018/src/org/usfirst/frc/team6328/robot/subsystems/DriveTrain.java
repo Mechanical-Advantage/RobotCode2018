@@ -87,6 +87,7 @@ public class DriveTrain extends Subsystem {
 	private boolean reverseSensorRight;
 	private boolean reverseOutputLeft;
 	private boolean reverseOutputRight;
+	private double nominalOutputVoltage;
 	private DriveControlMode currentControlMode = DriveControlMode.STANDARD_DRIVE; // enum defined at end of file
 	private DriveGear currentGear;
 //	private ProcessTalonMotionProfileBuffer processTalonMotionProfile = new ProcessTalonMotionProfileBuffer();
@@ -147,6 +148,22 @@ public class DriveTrain extends Subsystem {
 			kAllowableErrorDistance = 24;
 			break;
 		case ORIGINAL_ROBOT_2018:
+			encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
+			ticksPerRotation = 4096;
+			wheelDiameter = 4.25;
+			reverseSensorRight = false;
+			reverseSensorLeft = false;
+			reverseOutputLeft = true;
+			reverseOutputRight = false;
+			kPLow = 0.5;
+			kILow = 0.003;
+			kDLow = 30;
+			kFLow = 0.3145756458;
+			kPHigh = 0.8;
+			kIHigh = 0;
+			kDHigh = 10;
+			kFHigh = 0.1449829932;
+			nominalOutputVoltage = 0;
 			leftGearSolenoid = new DoubleSolenoid(RobotMap.leftDriveGearPCM, RobotMap.leftDriveGearSolenoid1, RobotMap.leftDriveGearSolenoid2);
 			rightGearSolenoid = new DoubleSolenoid(RobotMap.rightDriveGearPCM, RobotMap.rightDriveGearSolenoid1, RobotMap.rightDriveGearSolenoid2);
 			setPID(1, kPHigh, kIHigh, kDHigh, kFHigh, kIZoneHigh);
@@ -187,6 +204,7 @@ public class DriveTrain extends Subsystem {
 		rightTalonMaster.configMotionAcceleration(RobotMap.maxAcceleration, configTimeout);
 		rightTalonMaster.setInverted(reverseOutputRight);
 		rightTalonMaster.setSensorPhase(reverseSensorRight);
+		rightTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
 		leftTalonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 //		leftTalonMaster.configNominalOutputVoltage(+0.0f, -0.0f);
 //		leftTalonMaster.configPeakOutputVoltage(+12.0f, -12.0f);
@@ -196,6 +214,7 @@ public class DriveTrain extends Subsystem {
 		leftTalonMaster.configMotionAcceleration(RobotMap.maxAcceleration, configTimeout);
 		leftTalonMaster.setInverted(reverseOutputLeft);
 		leftTalonMaster.setSensorPhase(reverseSensorLeft);
+		leftTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
 		resetPosition();
 		rightTalonSlave.set(ControlMode.Follower, RobotMap.rightMaster);
 		rightTalonSlave.enableCurrentLimit(enableCurrentLimit);
@@ -280,6 +299,16 @@ public class DriveTrain extends Subsystem {
      * @param right Right percent speed
      */
     public void drive(double left, double right) {
+    		drive(left, right, false);
+    }
+    
+    /**
+     * Make the robot drive
+     * @param left Left percent speed
+     * @param right Right percent speed
+     * @param alwaysHighMaxVel Whether to always use the max velocity of high gear or of current gear
+     */
+    public void drive(double left, double right, boolean alwaysHighMaxVel) {
     		if (Robot.oi.getDriveEnabled() && currentControlMode == DriveControlMode.STANDARD_DRIVE) {
 	    		if (Robot.oi.getSniperMode()) {
 	    			if (sniperModeLocked) {
@@ -291,7 +320,7 @@ public class DriveTrain extends Subsystem {
 	    			}
 	    		}
 	    		int maxVelocity;
-	    		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || currentGear == DriveGear.LOW) {
+	    		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || (currentGear == DriveGear.LOW && !alwaysHighMaxVel)) {
 	    			maxVelocity = RobotMap.maxVelocityLow;
 	    		} else {
 	    			maxVelocity = RobotMap.maxVelocityHigh;
@@ -399,7 +428,14 @@ public class DriveTrain extends Subsystem {
      * @param iZone Integral zone
      */
     public void setPID(double p, double i, double d, double f, int iZone) {
-    		int slot = currentControlMode == DriveControlMode.STANDARD_DRIVE ? 0 : 1;
+    		int slot;
+    		if (currentControlMode == DriveControlMode.STANDARD_DRIVE && currentGear == DriveGear.LOW) {
+    			slot = 0;
+    		} else if (currentControlMode == DriveControlMode.STANDARD_DRIVE && currentGear == DriveGear.HIGH) {
+    			slot = 1;
+    		} else {
+    			slot = 2;
+    		}
     		setPID(slot, p, i, d, f, iZone);
     }
     
@@ -439,22 +475,6 @@ public class DriveTrain extends Subsystem {
 
 	public double getF() {
 		return kFLow;
-	}
-
-	public void setP(double kP) {
-		this.kPLow = kP;
-	}
-
-	public void setI(double kI) {
-		this.kILow = kI;
-	}
-
-	public void setD(double kD) {
-		this.kDLow = kD;
-	}
-
-	public void setF(double kF) {
-		this.kFLow = kF;
 	}
 
 	public void changeStatusRate(int ms) {
@@ -544,6 +564,8 @@ public class DriveTrain extends Subsystem {
     		currentControlMode = DriveControlMode.STANDARD_DRIVE; // this needs to be changed before calling useClosed/OpenLoop so that they work
     		rightTalonMaster.selectProfileSlot(0, 0);
     		leftTalonMaster.selectProfileSlot(0, 0);
+    		rightTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
+    		leftTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
     	}
     }
 

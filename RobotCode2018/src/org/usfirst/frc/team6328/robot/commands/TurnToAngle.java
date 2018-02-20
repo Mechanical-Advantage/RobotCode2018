@@ -62,7 +62,14 @@ public class TurnToAngle extends Command implements PIDOutput {
 	        	updatePeriod = 0.02;
 	        	break;
         case ORIGINAL_ROBOT_2018:
-        		Robot.driveSubsystem.switchGear(gear);
+        		kP = 0.007;
+        		kI = 0;
+        		kD = 0.02;
+        		kF = 0;
+        		kToleranceDegrees = 1;
+        		kToleranceBufSamples = 3;
+        		updatePeriod = 0.02;
+        		gear = DriveGear.LOW;
         		break;
 		case EVERYBOT_2018:
 			kP = 0.01;
@@ -81,6 +88,9 @@ public class TurnToAngle extends Command implements PIDOutput {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+    		Robot.driveSubsystem.switchGear(gear);
+    	}
     	turnController = new PIDControllerFixed(kP, kI, kD, kF, Robot.ahrs, this, updatePeriod);
     	turnController.setInputRange(-180.0f,  180.0f);
         turnController.setOutputRange(-1.0, 1.0);
