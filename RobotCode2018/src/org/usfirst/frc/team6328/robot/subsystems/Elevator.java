@@ -34,9 +34,10 @@ public class Elevator extends Subsystem {
 	private static final int kIZoneHigh = 0;
 	private static final double distancePerRotation = 180/25.4;
 	private static final int ticksPerRotation = 4096;
-	private static final int cruiseVelocity = 0;
-	private static final double acceleration = 0;
-	private static final double topSoftLimit = 0;
+	private static final int cruiseVelocity = 0; // in/s
+	private static final double acceleration = 0; // in/s/s
+	private static final int topSoftLimit = /*58073*/57800; // Native units
+	private static final int bottomSoftLimit = 250; // Native units
 	private static final double nominalOutput = 0; // Percent
 	private static final boolean enableCurrentLimit = false;
 	private static final int continuousCurrentLimit = 0;
@@ -45,7 +46,10 @@ public class Elevator extends Subsystem {
 	private static final double allowableError = 0;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
-	private static final double resetSpeed = -0.2;
+	private static final double resetSpeed = -0.1;
+	private static final int slowTopPoint = 43000; // Native units
+	private static final int slowBottomPoint = 15000;
+	private static final double slowLimitSpeed = 0.2;
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -58,7 +62,7 @@ public class Elevator extends Subsystem {
 	DoubleSolenoid gearSwitch;
 	DigitalInput lowerLimit;
 	double targetPosition;
-	boolean resetCompleted = true;
+	boolean resetCompleted = false;
 	
 	public Elevator() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -107,8 +111,10 @@ public class Elevator extends Subsystem {
 			talonMaster.configMotionCruiseVelocity((int) (cruiseVelocity/distancePerRotation*ticksPerRotation*10), configTimeout);
 			talonMaster.configMotionAcceleration((int) (acceleration/distancePerRotation*ticksPerRotation*10), configTimeout);
 			
-			talonMaster.configForwardSoftLimitThreshold((int) (topSoftLimit/distancePerRotation*ticksPerRotation), configTimeout);
-			talonMaster.configForwardSoftLimitEnable(false, configTimeout);
+			talonMaster.configForwardSoftLimitThreshold(topSoftLimit, configTimeout);
+			talonMaster.configReverseSoftLimitThreshold(bottomSoftLimit, configTimeout);
+			talonMaster.configForwardSoftLimitEnable(true, configTimeout);
+			talonMaster.configReverseSoftLimitEnable(false, configTimeout);
 			
 			talonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 			
@@ -121,7 +127,7 @@ public class Elevator extends Subsystem {
 //			climbLock.set(Value.kReverse);
 			switchGear(ElevatorGear.HIGH);
 			
-//			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
+			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
 //			brake.set(Value.kReverse);
 		}
 	}
@@ -136,8 +142,16 @@ public class Elevator extends Subsystem {
 	public void periodic() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && getLimitSwitch()) {
 			resetCompleted = true;
-			talonMaster.neutralOutput();
+			if (talonMaster.getMotorOutputPercent() < 0) {
+				talonMaster.neutralOutput();
+			}
 			talonMaster.setSelectedSensorPosition(0, 0, configTimeout);
+			talonMaster.configReverseSoftLimitEnable(true, configTimeout);
+			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed) {
+				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
+			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1) {
+				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
+			}
 		}
 	}
 	
@@ -199,9 +213,15 @@ public class Elevator extends Subsystem {
 	 * @return Whether the change succeeded
 	 */
 	public boolean driveOpenLoop(double percent) {
-		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && (!getLimitSwitch() && percent < 0)) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0)) {
 //			brake.set(Value.kReverse);
-			talonMaster.set(ControlMode.PercentOutput, percent);
+			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed) {
+				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
+			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && percent <= slowLimitSpeed*-1) {
+				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
+			} else {
+				talonMaster.set(ControlMode.PercentOutput, percent);
+			}
 			return true;
 		} else {
 			return false;

@@ -28,7 +28,7 @@ public class JoystickElevatorControl extends Command {
 		if (Math.abs(joystickValue) <= deadband) {
 			Robot.elevator.holdPosition();
 		} else {
-			Robot.elevator.driveOpenLoop(joystickValue);
+			Robot.elevator.driveOpenLoop(joystickValue*0.25);
 		}
 	}
 
