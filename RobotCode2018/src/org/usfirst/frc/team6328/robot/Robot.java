@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
         		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
         		m_chooser.addObject("Turn 90 degrees", new TurnToAngle(90));
+        		m_chooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
         }
         m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(60, 0));
         m_chooser.addObject("Center auto", new CenterAuto());
