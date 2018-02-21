@@ -115,7 +115,8 @@ public class RobotMap {
 			maxVelocityLow = 3252; // 106 in/s
 			minVelocityLow = 100;
 			minVelocityHigh = 400;
-			elevatorLimitSwitch = 9;
+			elevatorLimitSwitch = 0;
+			intakeSensor = 1;
 			break;
 		default:
 			break;
