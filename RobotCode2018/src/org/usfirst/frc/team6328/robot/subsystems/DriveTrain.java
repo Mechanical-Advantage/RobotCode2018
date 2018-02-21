@@ -157,6 +157,7 @@ public class DriveTrain extends Subsystem {
 			reverseOutputRight = false;
 			kPLow = 0.5;
 			kILow = 0.003;
+			kIZoneLow = 300;
 			kDLow = 30;
 			kFLow = 0.3145756458;
 			kPHigh = 0.8;
@@ -167,7 +168,7 @@ public class DriveTrain extends Subsystem {
 			leftGearSolenoid = new DoubleSolenoid(RobotMap.leftDriveGearPCM, RobotMap.leftDriveGearSolenoid1, RobotMap.leftDriveGearSolenoid2);
 			rightGearSolenoid = new DoubleSolenoid(RobotMap.rightDriveGearPCM, RobotMap.rightDriveGearSolenoid1, RobotMap.rightDriveGearSolenoid2);
 			setPID(1, kPHigh, kIHigh, kDHigh, kFHigh, kIZoneHigh);
-			switchGear(DriveGear.LOW);
+			switchGear(DriveGear.HIGH);
 			break;
 		case EVERYBOT_2018:
 			encoderType = FeedbackDevice.QuadEncoder;
@@ -241,6 +242,14 @@ public class DriveTrain extends Subsystem {
 		leftTalonMaster.setSafetyEnabled(false);
 		leftTalonSlave.setSafetyEnabled(false);*/
 	}
+	
+//	@Override
+//	public void periodic() {
+//		if (RobotMap.tuningMode) {
+//			SmartDashboard.putNumber("Drive Error", (rightTalonMaster.getClosedLoopError(0)+leftTalonMaster.getClosedLoopError(0))/2);
+//			SmartDashboard.putNumber("Drive I accum", (rightTalonMaster.getIntegralAccumulator(0)+leftTalonMaster.getIntegralAccumulator(0))/2);
+//		}
+//	}
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
