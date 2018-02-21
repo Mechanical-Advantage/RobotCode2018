@@ -87,6 +87,7 @@ public class DriveToCube extends Command {
 			kFAngle = 0;
 			break;
 		case ORIGINAL_ROBOT_2018:
+			gear = DriveGear.HIGH;
 			break;
 		case EVERYBOT_2018:
 			kPDistance = 0.017;
