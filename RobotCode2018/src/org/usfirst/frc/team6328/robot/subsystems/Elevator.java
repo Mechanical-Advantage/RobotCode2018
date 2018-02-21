@@ -46,9 +46,9 @@ public class Elevator extends Subsystem {
 	private static final double allowableError = 0;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
-	private static final double resetSpeed = -0.1;
-	private static final int slowTopPoint = 43000; // Native units
-	private static final int slowBottomPoint = 15000;
+	private static final double resetSpeed = -0.05;
+	private static final int slowTopPoint = topSoftLimit-7000; // Native units
+	private static final int slowBottomPoint = 7000;
 	private static final double slowLimitSpeed = 0.2;
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
@@ -119,6 +119,9 @@ public class Elevator extends Subsystem {
 			talonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 			
 			talonMaster.setNeutralMode(brakeMode);
+			talonSlave1.setNeutralMode(brakeMode);
+			talonSlave2.setNeutralMode(brakeMode);
+			talonSlave3.setNeutralMode(brakeMode);
 			
 			talonMaster.configAllowableClosedloopError(0, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
 			talonMaster.configAllowableClosedloopError(1, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
