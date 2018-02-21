@@ -32,6 +32,8 @@ public class RunMotionProfileOnRio extends Command {
 	private TunableNumber kPAngle = new TunableNumber("Profile Angle P"); // standard is 0.8 * (1.0/80.0), add max velocity like: 0.8*60 * (1.0/80.0) (if maxVel is 60)
 	// kPAngle should be positive
 	private TunableNumber kPAngleAdjust = new TunableNumber("Profile Angle Adjust P");
+	private TunableNumber kV = new TunableNumber("Profile V");
+	private TunableNumber kA = new TunableNumber("Profile A");
 	
 	private CustomDistanceFollower leftFollower, rightFollower;
 	private double initialYaw;
@@ -98,15 +100,19 @@ public class RunMotionProfileOnRio extends Command {
 			wheelbase.setDefault(/*23*/21); // 18 measured, 19.5 at low speed
 			kPAngle.setDefault(2.5);
 			kPAngleAdjust.setDefault(0.1);
+			kV.setDefault(0.7);
+			kA.setDefault(0.2);
 			break;
 		case ORIGINAL_ROBOT_2018:
-			kP.setDefault(17);
+			kP.setDefault(3);
 			kD.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
-			wheelbase.setDefault(29);
+			wheelbase.setDefault(25.5);
 			kPAngle.setDefault(4);
 			kPAngleAdjust.setDefault(0.2);
 			gear = DriveGear.HIGH;
+			kV.setDefault(1.11);
+			kA.setDefault(0.12);
 			break;
 		case EVERYBOT_2018:
 			break;
@@ -173,8 +179,8 @@ public class RunMotionProfileOnRio extends Command {
     		if (RobotMap.tuningMode) {
     			initFollowers();
     		}
-    		leftFollower.configurePIDVA(kP.get(), 0, kD.get(), 0.7, 0.2);
-    		rightFollower.configurePIDVA(kP.get(), 0, kD.get(), 0.7, 0.2);
+    		leftFollower.configurePIDVA(kP.get(), 0, kD.get(), kV.get(), kA.get());
+    		rightFollower.configurePIDVA(kP.get(), 0, kD.get(), kV.get(), kA.get());
     		leftFollower.reset();
     		rightFollower.reset();
     		initialYaw = absHeading ? 0 : Robot.ahrs.getYaw(); // if absolute yaw, don't correct
@@ -249,14 +255,19 @@ public class RunMotionProfileOnRio extends Command {
         			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), gyroHeading));
         	SmartDashboard.putNumber("Profile Target Heading", Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
         	SmartDashboard.putNumber("Profile Current Heading", gyroHeading);
+        	
+        	SmartDashboard.putNumber("Profile P output", kP.get()*((leftFollower.getLastError()+rightFollower.getLastError())/2));
+        	SmartDashboard.putNumber("Profile V output", kV.get()*((leftFollower.getSegment().velocity+rightFollower.getSegment().velocity)/2));
+        	SmartDashboard.putNumber("Profile A output", kA.get()*((leftFollower.getSegment().acceleration+rightFollower.getSegment().acceleration)/2));
+        	SmartDashboard.putNumber("Profile Error", (leftFollower.getLastError() + rightFollower.getLastError())/2);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
     		// current segment and heading should be same on left and right, only check one
     		// At end of profile only correct angle
-		return leftFollower.isFinished() && (!endConverge || (enableGyroCorrection &&
-				Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
+		return leftFollower.isFinished() && (!endConverge || !enableGyroCorrection ||
+				(Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
 				<=AngleErrorThreshold.get()));
     }
 

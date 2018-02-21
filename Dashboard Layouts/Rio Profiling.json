@@ -160,6 +160,37 @@
           }
         }
       }
+    },
+    {
+      "title": "Tab 2",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "0,0": {
+            "size": [
+              6,
+              5
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Profile P output",
+              "_source1": "network_table:///SmartDashboard/Profile V output",
+              "_source2": "network_table:///SmartDashboard/Profile A output",
+              "_source3": "network_table:///SmartDashboard/Profile Error",
+              "_title": "Graph (4 sources)",
+              "Visible time": 30.0,
+              "SmartDashboard/Profile A output visible": true,
+              "SmartDashboard/Profile Error visible": true,
+              "SmartDashboard/Profile P output visible": true,
+              "SmartDashboard/Profile V output visible": true
+            }
+          }
+        }
+      }
     }
   ]
 }

@@ -17,7 +17,7 @@ public class SideAutoScaleAndSwitch extends InstantCommand {
 	private static final double cubePickUpToSwitchDistance = 12;
 	private static final double cubePickUpToScaleDistance = 20;
 	private static final double scaleBackUpDistance = -12; // Should be negative
-	private static final double scaleCrossDistance = 50; // How far to drive along space between switch and scale
+	private static final double scaleCrossDistance = 150; // How far to drive along space between switch and scale
 	
 	private boolean leftSide;
 
@@ -53,61 +53,61 @@ public class SideAutoScaleAndSwitch extends InstantCommand {
 	
 	private class BothSameSide extends CommandGroup {
 		public BothSameSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
-			addSequential(new EjectCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+//			addSequential(new EjectCube());
+//			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
 			addSequential(new DriveToCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 		}
 	}
 	
 	private class BothOppositeSide extends CommandGroup {
 		public BothOppositeSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, true));
-			addSequential(new EjectCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+//			addSequential(new EjectCube());
+//			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
 			addSequential(new DriveToCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 		}
 	}
 	
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 			addSequential(new RunMotionProfileOnRio("sideSwitchPrepareCrossing", leftSide, true, true, true));
-			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new RunMotionProfileOnRio("sideSwitchCross", leftSide, true, false, true));
 			addSequential(new DriveToCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
 			addSequential(new TurnToAngle(0, true));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToScaleDistance, 0));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 			addSequential(new DriveDistanceOnHeading(scaleBackUpDistance, 0));
 		}
 	}
 	
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 			addSequential(new RunMotionProfileOnRio("scalePrepareCrossing", leftSide, true, true, true));
-			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new DriveDistanceOnHeading(scaleCrossDistance, -90));
 			addSequential(new DriveToCube());
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
-			addSequential(new EjectCube());
+//			addSequential(new EjectCube());
 		}
 	}
 }
