@@ -12,6 +12,7 @@ import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
+import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 
@@ -76,6 +77,7 @@ public class OI {
 	private Button joysticksForward = new JoystickButton(leftController, 3);
 	private Button joysticksBackward = new JoystickButton(leftController, 2);
 	private Button sniperMode = new JoystickButton(rightController, 1);
+	private Button toggleGear = new JoystickButton(leftController, 1);
 	private Button openLoopDrive = new JoystickButton(oiController1, 10);
 	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
 	private Button driveToCube = new JoystickButton(oiController2, 9);
@@ -96,6 +98,7 @@ public class OI {
 		lowGear.whenPressed(new SwitchGear(DriveGear.LOW));
 		highElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.HIGH));
 		lowElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.LOW));
+		toggleGear.whenPressed(new ToggleGear());
 	}
 	
 	public double getLeftAxis() {
