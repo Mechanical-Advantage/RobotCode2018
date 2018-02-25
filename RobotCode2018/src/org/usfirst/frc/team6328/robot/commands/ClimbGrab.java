@@ -28,9 +28,9 @@ public class ClimbGrab extends CommandGroup {
 		// e.g. if Command1 requires chassis, and Command2 requires arm,
 		// a CommandGroup containing them would require both the chassis and the
 		// arm.
-		addSequential(new SetElevatorPosition(ElevatorPosition.GROUND));
+		addSequential(new SetElevatorPosition(ElevatorPosition.GROUND, true));
 		addSequential(new EngageClimbLock());
-		addSequential(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
+		addSequential(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB, true));
 	}
 	
 	private class EngageClimbLock extends InstantCommand {

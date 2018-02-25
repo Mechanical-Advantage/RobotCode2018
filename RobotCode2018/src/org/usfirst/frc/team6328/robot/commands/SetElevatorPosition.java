@@ -12,29 +12,44 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetElevatorPosition extends Command {
 	
+	private static final double bangBangSpeed = 0.5;
+	
 	private ElevatorPosition targetPosition;
 	private static HashMap<ElevatorPosition, Double> positions;
+	private boolean motionMagic;
 
-	public SetElevatorPosition(ElevatorPosition position) {
+	public SetElevatorPosition(ElevatorPosition position, boolean motionMagic) {
 		super("SetElevatorPosition");
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.elevator);
 		targetPosition = position;
+		this.motionMagic = motionMagic;
 		
 		if (positions == null) {
 			positions = new HashMap<ElevatorPosition, Double>();
 			positions.put(ElevatorPosition.GROUND, (double) 0);
-			positions.put(ElevatorPosition.SWITCH, (double) 0);
-			positions.put(ElevatorPosition.SCALE, (double) 0);
-			positions.put(ElevatorPosition.CLIMB_GRAB, (double) 0);
+			positions.put(ElevatorPosition.SWITCH, (double) 20);
+			positions.put(ElevatorPosition.SCALE_LOW, (double) 50);
+			positions.put(ElevatorPosition.SCALE_MID, (double) 62);
+			positions.put(ElevatorPosition.SCALE_HIGH, (double) 74);
+			positions.put(ElevatorPosition.CLIMB_GRAB, (double) 86);
 		}
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.elevator.switchGear(ElevatorGear.HIGH);
-		Robot.elevator.setPosition(positions.get(targetPosition));
+		double targetPositionInches = positions.get(targetPosition);
+		if (motionMagic) {
+			Robot.elevator.setPosition(targetPositionInches);
+		} else {
+			if (targetPositionInches > Robot.elevator.getPosition()) {
+				Robot.elevator.driveOpenLoop(bangBangSpeed*-1);
+			} else if (targetPositionInches < Robot.elevator.getPosition()) {
+				Robot.elevator.driveOpenLoop(bangBangSpeed);
+			}
+		}
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -43,7 +58,7 @@ public class SetElevatorPosition extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return Robot.elevator.onTarget();
+		return Robot.elevator.onTarget(positions.get(targetPosition));
 	}
 
 	// Called once after isFinished returns true
@@ -56,6 +71,6 @@ public class SetElevatorPosition extends Command {
 	}
 	
 	public enum ElevatorPosition {
-		GROUND, SWITCH, SCALE, CLIMB_GRAB
+		GROUND, SWITCH, SCALE_LOW, SCALE_MID, SCALE_HIGH, CLIMB_GRAB
 	}
 }

@@ -4,11 +4,8 @@ import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.JoystickElevatorControl;
 
-import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -43,7 +40,7 @@ public class Elevator extends Subsystem {
 	private static final int continuousCurrentLimit = 0;
 	private static final int peakCurrentLimit = 0;
 	private static final int peakCurrentLimitDuration = 0; // Milliseconds
-	private static final double allowableError = 0;
+	private static final double allowableError = 2;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
 	private static final double resetSpeed = -0.05;
@@ -190,6 +187,10 @@ public class Elevator extends Subsystem {
 	}
 	
 	public boolean onTarget() {
+		return onTarget(targetPosition);
+	}
+
+	public boolean onTarget(double target) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return Math.abs(getPosition()-targetPosition) <= allowableError && talonMaster.getControlMode() == ControlMode.MotionMagic;
 		}
