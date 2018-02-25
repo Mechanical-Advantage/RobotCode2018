@@ -42,6 +42,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import openrio.powerup.MatchData;
+import openrio.powerup.MatchData.GameFeature;
+import openrio.powerup.MatchData.OwnedSide;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -161,6 +164,8 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		Robot.driveSubsystem.enableBrakeMode(true);
+		
+		// Zero Gyro
 		ahrs.zeroYaw();
 		double startingUpdates = ahrs.getUpdateCount();
 		while (ahrs.getUpdateCount()<startingUpdates+3) {
@@ -171,6 +176,20 @@ public class Robot extends TimedRobot {
 				e.printStackTrace();
 			}
 		}
+		
+		// Wait for game data to arrive, check scale since we don't care about opposite switch
+		int retries = 100;
+		OwnedSide scaleSide = MatchData.getOwnedSide(GameFeature.SCALE);
+		while (scaleSide == OwnedSide.UNKNOWN && retries > 0) {
+			retries--;
+			try {
+                Thread.sleep(5);
+            } catch (InterruptedException ie) {
+                // Just ignore the interrupted exception
+            }
+			scaleSide = MatchData.getOwnedSide(GameFeature.SCALE);
+		}
+		
 		m_autonomousCommand = m_chooser.getSelected();
 
 		/*
