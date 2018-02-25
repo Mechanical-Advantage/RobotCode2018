@@ -1,46 +1,42 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
+import org.usfirst.frc.team6328.robot.subsystems.Intake.GrabState;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
- * Moves the scoring arm forward until it hits the limit.
+ * Eject a cube from the robot
  */
-public class ThrowCube extends Command {
+public class EjectCubeForTime extends TimedCommand {
+	
+	private static final double time = 0.5;
 
-	private static final double moveSpeed = 0.75;
-
-	public ThrowCube() {
-		super("ThrowCube");
+	public EjectCubeForTime() {
+		super(time);
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
-		requires(Robot.scoringArm);
+		requires(Robot.intake);
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
+		Robot.intake.setGrabState(GrabState.WEAK);
+		Robot.intake.eject();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		Robot.scoringArm.moveArm(moveSpeed);
 	}
 
-	// Make this return true when this Command no longer needs to run execute()
-	protected boolean isFinished() {
-		if(Robot.scoringArm.getForwardLimit()) {
-			return true;
-		}
-		return false;
-	}
-
-	// Called once after isFinished returns true
+	// Called once after timeout
 	protected void end() {
+		Robot.intake.stop();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
+		end();
 	}
 }

@@ -67,7 +67,7 @@ public class RobotMap {
 	public static int rightDriveGearSolenoid2;
 	public static int rightDriveGearPCM;
 	public static final boolean tuningMode = true;
-	public static final RobotType robot = RobotType.ORIGINAL_ROBOT_2018;
+	public static final RobotType robot = RobotType.EVERYBOT_2018;
 	
 	public RobotMap() {
 		switch (robot) {
@@ -118,6 +118,17 @@ public class RobotMap {
 			elevatorLimitSwitch = 0;
 			intakeSensor = 1;
 			break;
+		case EVERYBOT_2018:
+			rightMaster = 0;
+			leftMaster = 3;
+			rightSlave = 1;
+			leftSlave = 2;
+			scoringArm = 12;
+			intakeLeft = 5;
+			intakeRight = 4;
+			maxVelocityLow = 950; // 950 native units per 100ms
+			minVelocityLow = 40; // 40 native units per 100ms
+			maxAcceleration = 300;
 		default:
 			break;
 		}

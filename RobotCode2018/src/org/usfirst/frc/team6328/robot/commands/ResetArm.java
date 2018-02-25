@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ResetArm extends Command {
 
-	private static final double moveSpeed = -0.5;
+	private static final double moveSpeed = -0.10;
 
 	public ResetArm() {
 		super("ResetArm");

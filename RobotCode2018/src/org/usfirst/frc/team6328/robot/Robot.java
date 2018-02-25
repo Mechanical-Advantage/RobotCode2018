@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringJoiner;
 
+import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.CenterAuto;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
@@ -121,10 +122,12 @@ public class Robot extends TimedRobot {
 			generateCommand.setRunWhenDisabled(true);
 			generateCommand.start();
 		}
-		DoubleSolenoid solenoid1 = new DoubleSolenoid(1, 4, 5);
-		solenoid1.set(Value.kReverse);
-		DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
-		solenoid2.set(Value.kReverse);
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			DoubleSolenoid solenoid1 = new DoubleSolenoid(1, 4, 5);
+			solenoid1.set(Value.kReverse);
+			DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
+			solenoid2.set(Value.kReverse);
+		}
 	}
 
 	/**

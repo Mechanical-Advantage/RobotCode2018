@@ -7,11 +7,17 @@
 
 package org.usfirst.frc.team6328.robot;
 
+import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
+import org.usfirst.frc.team6328.robot.commands.EjectCube;
+import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
+import org.usfirst.frc.team6328.robot.commands.IntakeCube;
+import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
+import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
@@ -85,6 +91,15 @@ public class OI {
 	private Button lowGear = new JoystickButton(leftController, 4);
 	private Button highElevatorGear = new JoystickButton(rightController, 11);
 	private Button lowElevatorGear = new JoystickButton(rightController, 10);
+	
+	// Everybot
+	private Button scoreCube = new JoystickButton(oiController2, 1);
+	private Button raiseArm = new JoystickButton(oiController2, 2);
+	private Button lowerArm = new JoystickButton(oiController2, 3);
+	private Button startIntake = new JoystickButton(oiController2, 5);
+	private Button stopIntake = new JoystickButton(oiController2, 6);
+	private Button ejectCubeTime = new JoystickButton(oiController2, 4);
+	private Button ejectCube = new JoystickButton(oiController2, 10);
 
 	public OI() {
 		frontCameraButton.whenPressed(new SetCamera(true));
@@ -99,6 +114,14 @@ public class OI {
 		highElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.HIGH));
 		lowElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.LOW));
 		toggleGear.whenPressed(new ToggleGear());
+		scoreCube.whenPressed(new ArmMoveAndReset());
+		raiseArm.whenPressed(new ThrowCube());
+		lowerArm.whenPressed(new ResetArm());
+		IntakeCube intakeCommand = new IntakeCube(false);
+		startIntake.whenPressed(intakeCommand);
+		stopIntake.cancelWhenPressed(intakeCommand);
+		ejectCubeTime.whenPressed(new EjectCubeForTime());
+		ejectCube.whileHeld(new EjectCube());
 	}
 	
 	public double getLeftAxis() {
@@ -149,6 +172,10 @@ public class OI {
 	public double getSniperLevel() {
 		double sniperLimit = 0.5;
 		return (1-((rightController.getRawAxis(2)+1)/2))*sniperLimit; // control returns -1 to 1, scale to 0 to 1, subtract from 1 so 1 is up
+	}
+	
+	public double getIntakeLevel() {
+		return (1-((leftController.getRawAxis(2)+1)/2)); // control returns -1 to 1, scale to 0 to 1, subtract from 1 so 1 is up
 	}
 	
 	public void reverseJoysticks(boolean reverse) {

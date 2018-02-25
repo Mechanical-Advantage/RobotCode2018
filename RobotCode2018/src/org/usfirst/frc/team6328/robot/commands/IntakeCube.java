@@ -25,4 +25,14 @@ public class IntakeCube extends Command {
 	protected boolean isFinished() {
 		return enableSensor && Robot.intake.getSensor();
 	}
+	
+	@Override
+	protected void end() {
+		Robot.intake.stop();
+	}
+	
+	@Override
+	protected void interrupted() {
+		end();
+	}
 }

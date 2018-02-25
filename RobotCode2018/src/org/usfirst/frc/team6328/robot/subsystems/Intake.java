@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.IntakeAndHoldCube;
@@ -19,14 +20,14 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Intake extends Subsystem {
 
-	private static final boolean enableCurrentLimit = false;
-	private static final int continuousCurrentLimit = 0;
-	private static final int peakCurrentLimit = 0;
-	private static final int peakCurrentLimitDuration = 0; // Milliseconds
+	private static final boolean enableCurrentLimit = true;
+	private static final int continuousCurrentLimit = 30;
+	private static final int peakCurrentLimit = 50;
+	private static final int peakCurrentLimitDuration = 50; // Milliseconds
 	private static final boolean invertLeft = false;
 	private static final boolean invertRight = true;
-	private static final double intakeSpeed = 0; // Should be negative
-	private static final double ejectSpeed = 0;
+	private static final double intakeSpeed = 0.2; // Should be negative
+	private static final double ejectSpeed = -1;
 	private static final int configTimeout = 0;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -71,8 +72,8 @@ public class Intake extends Subsystem {
 
 	public void intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, intakeSpeed);
-			rightTalon.set(ControlMode.PercentOutput, intakeSpeed);
+			leftTalon.set(ControlMode.PercentOutput, Robot.oi.getIntakeLevel());
+			rightTalon.set(ControlMode.PercentOutput, Robot.oi.getIntakeLevel());
 		}
 	}
 
