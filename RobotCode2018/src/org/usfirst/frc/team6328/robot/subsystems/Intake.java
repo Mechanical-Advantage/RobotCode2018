@@ -3,8 +3,6 @@ package org.usfirst.frc.team6328.robot.subsystems;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
-import org.usfirst.frc.team6328.robot.commands.IntakeAndHoldCube;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -12,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -20,30 +17,49 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Intake extends Subsystem {
 
-	private static final boolean enableCurrentLimit = true;
-	private static final int continuousCurrentLimit = 30;
-	private static final int peakCurrentLimit = 50;
-	private static final int peakCurrentLimitDuration = 50; // Milliseconds
-	private static final boolean invertLeft = false;
-	private static final boolean invertRight = true;
-	private static final double intakeSpeed = 0.2; // Should be negative
-	private static final double ejectSpeed = -1;
 	private static final int configTimeout = 0;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
+	
+	private double intakeSpeed;
+	private double ejectSpeed;
+	private boolean intakeSpeedLocked;
+	private boolean enableCurrentLimit;
+	private int continuousCurrentLimit;
+	private int peakCurrentLimit;
+	private int peakCurrentLimitDuration; // Milliseconds
+	private boolean invertLeft;
+	private boolean invertRight;
 
 	TalonSRX leftTalon;
 	TalonSRX rightTalon;
-	DoubleSolenoid weakGrab1;
-	DoubleSolenoid weakGrab2;
-	Solenoid strongGrab;
+	DoubleSolenoid retract;
 	DigitalInput proximitySensor;
 
 	public Intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-//			weakGrab1 = new DoubleSolenoid(RobotMap.intakeWeak1PCM, RobotMap.intakeWeak1Solenoid1, RobotMap.intakeWeak1Solenoid2);
-//			weakGrab2 = new DoubleSolenoid(RobotMap.intakeWeak2PCM, RobotMap.intakeWeak2Solenoid1, RobotMap.intakeWeak2Solenoid2);
-//			strongGrab = new Solenoid(RobotMap.intakeStrongPCM, RobotMap.intakeStrongSolenoid);
 			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
+//			retract = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
+			intakeSpeed = 0.5;
+			ejectSpeed = -1;
+			intakeSpeedLocked = false;
+			invertLeft = false;
+			invertRight = true;
+			enableCurrentLimit = true;
+			continuousCurrentLimit = 30;
+			peakCurrentLimit = 50;
+			peakCurrentLimitDuration = 50;
+
+		}
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
+			intakeSpeed = 0.2;
+			ejectSpeed = -1;
+			intakeSpeedLocked = true;
+			invertLeft = false;
+			invertRight = true;
+			enableCurrentLimit = true;
+			continuousCurrentLimit = 30;
+			peakCurrentLimit = 50;
+			peakCurrentLimitDuration = 50;
 		}
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon = new TalonSRX(RobotMap.intakeLeft);
@@ -67,13 +83,12 @@ public class Intake extends Subsystem {
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
-//		setDefaultCommand(new IntakeAndHoldCube());
 	}
 
 	public void intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, Robot.oi.getIntakeLevel());
-			rightTalon.set(ControlMode.PercentOutput, Robot.oi.getIntakeLevel());
+			leftTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
+			rightTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
 		}
 	}
 
@@ -98,28 +113,10 @@ public class Intake extends Subsystem {
 			return false;
 		}
 	}
-
-	public void setGrabState(GrabState state) {
+	
+	public void setRetracted(boolean retracted) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			switch(state) {
-			case RETRACTED:
-				weakGrab1.set(Value.kReverse);
-				weakGrab2.set(Value.kReverse);
-				strongGrab.set(false);
-				break;
-			case STRONG:
-				weakGrab1.set(Value.kForward);
-				weakGrab2.set(Value.kForward);
-				strongGrab.set(true);
-				break;
-			case WEAK:
-				weakGrab1.set(Value.kForward);
-				weakGrab2.set(Value.kForward);
-				strongGrab.set(false);
-				break;
-			default:
-				break;
-			}
+			retract.set(retracted ? Value.kReverse : Value.kForward);
 		}
 	}
 
@@ -129,10 +126,6 @@ public class Intake extends Subsystem {
 		} else {
 			return 0;
 		}
-	}
-
-	public enum GrabState {
-		RETRACTED, WEAK, STRONG
 	}
 }
 

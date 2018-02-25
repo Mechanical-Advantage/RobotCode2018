@@ -46,14 +46,9 @@ public class RobotMap {
 	public static int elevatorLimitSwitch;
 	public static int intakeLeft;
 	public static int intakeRight;
-	public static int intakeWeak1Solenoid1;
-	public static int intakeWeak1Solenoid2;
-	public static int intakeWeak1PCM;
-	public static int intakeWeak2Solenoid1;
-	public static int intakeWeak2Solenoid2;
-	public static int intakeWeak2PCM;
-	public static int intakeStrongSolenoid;
-	public static int intakeStrongPCM;
+	public static int intakeRetractSolenoid1;
+	public static int intakeRetractSolenoid2;
+	public static int intakeRetractPCM;
 	public static int intakeSensor; // DIO
 	public static int minVelocityLow; // lower values will be treated as this value, RPM
 	public static int maxVelocityLow; // maximum velocity when sticks are fully forward (value of 1), RPM

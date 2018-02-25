@@ -1,8 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
-import org.usfirst.frc.team6328.robot.subsystems.Intake.GrabState;
-
 import edu.wpi.first.wpilibj.command.Command;
 
 public class IntakeCube extends Command {
@@ -17,7 +15,7 @@ public class IntakeCube extends Command {
 	
 	@Override
 	protected void initialize() {
-		Robot.intake.setGrabState(GrabState.WEAK);
+		Robot.intake.setRetracted(false);
 		Robot.intake.intake();
 	}
 	

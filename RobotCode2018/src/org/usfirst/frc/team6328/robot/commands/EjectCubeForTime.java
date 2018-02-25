@@ -1,8 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
-import org.usfirst.frc.team6328.robot.subsystems.Intake.GrabState;
-
 import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
@@ -21,7 +19,7 @@ public class EjectCubeForTime extends TimedCommand {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.intake.setGrabState(GrabState.WEAK);
+		Robot.intake.setRetracted(false);
 		Robot.intake.eject();
 	}
 
