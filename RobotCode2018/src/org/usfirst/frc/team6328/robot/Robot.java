@@ -26,6 +26,7 @@ import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator;
 import org.usfirst.frc.team6328.robot.subsystems.Intake;
+import org.usfirst.frc.team6328.robot.subsystems.MaxbotixUltrasonic;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -64,6 +66,7 @@ public class Robot extends TimedRobot {
 	public static OI oi;
 	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
+	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
 	Command m_autonomousCommand;
@@ -231,6 +234,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		System.out.println(ultrasonic.getDistance());
 	}
 
 	/**
