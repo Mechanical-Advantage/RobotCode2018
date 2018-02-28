@@ -19,7 +19,9 @@ import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
 import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch;
+import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch.SideEnabledAutos;
 import org.usfirst.frc.team6328.robot.commands.SideAutoSwitch;
+import org.usfirst.frc.team6328.robot.commands.SimpleSideAutoSwitch;
 import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
@@ -96,12 +98,13 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("5 foot straight line", new DriveDistanceOnHeading(60));
         		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
-        		m_chooser.addObject("Side Auto right", new SideAutoScaleAndSwitch(false));
         		m_chooser.addObject("Turn 90 degrees", new TurnToAngle(90));
         		m_chooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
         }
-        m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(60, 0));
+        m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(130, 0));
         m_chooser.addObject("Center auto", new CenterAuto());
+        m_chooser.addObject("Right side simple side switch or cross line", new SimpleSideAutoSwitch(false));
+        m_chooser.addObject("Left side simple side switch or cross line", new SimpleSideAutoSwitch(true));
         m_chooser.addObject("Right side end of switch no cross", new SideAutoSwitch(false, false, false));
         m_chooser.addObject("Right side front of switch no cross", new SideAutoSwitch(false, true, false));
         m_chooser.addObject("Right side end of switch + cross", new SideAutoSwitch(false, false, true));
@@ -110,6 +113,14 @@ public class Robot extends TimedRobot {
         m_chooser.addObject("Left side front of switch no cross", new SideAutoSwitch(true, true, false));
         m_chooser.addObject("Left side end of switch + cross", new SideAutoSwitch(true, false, true));
         m_chooser.addObject("Left side front of switch + cross", new SideAutoSwitch(true, true, true));
+        m_chooser.addObject("Left side 2 cube or switch same side only", new SideAutoScaleAndSwitch(true, SideEnabledAutos.SAME_SIDE_ONLY));
+        m_chooser.addObject("Left side 2 cube both same side or switch + cross", new SideAutoScaleAndSwitch(true, SideEnabledAutos.SAME_SIDE_ONLY_SWITCH_CROSS));
+        m_chooser.addObject("Left side 2 cube both together or switch + cross", new SideAutoScaleAndSwitch(true, SideEnabledAutos.NOT_SPLIT));
+        m_chooser.addObject("Left side 2 cube always", new SideAutoScaleAndSwitch(true, SideEnabledAutos.ALL));
+        m_chooser.addObject("Right side 2 cube or switch same side only", new SideAutoScaleAndSwitch(false, SideEnabledAutos.SAME_SIDE_ONLY));
+        m_chooser.addObject("Right side 2 cube both same side or switch + cross", new SideAutoScaleAndSwitch(false, SideEnabledAutos.SAME_SIDE_ONLY_SWITCH_CROSS));
+        m_chooser.addObject("Right side 2 cube both together or switch + cross", new SideAutoScaleAndSwitch(false, SideEnabledAutos.NOT_SPLIT));
+        m_chooser.addObject("Right side 2 cube always", new SideAutoScaleAndSwitch(false, SideEnabledAutos.ALL));
         SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
         

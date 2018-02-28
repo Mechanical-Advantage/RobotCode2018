@@ -20,12 +20,14 @@ public class SideAutoScaleAndSwitch extends InstantCommand {
 	private static final double scaleCrossDistance = 150; // How far to drive along space between switch and scale
 	
 	private boolean leftSide;
+	private SideEnabledAutos enabledAutos;
 
-	public SideAutoScaleAndSwitch(boolean leftSide) {
+	public SideAutoScaleAndSwitch(boolean leftSide, SideEnabledAutos enabledAutos) {
 		super();
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		this.leftSide = leftSide;
+		this.enabledAutos = enabledAutos;
 	}
 
 	// Called once when the command executes
@@ -37,15 +39,17 @@ public class SideAutoScaleAndSwitch extends InstantCommand {
 		if (side == switchSide && side == scaleSide) {
 			sideAutoCommand = new BothSameSide();
 			System.out.println("Running both same side auto");
-		} else if (side == switchSide) {
+		} else if (side == switchSide && enabledAutos == SideEnabledAutos.ALL) {
 			sideAutoCommand = new SwitchSameSide();
 			System.out.println("Running switch same side auto");
-		} else if (side == scaleSide) {
+		} else if (side == scaleSide && enabledAutos == SideEnabledAutos.ALL) {
 			sideAutoCommand = new ScaleSameSide();
 			System.out.println("Running scale same side auto");
-		} else {
+		} else if (enabledAutos.ordinal() >= 2) { // If auto is NOT_SPLIT or ALL
 			sideAutoCommand = new BothOppositeSide();
 			System.out.println("Running both opposite side auto");
+		} else {
+			sideAutoCommand = new SideAutoSwitch(leftSide, false, enabledAutos.ordinal() >= 1);
 		}
 		
 		sideAutoCommand.start();
@@ -109,5 +113,9 @@ public class SideAutoScaleAndSwitch extends InstantCommand {
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 //			addSequential(new EjectCube());
 		}
+	}
+	
+	public enum SideEnabledAutos {
+		SAME_SIDE_ONLY, SAME_SIDE_ONLY_SWITCH_CROSS, NOT_SPLIT, ALL
 	}
 }

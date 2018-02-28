@@ -13,7 +13,7 @@ import openrio.powerup.MatchData.OwnedSide;
 public class SideAutoSwitch extends InstantCommand {
 	
 	private static final double switchSideDriveDistance = 28;
-	private static final double crossLineDistance = 60;
+	private static final double crossLineDistance = 130;
 	
 	private boolean leftSide;
 	private boolean switchFront;
