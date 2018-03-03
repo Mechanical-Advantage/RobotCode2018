@@ -147,6 +147,7 @@ public class Robot extends TimedRobot {
 			DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
 			solenoid2.set(Value.kReverse);
 		}
+		cameraSubsystem.useFrontCamera();
 	}
 
 	/**
