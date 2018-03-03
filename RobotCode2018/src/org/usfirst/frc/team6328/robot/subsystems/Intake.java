@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalGlitchFilter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -19,6 +20,7 @@ public class Intake extends Subsystem {
 
 	private static final int configTimeout = 0;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
+	private static final int sensorGlitchFilter = 50000; // nanoseconds
 	
 	private double intakeSpeed;
 	private double ejectSpeed;
@@ -34,10 +36,14 @@ public class Intake extends Subsystem {
 	TalonSRX rightTalon;
 	DoubleSolenoid retract;
 	DigitalInput proximitySensor;
+	DigitalGlitchFilter sensorFilter;
 
 	public Intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
+			sensorFilter = new DigitalGlitchFilter();
+			sensorFilter.add(proximitySensor);
+			sensorFilter.setPeriodNanoSeconds(sensorGlitchFilter);
 //			retract = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
 			intakeSpeed = 0.5;
 			ejectSpeed = -1;
@@ -51,9 +57,13 @@ public class Intake extends Subsystem {
 
 		}
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
+			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
+			sensorFilter = new DigitalGlitchFilter();
+			sensorFilter.add(proximitySensor);
+			sensorFilter.setPeriodNanoSeconds(sensorGlitchFilter);
 			intakeSpeed = 0.2;
 			ejectSpeed = -1;
-			intakeSpeedLocked = true;
+			intakeSpeedLocked = false;
 			invertLeft = false;
 			invertRight = true;
 			enableCurrentLimit = true;
@@ -107,7 +117,8 @@ public class Intake extends Subsystem {
 	}
 
 	public boolean getSensor() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		// Remove everybot later (add sensor def.)
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			return proximitySensor.get();
 		} else {
 			return false;

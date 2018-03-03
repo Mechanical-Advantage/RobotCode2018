@@ -61,6 +61,7 @@ public class RobotMap {
 	public static int rightDriveGearSolenoid1;
 	public static int rightDriveGearSolenoid2;
 	public static int rightDriveGearPCM;
+	public static int tapeSensor;
 	public static final boolean tuningMode = true;
 	public static final RobotType robot = RobotType.EVERYBOT_2018;
 	
@@ -112,6 +113,7 @@ public class RobotMap {
 			minVelocityHigh = 400;
 			elevatorLimitSwitch = 0;
 			intakeSensor = 1;
+			tapeSensor = 2;
 			break;
 		case EVERYBOT_2018:
 			rightMaster = 0;
@@ -124,6 +126,8 @@ public class RobotMap {
 			maxVelocityLow = 950; // 950 native units per 100ms
 			minVelocityLow = 40; // 40 native units per 100ms
 			maxAcceleration = 300;
+			intakeSensor = 1; // For testing
+			tapeSensor = 2; // For testing
 		default:
 			break;
 		}

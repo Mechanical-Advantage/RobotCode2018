@@ -36,6 +36,7 @@ import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.I2C;
@@ -68,8 +69,9 @@ public class Robot extends TimedRobot {
 	public static OI oi;
 	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
-	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
+//	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
+	public static final DigitalInput tapeSensor = new DigitalInput(RobotMap.tapeSensor);
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -162,6 +164,7 @@ public class Robot extends TimedRobot {
 		if (driveSubsystem.getVelocityLeft() <= 2 && driveSubsystem.getVelocityRight() <= 2) {
 			Robot.driveSubsystem.enableBrakeMode(false);
 		}
+		System.out.println(tapeSensor.get());
 	}
 
 	/**
@@ -245,7 +248,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		System.out.println(ultrasonic.getDistance());
 	}
 
 	/**
