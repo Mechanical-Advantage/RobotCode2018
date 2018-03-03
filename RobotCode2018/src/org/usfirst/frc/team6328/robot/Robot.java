@@ -71,7 +71,6 @@ public class Robot extends TimedRobot {
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
 //	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
-	public static final DigitalInput tapeSensor = new DigitalInput(RobotMap.tapeSensor);
 
 	Command m_autonomousCommand;
 	SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -102,6 +101,7 @@ public class Robot extends TimedRobot {
         		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
         		m_chooser.addObject("Turn 90 degrees", new TurnToAngle(90));
         		m_chooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
+        		m_chooser.addObject("Profile Flip Test", new RunMotionProfileOnRio("centerToLeftSwitch", true, false, false, true));
         }
         m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(130, 0));
         m_chooser.addObject("Center auto", new CenterAuto());
@@ -164,7 +164,6 @@ public class Robot extends TimedRobot {
 		if (driveSubsystem.getVelocityLeft() <= 2 && driveSubsystem.getVelocityRight() <= 2) {
 			Robot.driveSubsystem.enableBrakeMode(false);
 		}
-		System.out.println(tapeSensor.get());
 	}
 
 	/**
