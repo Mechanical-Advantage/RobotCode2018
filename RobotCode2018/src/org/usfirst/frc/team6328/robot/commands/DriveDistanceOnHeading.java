@@ -40,6 +40,10 @@ public class DriveDistanceOnHeading extends Command {
     static final double kMaxOutput = 0.9;
     // Limit change in one iteration to this - % of max output
     static final double kMaxChange = 0.03;
+    // If robot does not move for this many cycles, give up
+    static final int stuckCycleThreshold = 25;
+    // The maximum distance the robot can move in the number of cycles above to be considered stuck
+    static final double stickDistance = 0.5;
     
     private DriveGear gear;
 
@@ -55,6 +59,8 @@ public class DriveDistanceOnHeading extends Command {
 	private boolean resetCompletedDistance;
 	private boolean resetStartedDistance;
 	private double lastOutputDistance;
+	private double lastDistance;
+	private int stuckCycles;
     
     public DriveDistanceOnHeading(double distance) {
     	this(distance, 0);
@@ -150,6 +156,7 @@ public class DriveDistanceOnHeading extends Command {
         lastOutputDistance = 0;
         resetCompletedDistance = false;
         resetStartedDistance = false;
+        stuckCycles = 0;
     }
     
     private double calcNewVelocity(PIDOutputter pidOut, double lastOutput) {
@@ -199,9 +206,15 @@ public class DriveDistanceOnHeading extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return resetCompletedDistance && distanceController.onTarget() && turnController.onTarget() && 
+    		if (Math.abs(getAverageDistance() - lastDistance) <= stickDistance) {
+    			stuckCycles++;
+    		} else {
+    			stuckCycles = 0;
+    			lastDistance = getAverageDistance();
+    		}
+        return resetCompletedDistance && ((distanceController.onTarget() && turnController.onTarget() && 
         		(Math.abs(getAverageDistance() - targetDistance) < kToleranceInches) &&
-        		(Math.abs(Robot.ahrs.getYaw() - targetAngle) < kToleranceDegrees);
+        		(Math.abs(Robot.ahrs.getYaw() - targetAngle) < kToleranceDegrees)) || stuckCycles >= stuckCycleThreshold);
     }
 
     // Called once after isFinished returns true
