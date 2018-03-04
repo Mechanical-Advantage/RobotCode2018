@@ -16,15 +16,14 @@ public class SetElevatorPosition extends Command {
 	
 	private ElevatorPosition targetPosition;
 	private static HashMap<ElevatorPosition, Double> positions;
-	private boolean motionMagic;
+	private static final boolean motionMagic = false;
 
-	public SetElevatorPosition(ElevatorPosition position, boolean motionMagic) {
+	public SetElevatorPosition(ElevatorPosition position) {
 		super("SetElevatorPosition");
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.elevator);
 		targetPosition = position;
-		this.motionMagic = motionMagic;
 		
 		if (positions == null) {
 			positions = new HashMap<ElevatorPosition, Double>();

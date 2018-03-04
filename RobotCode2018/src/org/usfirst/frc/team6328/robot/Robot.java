@@ -18,17 +18,14 @@ import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
-import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch;
-import org.usfirst.frc.team6328.robot.commands.SideAutoScaleAndSwitch.SideEnabledAutos;
-import org.usfirst.frc.team6328.robot.commands.SideAutoSwitch;
-import org.usfirst.frc.team6328.robot.commands.SimpleSideAutoSwitch;
+import org.usfirst.frc.team6328.robot.commands.SmartSideAuto;
+import org.usfirst.frc.team6328.robot.commands.SwitchStraightDelivery;
 import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator;
 import org.usfirst.frc.team6328.robot.subsystems.Intake;
-import org.usfirst.frc.team6328.robot.subsystems.MaxbotixUltrasonic;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
@@ -36,12 +33,12 @@ import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -72,9 +69,13 @@ public class Robot extends TimedRobot {
 //	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
 
-	Command m_autonomousCommand;
-	SendableChooser<Command> m_chooser = new SendableChooser<>();
+	Command autoCommand;
+	SendableChooser<Command> tuningModeChooser
+	= new SendableChooser<>();
 	public static SendableChooser<JoystickMode> joystickModeChooser;
+	SendableChooser<StartingPosition> startingPositionChooser = new SendableChooser<StartingPosition>();
+	SendableChooser<AutoMode> autoModeChooser = new SendableChooser<AutoMode>();
+	SendableChooser<AutoPriority> autoPriorityChooser = new SendableChooser<AutoPriority>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -85,46 +86,44 @@ public class Robot extends TimedRobot {
 		this.setPeriod(0.02);
 		oi = new OI();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
-		m_chooser.addDefault("Do Nothing", null);
+		
+		startingPositionChooser.addObject("Left", StartingPosition.LEFT);
+		startingPositionChooser.addObject("Center", StartingPosition.CENTER);
+		startingPositionChooser.addObject("Right", StartingPosition.RIGHT);
+		autoModeChooser.addDefault("Do Nothing", null);
+		autoModeChooser.addObject("Cross line", AutoMode.CROSS_LINE);
+		autoModeChooser.addObject("Simple switch delivery", AutoMode.SIMPLE_SWITCH);
+		autoModeChooser.addObject("Smart Delivery", AutoMode.SMART);
+		autoPriorityChooser.addDefault("None", AutoPriority.NONE);
+		autoPriorityChooser.addObject("Switch", AutoPriority.SWITCH);
+		autoPriorityChooser.addObject("Scale", AutoPriority.SCALE);
+		tuningModeChooser.addDefault("Do Nothing", null);
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		joystickModeChooser.addDefault("Tank", JoystickMode.Tank);
         joystickModeChooser.addObject("Split Arcade", JoystickMode.SplitArcade);
+        
         if (RobotMap.tuningMode) {
-        		m_chooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRio("test10forward5right", false, false, false, true));
-        		m_chooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false, true));
-        		m_chooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false, true));
-        		m_chooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
-        		m_chooser.addObject("15 foot straight line", new DriveDistanceOnHeading(180));
-        		m_chooser.addObject("10 foot straight line", new DriveDistanceOnHeading(120));
-        		m_chooser.addObject("5 foot straight line", new DriveDistanceOnHeading(60));
-        		m_chooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
-        		m_chooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
-        		m_chooser.addObject("Turn 90 degrees", new TurnToAngle(90));
-        		m_chooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
-        		m_chooser.addObject("Profile Flip Test", new RunMotionProfileOnRio("centerToLeftSwitch", true, false, false, true));
+        		tuningModeChooser.addObject("10 forward 5 right profile", new RunMotionProfileOnRio("test10forward5right", false, false, false, true));
+        		tuningModeChooser.addObject("1 foot off edge to switch side profile", new RunMotionProfileOnRio("sideToSwitch", false, false, false, true));
+        		tuningModeChooser.addObject("1 foot off edge to switch front profile", new RunMotionProfileOnRio("sideToSwitchFront", false, false, false, true));
+        		tuningModeChooser.addObject("20 foot straight line", new DriveDistanceOnHeading(240));
+        		tuningModeChooser.addObject("15 foot straight line", new DriveDistanceOnHeading(180));
+        		tuningModeChooser.addObject("10 foot straight line", new DriveDistanceOnHeading(120));
+        		tuningModeChooser.addObject("5 foot straight line", new DriveDistanceOnHeading(60));
+        		tuningModeChooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
+        		tuningModeChooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
+        		tuningModeChooser.addObject("Turn 90 degrees", new TurnToAngle(90));
+        		tuningModeChooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
+        		tuningModeChooser.addObject("Profile Flip Test", new RunMotionProfileOnRio("centerToLeftSwitch", true, false, false, true));
+         	SmartDashboard.putData("Tuning Auto Mode", tuningModeChooser);
+         	autoModeChooser.addObject("Tuning auto", AutoMode.TUNING);
         }
-        m_chooser.addObject("Cross Line", new DriveDistanceOnHeading(130, 0));
-        m_chooser.addObject("Center auto", new CenterAuto());
-        m_chooser.addObject("Right side simple side switch or cross line", new SimpleSideAutoSwitch(false));
-        m_chooser.addObject("Left side simple side switch or cross line", new SimpleSideAutoSwitch(true));
-        m_chooser.addObject("Right side end of switch no cross", new SideAutoSwitch(false, false, false));
-        m_chooser.addObject("Right side front of switch no cross", new SideAutoSwitch(false, true, false));
-        m_chooser.addObject("Right side end of switch + cross", new SideAutoSwitch(false, false, true));
-        m_chooser.addObject("Right side front of switch + cross", new SideAutoSwitch(false, true, true));
-        m_chooser.addObject("Left side end of switch no cross", new SideAutoSwitch(true, false, false));
-        m_chooser.addObject("Left side front of switch no cross", new SideAutoSwitch(true, true, false));
-        m_chooser.addObject("Left side end of switch + cross", new SideAutoSwitch(true, false, true));
-        m_chooser.addObject("Left side front of switch + cross", new SideAutoSwitch(true, true, true));
-        m_chooser.addObject("Left side 2 cube or switch same side only", new SideAutoScaleAndSwitch(true, SideEnabledAutos.SAME_SIDE_ONLY));
-        m_chooser.addObject("Left side 2 cube both same side or switch + cross", new SideAutoScaleAndSwitch(true, SideEnabledAutos.SAME_SIDE_ONLY_SWITCH_CROSS));
-        m_chooser.addObject("Left side 2 cube both together or switch + cross", new SideAutoScaleAndSwitch(true, SideEnabledAutos.NOT_SPLIT));
-        m_chooser.addObject("Left side 2 cube always", new SideAutoScaleAndSwitch(true, SideEnabledAutos.ALL));
-        m_chooser.addObject("Right side 2 cube or switch same side only", new SideAutoScaleAndSwitch(false, SideEnabledAutos.SAME_SIDE_ONLY));
-        m_chooser.addObject("Right side 2 cube both same side or switch + cross", new SideAutoScaleAndSwitch(false, SideEnabledAutos.SAME_SIDE_ONLY_SWITCH_CROSS));
-        m_chooser.addObject("Right side 2 cube both together or switch + cross", new SideAutoScaleAndSwitch(false, SideEnabledAutos.NOT_SPLIT));
-        m_chooser.addObject("Right side 2 cube always", new SideAutoScaleAndSwitch(false, SideEnabledAutos.ALL));
-        SmartDashboard.putData("Auto mode", m_chooser);
         SmartDashboard.putData("Control Mode", joystickModeChooser);
+        SmartDashboard.putData("Starting Position", startingPositionChooser);
+        SmartDashboard.putData("Auto Mode", autoModeChooser);
+        SmartDashboard.putBoolean("Cross Middle Allowed", true);
+        SmartDashboard.putData("Auto Priority", autoPriorityChooser);
+        SmartDashboard.putBoolean("Enable 2nd Cube", true);
         
      // if the current waypoint version is old, re-generate profiles
         BufferedReader waypointVersionReader;
@@ -147,6 +146,7 @@ public class Robot extends TimedRobot {
 			DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
 			solenoid2.set(Value.kReverse);
 		}
+		Compressor c = new Compressor();
 		cameraSubsystem.useFrontCamera();
 	}
 
@@ -194,8 +194,8 @@ public class Robot extends TimedRobot {
 			}
 		}
 		
-		// Wait for game data to arrive, check scale since we don't care about opposite switch
-		int retries = 100;
+		// Wait for game data to arrive, check scale since we don't care about opposing switch
+		int retries = 400;
 		OwnedSide scaleSide = MatchData.getOwnedSide(GameFeature.SCALE);
 		while (scaleSide == OwnedSide.UNKNOWN && retries > 0) {
 			retries--;
@@ -206,19 +206,84 @@ public class Robot extends TimedRobot {
             }
 			scaleSide = MatchData.getOwnedSide(GameFeature.SCALE);
 		}
+		OwnedSide switchSide = MatchData.getOwnedSide(GameFeature.SWITCH_NEAR);
 		
-		m_autonomousCommand = m_chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
+		Command tuningCommand = tuningModeChooser.getSelected();
+		StartingPosition startingPosition = startingPositionChooser.getSelected();
+		AutoMode mode = autoModeChooser.getSelected();
+		boolean crossMiddle = SmartDashboard.getBoolean("Cross Middle Allowed", true);
+		AutoPriority priority = autoPriorityChooser.getSelected();
+		boolean twoCubeEnabled = SmartDashboard.getBoolean("Enable 2nd Cube", true);
+		
+		Command crossLineCommand = new DriveDistanceOnHeading(130, 0);
+		
+		switch (mode) {
+		case CROSS_LINE:
+			autoCommand = crossLineCommand;
+			if (switchSide == OwnedSide.UNKNOWN || scaleSide == OwnedSide.UNKNOWN) {
+				DriverStation.reportWarning("Failed to recieve data from FMS but it didn't matter", false);
+			}
+			break;
+		case SIMPLE_SWITCH:
+			if (startingPosition.equals(switchSide)) {
+				autoCommand = new SwitchStraightDelivery();
+			} else {
+				autoCommand = crossLineCommand;
+			}
+			if (switchSide == OwnedSide.UNKNOWN) {
+				DriverStation.reportError("Failed to recieve data from FMS about switch so not delivering", false);
+			}
+			if (scaleSide == OwnedSide.UNKNOWN) {
+				DriverStation.reportWarning("Failed to recieve data from FMS about scale but it didn't matter", false);
+			}
+			break;
+		case SMART:
+			if (startingPosition == StartingPosition.CENTER) {
+				autoCommand = new CenterAuto(switchSide);
+			} else {
+				if (switchSide == OwnedSide.UNKNOWN || scaleSide == OwnedSide.UNKNOWN) {
+					DriverStation.reportError("Failed to recieve data from FMS, crossing line!", false);
+					autoCommand = crossLineCommand;
+				} else {
+					AutoTruthTable.SelectedAutoDestinations dests = AutoTruthTable.findRow(
+							startingPosition.equals(switchSide), startingPosition.equals(scaleSide), 
+							crossMiddle, priority == AutoPriority.SWITCH, priority == AutoPriority.SCALE, 
+							twoCubeEnabled);
+					if (dests != null) {
+						if (dests.getDest1() == null) {
+							// No first destination means cross line
+							autoCommand = crossLineCommand;
+						} else {
+							// SmartSideAuto will handle dest2 being null
+							autoCommand = new SmartSideAuto(dests.getDest1(), dests.getDest2(), 
+									startingPosition == StartingPosition.LEFT);
+						}
+					} else {
+						// The truth table did not find a match
+						autoCommand = crossLineCommand;
+						DriverStation.reportError("Auto lookup failed, crossing line!", false);
+					}
+				}
+			}
+			break;
+		case TUNING:
+			if (RobotMap.tuningMode) {
+				autoCommand = tuningCommand;
+			} else {
+				autoCommand = crossLineCommand;
+				DriverStation.reportError("Tuning auto selected in competition mode, crossing line!", false);
+			}
+			break;
+		default:
+			if (switchSide == OwnedSide.UNKNOWN || scaleSide == OwnedSide.UNKNOWN) {
+				DriverStation.reportWarning("Failed to recieve data from FMS but it didn't matter", false);
+			}
+			break;
+		}
 
 		// schedule the autonomous command (example)
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.start();
+		if (autoCommand != null) {
+			autoCommand.start();
 		}
 	}
 
@@ -237,8 +302,8 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (m_autonomousCommand != null) {
-			m_autonomousCommand.cancel();
+		if (autoCommand != null) {
+			autoCommand.cancel();
 		}
 	}
 
@@ -255,6 +320,22 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+	}
+	
+	public enum StartingPosition {
+		LEFT, CENTER, RIGHT;
+		
+		public boolean equals(OwnedSide side) {
+			return this.toString().equals(side.toString());
+		}
+	}
+	
+	public enum AutoMode {
+		CROSS_LINE, SIMPLE_SWITCH, SMART, TUNING
+	}
+	
+	public enum AutoPriority {
+		NONE, SWITCH, SCALE
 	}
 	
 	
