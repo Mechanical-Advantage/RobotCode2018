@@ -40,7 +40,6 @@ public class PixyI2C extends Subsystem {
 		int Checksum;												   //pixymon you are trying to get data for
 		int Sig;
 		byte[] rawData = new byte[32];
-		SmartDashboard.putString("rawData", rawData[0] + " " + rawData[1] + " " + rawData[15] + " " + rawData[31]);		
 		try{
 			pixy.readOnly(rawData, 32);	
 		} catch (RuntimeException e){
@@ -76,8 +75,6 @@ public class PixyI2C extends Subsystem {
 				}
 				break;
 			}
-			else
-				SmartDashboard.putNumber("syncword: ", syncWord);
 		}
 		//Assigns our packet to a temp packet, then deletes data so that we dont return old data
 		PixyPacket pkt = packets[Signature - 1];
