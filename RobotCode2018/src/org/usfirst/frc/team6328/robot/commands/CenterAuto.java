@@ -10,11 +10,13 @@ import openrio.powerup.MatchData.OwnedSide;
  */
 public class CenterAuto extends CommandGroup {
 	public CenterAuto(OwnedSide switchSide) {
-		String sideString = switchSide.toString().toLowerCase();
-		sideString.replace("l", "L");
-		sideString.replace("r", "R");
-		addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
-		addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
-		addSequential(new EjectCube());
+		if (switchSide == OwnedSide.LEFT || switchSide == OwnedSide.RIGHT) {
+			String sideString = switchSide.toString().toLowerCase();
+			sideString = sideString.replace("l", "L");
+			sideString = sideString.replace("r", "R");
+			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+			addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
+			addSequential(new EjectCube());
+		}
 	}
 }

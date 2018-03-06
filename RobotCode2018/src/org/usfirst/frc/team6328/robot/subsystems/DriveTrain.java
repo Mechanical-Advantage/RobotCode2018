@@ -206,6 +206,9 @@ public class DriveTrain extends Subsystem {
 		rightTalonMaster.setInverted(reverseOutputRight);
 		rightTalonMaster.setSensorPhase(reverseSensorRight);
 		rightTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
+		rightTalonMaster.configNominalOutputReverse(nominalOutputVoltage/12*-1, configTimeout);
+		rightTalonMaster.configPeakOutputForward(1, configTimeout);
+		rightTalonMaster.configPeakOutputReverse(-1, configTimeout);
 		leftTalonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 //		leftTalonMaster.configNominalOutputVoltage(+0.0f, -0.0f);
 //		leftTalonMaster.configPeakOutputVoltage(+12.0f, -12.0f);
@@ -216,6 +219,9 @@ public class DriveTrain extends Subsystem {
 		leftTalonMaster.setInverted(reverseOutputLeft);
 		leftTalonMaster.setSensorPhase(reverseSensorLeft);
 		leftTalonMaster.configNominalOutputForward(nominalOutputVoltage/12, configTimeout);
+		leftTalonMaster.configNominalOutputReverse(nominalOutputVoltage/12*-1, configTimeout);
+		leftTalonMaster.configPeakOutputForward(1, configTimeout);
+		leftTalonMaster.configPeakOutputReverse(-1, configTimeout);
 		resetPosition();
 		rightTalonSlave.set(ControlMode.Follower, RobotMap.rightMaster);
 		rightTalonSlave.enableCurrentLimit(enableCurrentLimit);

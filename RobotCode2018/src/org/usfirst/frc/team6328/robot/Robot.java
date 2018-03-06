@@ -215,7 +215,7 @@ public class Robot extends TimedRobot {
 		AutoPriority priority = autoPriorityChooser.getSelected();
 		boolean twoCubeEnabled = SmartDashboard.getBoolean("Enable 2nd Cube", true);
 		
-		Command crossLineCommand = new DriveDistanceOnHeading(130, 0);
+		Command crossLineCommand = new DriveDistanceOnHeading(120+5-RobotMap.robotLength, 0);
 		
 		switch (mode) {
 		case CROSS_LINE:
@@ -239,7 +239,14 @@ public class Robot extends TimedRobot {
 			break;
 		case SMART:
 			if (startingPosition == StartingPosition.CENTER) {
-				autoCommand = new CenterAuto(switchSide);
+				if (switchSide == OwnedSide.UNKNOWN) {
+					DriverStation.reportError("Failed to recieve data from FMS about switch, doing nothing", false);
+				} else {
+					autoCommand = new CenterAuto(switchSide);
+				}
+				if (scaleSide == OwnedSide.UNKNOWN) {
+					DriverStation.reportWarning("Failed to recieve data from FMS about scale but it didn't matter", false);
+				}	
 			} else {
 				if (switchSide == OwnedSide.UNKNOWN || scaleSide == OwnedSide.UNKNOWN) {
 					DriverStation.reportError("Failed to recieve data from FMS, crossing line!", false);

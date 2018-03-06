@@ -65,6 +65,8 @@ public class RobotMap {
 	public static int rightDriveGearSolenoid2;
 	public static int rightDriveGearPCM;
 	public static int tapeSensor;
+	public static double robotWidth;
+	public static double robotLength;
 	public static final boolean tuningMode = true;
 	public static final RobotType robot = RobotType.ROBOT_2017;
 	
@@ -78,6 +80,8 @@ public class RobotMap {
 			maxVelocityLow = 950; // 950 native units per 100ms
 			minVelocityLow = 40; // 40 native units per 100ms
 			maxAcceleration = 300;
+			robotLength = 36;
+			robotWidth = 35;
 			break;
 		case ROBOT_2017:
 			rightMaster = 14;
@@ -89,6 +93,8 @@ public class RobotMap {
 			maxVelocityLow = 3284; // 525 RPM
 			minVelocityLow = 135; // 20 RPM
 			maxAcceleration = 300;
+			robotLength = 31.5;
+			robotWidth = 29.25;
 			break;
 		case ORIGINAL_ROBOT_2018:
 			rightMaster = 2;
@@ -117,6 +123,8 @@ public class RobotMap {
 			elevatorLimitSwitch = 0;
 			intakeSensor = 1;
 			tapeSensor = 2;
+			robotLength = 32+6;
+			robotWidth = 27+6;
 			break;
 		case EVERYBOT_2018:
 			rightMaster = 0;
