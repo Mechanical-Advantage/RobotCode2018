@@ -34,7 +34,8 @@ public class Intake extends Subsystem {
 
 	TalonSRX leftTalon;
 	TalonSRX rightTalon;
-	DoubleSolenoid retract;
+	DoubleSolenoid retractSolenoid;
+	DoubleSolenoid openSolenoid;
 	DigitalInput proximitySensor;
 	DigitalGlitchFilter sensorFilter;
 
@@ -45,6 +46,7 @@ public class Intake extends Subsystem {
 			sensorFilter.add(proximitySensor);
 			sensorFilter.setPeriodNanoSeconds(sensorGlitchFilter);
 //			retract = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
+			openSolenoid = new DoubleSolenoid(RobotMap.intakeOpenPCM, RobotMap.intakeOpenSolenoid1, RobotMap.intakeOpenSolenoid2);
 			intakeSpeed = 0.5;
 			ejectSpeed = -1;
 			intakeSpeedLocked = false;
@@ -127,8 +129,28 @@ public class Intake extends Subsystem {
 	
 	public void setRetracted(boolean retracted) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			retract.set(retracted ? Value.kReverse : Value.kForward);
+			retractSolenoid.set(retracted ? Value.kReverse : Value.kForward);
 		}
+	}
+	
+	public boolean getRetracted() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			return retractSolenoid.get() == Value.kReverse;
+		}
+		return false;
+	}
+	
+	public void setOpen(boolean open) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			openSolenoid.set(open ? Value.kForward : Value.kReverse);
+		}
+	}
+	
+	public boolean getOpen() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			return openSolenoid.get() == Value.kForward;
+		}
+		return false;
 	}
 
 	public double getCurrent() {

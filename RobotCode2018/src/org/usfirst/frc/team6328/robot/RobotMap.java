@@ -49,6 +49,9 @@ public class RobotMap {
 	public static int intakeRetractSolenoid1;
 	public static int intakeRetractSolenoid2;
 	public static int intakeRetractPCM;
+	public static int intakeOpenSolenoid1;
+	public static int intakeOpenSolenoid2;
+	public static int intakeOpenPCM;
 	public static int intakeSensor; // DIO
 	public static int minVelocityLow; // lower values will be treated as this value, RPM
 	public static int maxVelocityLow; // maximum velocity when sticks are fully forward (value of 1), RPM
@@ -63,7 +66,7 @@ public class RobotMap {
 	public static int rightDriveGearPCM;
 	public static int tapeSensor;
 	public static final boolean tuningMode = true;
-	public static final RobotType robot = RobotType.EVERYBOT_2018;
+	public static final RobotType robot = RobotType.ROBOT_2017;
 	
 	public RobotMap() {
 		switch (robot) {
