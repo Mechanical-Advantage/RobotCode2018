@@ -34,6 +34,7 @@ import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
 	public static final PixyI2C pixy = new PixyI2C(new I2C(I2C.Port.kOnboard, 0x54), new PixyPacket[5], new PixyException("Pixy Error"), new PixyPacket());
 //	public static final MaxbotixUltrasonic ultrasonic = new MaxbotixUltrasonic(SerialPort.Port.kOnboard);
 	public static final CameraSystem cameraSubsystem = new CameraSystem();
+	public static DigitalInput tapeSensor;
 
 	Command autoCommand;
 	SendableChooser<Command> tuningModeChooser
@@ -88,7 +90,7 @@ public class Robot extends TimedRobot {
 		joystickModeChooser = new SendableChooser<JoystickMode>();
 		
 		startingPositionChooser.addObject("Left", StartingPosition.LEFT);
-		startingPositionChooser.addObject("Center", StartingPosition.CENTER);
+		startingPositionChooser.addDefault("Center", StartingPosition.CENTER);
 		startingPositionChooser.addObject("Right", StartingPosition.RIGHT);
 		autoModeChooser.addDefault("Do Nothing", null);
 		autoModeChooser.addObject("Cross line", AutoMode.CROSS_LINE);
@@ -145,9 +147,22 @@ public class Robot extends TimedRobot {
 			solenoid1.set(Value.kReverse);
 			DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
 			solenoid2.set(Value.kReverse);
+			tapeSensor = new DigitalInput(RobotMap.tapeSensor);
 		}
+		// Force compressor to run by creating a pneumatics object
+		@SuppressWarnings("unused")
 		Compressor c = new Compressor();
 		cameraSubsystem.useFrontCamera();
+	}
+	
+	@Override
+	public void robotPeriodic() {
+		boolean tapeSensorValue = false;
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			tapeSensorValue = tapeSensor.get();
+		} 
+		SmartDashboard.putBoolean("Tape Sensor", tapeSensorValue);
+		SmartDashboard.putBoolean("Cube Sensor", intake.getSensor());
 	}
 
 	/**

@@ -67,7 +67,7 @@ public class RobotMap {
 	public static int tapeSensor;
 	public static double robotWidth;
 	public static double robotLength;
-	public static final boolean tuningMode = true;
+	public static final boolean tuningMode = false;
 	public static final RobotType robot = RobotType.ROBOT_2017;
 	
 	public RobotMap() {
