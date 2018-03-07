@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.JoystickElevatorControl;
@@ -147,11 +148,11 @@ public class Elevator extends Subsystem {
 			}
 			talonMaster.setSelectedSensorPosition(0, 0, configTimeout);
 			talonMaster.configReverseSoftLimitEnable(true, configTimeout);
-			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed) {
-				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
-			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1) {
-				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
-			}
+		}
+		if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
+			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
+		} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
+			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
 		}
 	}
 	
@@ -219,9 +220,9 @@ public class Elevator extends Subsystem {
 	public boolean driveOpenLoop(double percent) {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0)) {
 //			brake.set(Value.kReverse);
-			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed) {
+			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
 				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
-			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && percent <= slowLimitSpeed*-1) {
+			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && percent <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
 				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
 			} else {
 				talonMaster.set(ControlMode.PercentOutput, percent);
@@ -264,7 +265,7 @@ public class Elevator extends Subsystem {
 	}
 	
 	public boolean getLimitSwitch() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isElevatorLimitEnabled()) {
 			return !lowerLimit.get();
 		}
 		return false;

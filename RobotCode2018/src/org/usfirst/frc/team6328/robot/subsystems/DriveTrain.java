@@ -511,7 +511,7 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public void switchGear(DriveGear gear) {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isShiftingEnabled()) {
 			switch (gear) {
 			case HIGH:
 				leftGearSolenoid.set(Value.kForward);

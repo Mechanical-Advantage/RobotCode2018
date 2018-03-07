@@ -86,6 +86,9 @@ public class OI {
 	private Button toggleGear = new JoystickButton(leftController, 1);
 	private Button openLoopDrive = new JoystickButton(oiController1, 10);
 	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
+	private Button shiftDisableSwitch;
+	private Button cubeSenseDisableSwitch;
+	private Button elevatorLimitDisableSwitch;
 	private Button driveToCube = new JoystickButton(oiController2, 9);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
@@ -184,5 +187,17 @@ public class OI {
 	
 	public double getElevatorJoystick() {
 		return oiController1.getRawAxis(1);
+	}
+	
+	public boolean isShiftingEnabled() {
+		return !shiftDisableSwitch.get();
+	}
+	
+	public boolean isCubeSensorEnabled() {
+		return !cubeSenseDisableSwitch.get();
+	}
+	
+	public boolean isElevatorLimitEnabled() {
+		return !elevatorLimitDisableSwitch.get();
 	}
 }

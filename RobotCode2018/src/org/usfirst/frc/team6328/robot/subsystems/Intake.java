@@ -59,10 +59,6 @@ public class Intake extends Subsystem {
 
 		}
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
-			proximitySensor = new DigitalInput(RobotMap.intakeSensor);
-			sensorFilter = new DigitalGlitchFilter();
-			sensorFilter.add(proximitySensor);
-			sensorFilter.setPeriodNanoSeconds(sensorGlitchFilter);
 			intakeSpeed = 0.2;
 			ejectSpeed = -1;
 			intakeSpeedLocked = false;
@@ -119,8 +115,7 @@ public class Intake extends Subsystem {
 	}
 
 	public boolean getSensor() {
-		// Remove everybot later (add sensor def.)
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || Robot.oi.isCubeSensorEnabled()) {
 			return proximitySensor.get();
 		} else {
 			return false;
