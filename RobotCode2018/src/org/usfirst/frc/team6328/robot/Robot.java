@@ -230,7 +230,7 @@ public class Robot extends TimedRobot {
 		AutoPriority priority = autoPriorityChooser.getSelected();
 		boolean twoCubeEnabled = SmartDashboard.getBoolean("Enable 2nd Cube", true);
 		
-		Command crossLineCommand = new DriveDistanceOnHeading(120+5-RobotMap.robotLength, 0);
+		Command crossLineCommand = new DriveDistanceOnHeading(120+12-RobotMap.robotLength, 0);
 		
 		switch (mode) {
 		case CROSS_LINE:

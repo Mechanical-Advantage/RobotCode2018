@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class TunableNumber {
 	private String key;
 	private double defaultValue;
-	
+
 	/**
 	 * Create a new TunableNumber
 	 * @param dashboardKey Key on dashboard
@@ -33,10 +33,12 @@ public class TunableNumber {
 	 */
 	public void setDefault(double defaultValue) {
 		this.defaultValue = defaultValue;
-		// This makes sure the data is on NetworkTables but will not change it
-		SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+		if (RobotMap.tuningMode) {
+			// This makes sure the data is on NetworkTables but will not change it
+			SmartDashboard.putNumber(key, SmartDashboard.getNumber(key, defaultValue));
+		}
 	}
-	
+
 	/**
 	 * Get the current value, from dashboard if available and in tuning mode
 	 * @return The current value

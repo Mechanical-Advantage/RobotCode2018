@@ -242,24 +242,26 @@ public class RunMotionProfileOnRio extends Command {
         	}
         	
         	// Graphing
-        	SmartDashboard.putString("Profile Position Graph", Robot.genGraphStr(
-        			leftFollower.getSegment().position,
-        			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft,
-        			rightFollower.getSegment().position,
-        			Robot.driveSubsystem.getDistanceRight()-initialPositionRight));
-        	SmartDashboard.putNumber("Profile Target Position Left", leftFollower.getSegment().position);
-        	SmartDashboard.putNumber("Profile Target Position Right", rightFollower.getSegment().position);
-        	SmartDashboard.putNumber("Profile Current Position Left", Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
-        	SmartDashboard.putNumber("Profile Current Position Right", Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
-        	SmartDashboard.putString("Profile Heading Graph", Robot.genGraphStr(
-        			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), gyroHeading));
-        	SmartDashboard.putNumber("Profile Target Heading", Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
-        	SmartDashboard.putNumber("Profile Current Heading", gyroHeading);
-        	
-        	SmartDashboard.putNumber("Profile P output", kP.get()*((leftFollower.getLastError()+rightFollower.getLastError())/2));
-        	SmartDashboard.putNumber("Profile V output", kV.get()*((leftFollower.getSegment().velocity+rightFollower.getSegment().velocity)/2));
-        	SmartDashboard.putNumber("Profile A output", kA.get()*((leftFollower.getSegment().acceleration+rightFollower.getSegment().acceleration)/2));
-        	SmartDashboard.putNumber("Profile Error", (leftFollower.getLastError() + rightFollower.getLastError())/2);
+        	if (RobotMap.tuningMode) {
+	        	SmartDashboard.putString("Profile Position Graph", Robot.genGraphStr(
+	        			leftFollower.getSegment().position,
+	        			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft,
+	        			rightFollower.getSegment().position,
+	        			Robot.driveSubsystem.getDistanceRight()-initialPositionRight));
+	        	SmartDashboard.putNumber("Profile Target Position Left", leftFollower.getSegment().position);
+	        	SmartDashboard.putNumber("Profile Target Position Right", rightFollower.getSegment().position);
+	        	SmartDashboard.putNumber("Profile Current Position Left", Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
+	        	SmartDashboard.putNumber("Profile Current Position Right", Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
+	        	SmartDashboard.putString("Profile Heading Graph", Robot.genGraphStr(
+	        			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), gyroHeading));
+	        	SmartDashboard.putNumber("Profile Target Heading", Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
+	        	SmartDashboard.putNumber("Profile Current Heading", gyroHeading);
+	        	
+	        	SmartDashboard.putNumber("Profile P output", kP.get()*((leftFollower.getLastError()+rightFollower.getLastError())/2));
+	        	SmartDashboard.putNumber("Profile V output", kV.get()*((leftFollower.getSegment().velocity+rightFollower.getSegment().velocity)/2));
+	        	SmartDashboard.putNumber("Profile A output", kA.get()*((leftFollower.getSegment().acceleration+rightFollower.getSegment().acceleration)/2));
+	        	SmartDashboard.putNumber("Profile Error", (leftFollower.getLastError() + rightFollower.getLastError())/2);
+        	}
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -276,24 +278,26 @@ public class RunMotionProfileOnRio extends Command {
     		Robot.driveSubsystem.stop();
     		Robot.driveSubsystem.resetSensorRate();
     		Robot.driveSubsystem.resetControlRate();
-    		System.out.printf("DLeft: %f, DRight: %f, Yaw: %f, Target Yaw: %f, Target DLeft: %f, Target DRight: %f\n",
-			Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft, Robot.driveSubsystem.getDistanceRight()-initialPositionRight, gyroHeading,
-			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)), leftFollower.getSegment().position, rightFollower.getSegment().position);
-    		System.out.printf("Errors: Lp: %f, Ln: %f, Rp: %f, Rn: %f, Yp: %f, Yn: %f\n",
-    				positionErrorLeftPositive/trajectoryLength, positionErrorLeftNegative/trajectoryLength,
-    				positionErrorRightPositive/trajectoryLength, positionErrorRightNegative/trajectoryLength,
-    				yawErrorPositive/trajectoryLength, yawErrorNegative/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Left Positive", positionErrorLeftPositive/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Left Negative", positionErrorLeftNegative/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Right Positive", positionErrorRightPositive/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Right Negative", positionErrorRightNegative/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Yaw Positive", yawErrorPositive/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Error Yaw Negative", yawErrorNegative/trajectoryLength);
-    		SmartDashboard.putNumber("Profile Final Error Left", 
-    				Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft-leftFollower.getSegment().position);
-    		SmartDashboard.putNumber("Profile Final Error Right", 
-    				Robot.driveSubsystem.getDistanceRight()-initialPositionRight-rightFollower.getSegment().position);
-    		SmartDashboard.putNumber("Profile Final Error Yaw", gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
+    		if (RobotMap.tuningMode) {
+    			System.out.printf("DLeft: %f, DRight: %f, Yaw: %f, Target Yaw: %f, Target DLeft: %f, Target DRight: %f\n",
+    					Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft, Robot.driveSubsystem.getDistanceRight()-initialPositionRight, gyroHeading,
+    					Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)), leftFollower.getSegment().position, rightFollower.getSegment().position);
+    			System.out.printf("Errors: Lp: %f, Ln: %f, Rp: %f, Rn: %f, Yp: %f, Yn: %f\n",
+    					positionErrorLeftPositive/trajectoryLength, positionErrorLeftNegative/trajectoryLength,
+    					positionErrorRightPositive/trajectoryLength, positionErrorRightNegative/trajectoryLength,
+    					yawErrorPositive/trajectoryLength, yawErrorNegative/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Left Positive", positionErrorLeftPositive/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Left Negative", positionErrorLeftNegative/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Right Positive", positionErrorRightPositive/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Right Negative", positionErrorRightNegative/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Yaw Positive", yawErrorPositive/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Error Yaw Negative", yawErrorNegative/trajectoryLength);
+    			SmartDashboard.putNumber("Profile Final Error Left", 
+    					Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft-leftFollower.getSegment().position);
+    			SmartDashboard.putNumber("Profile Final Error Right", 
+    					Robot.driveSubsystem.getDistanceRight()-initialPositionRight-rightFollower.getSegment().position);
+    			SmartDashboard.putNumber("Profile Final Error Yaw", gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
+    		}
     }
 
     // Called when another command which requires one or more of the same
