@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
@@ -48,6 +49,7 @@ public class Elevator extends Subsystem {
 	private static final int slowTopPoint = topSoftLimit-7000; // Native units
 	private static final int slowBottomPoint = 7000;
 	private static final double slowLimitSpeed = 0.2;
+	private static final double LEDRange = 3; // Range on both sides of position that LED turns on in
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -154,6 +156,14 @@ public class Elevator extends Subsystem {
 		} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
 		}
+		
+		for (int i = 0; i < ElevatorPosition.values().length; i++) {
+			ElevatorPosition position = ElevatorPosition.values()[i];
+			OILED led = position.getLED();
+			if (led != null) {
+				Robot.oi.updateLED(led, Math.abs(getPosition()-getPositionTarget(position)) <= LEDRange);
+			}
+		}
 	}
 	
 	private void setPID(int slotIdx, double p, double i, double d, double f, int iZone) {
@@ -171,7 +181,8 @@ public class Elevator extends Subsystem {
 	 */
 	public boolean setPosition(double position) {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			brake.set(Value.kReverse);
+//			brake.set(Value.kReverse);
+//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
 			targetPosition = position;
 			return true;
@@ -206,6 +217,7 @@ public class Elevator extends Subsystem {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
 //			brake.set(Value.kForward);
+//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
 			return true;
 		} else {
 			return false;
@@ -220,6 +232,7 @@ public class Elevator extends Subsystem {
 	public boolean driveOpenLoop(double percent) {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0)) {
 //			brake.set(Value.kReverse);
+//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
 				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
 			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && percent <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
@@ -239,10 +252,14 @@ public class Elevator extends Subsystem {
 			case HIGH:
 				gearSwitch.set(Value.kForward);
 				talonMaster.selectProfileSlot(1, 0);
+				Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, true);
+				Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, false);
 				break;
 			case LOW:
 				gearSwitch.set(Value.kReverse);
 				talonMaster.selectProfileSlot(0, 0);
+				Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, false);
+				Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, true);
 				break;
 			default:
 				break;
@@ -271,8 +288,50 @@ public class Elevator extends Subsystem {
 		return false;
 	}
 	
+	public double getPositionTarget(ElevatorPosition position) {
+		switch (position) {
+		case CLIMB_GRAB:
+			return 86;
+		case GROUND:
+			return 0;
+		case SCALE_HIGH:
+			return 74;
+		case SCALE_LOW:
+			return 50;
+		case SCALE_MID:
+			return 62;
+		case SWITCH:
+			return 20;
+		default:
+			return 0;
+		}
+	}
+	
 	public enum ElevatorGear {
 		LOW, HIGH
+	}
+	
+	public enum ElevatorPosition {
+		GROUND, SWITCH, SCALE_LOW, SCALE_MID, SCALE_HIGH, CLIMB_GRAB;
+		
+		public OILED getLED() {
+			switch (this) {
+			case CLIMB_GRAB:
+				return OILED.CLIMB_GRAB;
+			case GROUND:
+				return OILED.ELEVATOR_GROUND;
+			case SCALE_HIGH:
+				return OILED.ELEVATOR_SCALE_HIGH;
+			case SCALE_LOW:
+				return OILED.ELEVATOR_SCALE_LOW;
+			case SCALE_MID:
+				return null;
+			case SWITCH:
+				return OILED.ELEVATOR_SWITCH;
+			default:
+				return null;
+			}
+		}
 	}
 }
 

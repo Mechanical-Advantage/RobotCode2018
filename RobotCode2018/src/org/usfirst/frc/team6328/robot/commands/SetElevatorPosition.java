@@ -1,9 +1,8 @@
 package org.usfirst.frc.team6328.robot.commands;
 
-import java.util.HashMap;
-
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
+import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -15,7 +14,6 @@ public class SetElevatorPosition extends Command {
 	private static final double bangBangSpeed = 0.5;
 	
 	private ElevatorPosition targetPosition;
-	private static HashMap<ElevatorPosition, Double> positions;
 	private static final boolean motionMagic = false;
 
 	public SetElevatorPosition(ElevatorPosition position) {
@@ -24,22 +22,12 @@ public class SetElevatorPosition extends Command {
 		// eg. requires(chassis);
 		requires(Robot.elevator);
 		targetPosition = position;
-		
-		if (positions == null) {
-			positions = new HashMap<ElevatorPosition, Double>();
-			positions.put(ElevatorPosition.GROUND, (double) 0);
-			positions.put(ElevatorPosition.SWITCH, (double) 20);
-			positions.put(ElevatorPosition.SCALE_LOW, (double) 50);
-			positions.put(ElevatorPosition.SCALE_MID, (double) 62);
-			positions.put(ElevatorPosition.SCALE_HIGH, (double) 74);
-			positions.put(ElevatorPosition.CLIMB_GRAB, (double) 86);
-		}
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.elevator.switchGear(ElevatorGear.HIGH);
-		double targetPositionInches = positions.get(targetPosition);
+		double targetPositionInches = Robot.elevator.getPositionTarget(targetPosition);
 		if (motionMagic) {
 			Robot.elevator.setPosition(targetPositionInches);
 		} else {
@@ -57,7 +45,7 @@ public class SetElevatorPosition extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return Robot.elevator.onTarget(positions.get(targetPosition));
+		return Robot.elevator.onTarget(Robot.elevator.getPositionTarget(targetPosition));
 	}
 
 	// Called once after isFinished returns true
@@ -67,9 +55,5 @@ public class SetElevatorPosition extends Command {
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
-	}
-	
-	public enum ElevatorPosition {
-		GROUND, SWITCH, SCALE_LOW, SCALE_MID, SCALE_HIGH, CLIMB_GRAB
 	}
 }

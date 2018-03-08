@@ -22,6 +22,9 @@ import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -103,8 +106,14 @@ public class OI {
 	private Button stopIntake = new JoystickButton(oiController2, 6);
 	private Button ejectCubeTime = new JoystickButton(oiController2, 4);
 	private Button ejectCube = new JoystickButton(oiController2, 10);
+	
+	NetworkTable ledTable;
+	NetworkTableEntry ledEntry;
 
 	public OI() {
+		ledTable = NetworkTableInstance.getDefault().getTable("LEDs");
+		ledEntry = ledTable.getEntry("OI LEDs");
+		
 		frontCameraButton.whenPressed(new SetCamera(true));
 		rearCameraButton.whenPressed(new SetCamera(false));
 		joysticksForward.whenPressed(new SetCamera(true));
@@ -199,5 +208,17 @@ public class OI {
 	
 	public boolean isElevatorLimitEnabled() {
 		return !elevatorLimitDisableSwitch.get();
+	}
+	
+	
+	public void updateLED(OILED led, boolean state) {
+		boolean[] array = ledTable.getEntry("OI LEDs").getBooleanArray(new  boolean[]{false, false, false, false, false, false, false, false});
+		array[led.ordinal()] = state;
+		ledEntry.setBooleanArray(array);
+	}
+	
+	public enum OILED {
+		CUBE_SENSE_1, CUBE_SENSE_2, CUBE_SENSE_3, INTAKE_OPEN, INTAKE_RETRACT, INTAKE_OFF, INTAKE_ON, ELEVATOR_LOW_GEAR, ELEVATOR_HIGH_GEAR,
+		ELEVATOR_BRAKE, CLIMB, ELEVATOR_GROUND, ELEVATOR_SWITCH, ELEVATOR_DRIVE, ELEVATOR_SCALE_LOW, ELEVATOR_SCALE_HIGH, CLIMB_GRAB
 	}
 }

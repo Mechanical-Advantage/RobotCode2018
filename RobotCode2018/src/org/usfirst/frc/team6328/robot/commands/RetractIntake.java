@@ -1,6 +1,7 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
+import org.usfirst.frc.team6328.robot.OI.OILED;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 
@@ -19,6 +20,9 @@ public class RetractIntake extends InstantCommand {
 	// Called once when the command executes
 	protected void initialize() {
 		Robot.intake.setRetracted(true);
+		Robot.oi.updateLED(OILED.INTAKE_ON, false);
+		Robot.oi.updateLED(OILED.INTAKE_OFF, false);
+		Robot.oi.updateLED(OILED.INTAKE_RETRACT, true);
 	}
 
 }

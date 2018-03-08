@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
@@ -92,6 +93,10 @@ public class Intake extends Subsystem {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
 	}
+	
+	public void periodic() {
+		Robot.oi.updateLED(OILED.CUBE_SENSE_1, getSensor());
+	}
 
 	public void intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
@@ -138,6 +143,7 @@ public class Intake extends Subsystem {
 	public void setOpen(boolean open) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			openSolenoid.set(open ? Value.kForward : Value.kReverse);
+			Robot.oi.updateLED(OILED.INTAKE_OPEN, open);
 		}
 	}
 	
