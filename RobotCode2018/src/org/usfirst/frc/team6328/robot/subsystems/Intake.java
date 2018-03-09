@@ -123,7 +123,8 @@ public class Intake extends Subsystem {
 
 	public boolean getSensor() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isCubeSensorEnabled()) {
-			return proximitySensor.get();
+//			return proximitySensor.get();
+			return false;
 		} else {
 			return false;
 		}
