@@ -239,7 +239,7 @@ public class OI {
 	
 	
 	public void updateLED(OILED led, boolean state) {
-		boolean[] array = ledTable.getEntry("OI LEDs").getBooleanArray(new boolean[]{false, false, false, false, false, false, false, false});
+		boolean[] array = ledTable.getEntry("OI LEDs").getBooleanArray(new boolean[]{false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false});
 		array[led.ordinal()] = state;
 		ledEntry.setBooleanArray(array);
 	}
