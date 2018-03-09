@@ -316,6 +316,8 @@ public class Elevator extends Subsystem {
 			return 62;
 		case SWITCH:
 			return 20;
+		case DRIVE:
+			return 30;
 		default:
 			return 0;
 		}
