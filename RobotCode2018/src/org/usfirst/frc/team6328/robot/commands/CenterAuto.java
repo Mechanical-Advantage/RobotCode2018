@@ -14,6 +14,7 @@ public class CenterAuto extends CommandGroup {
 			String sideString = switchSide.toString().toLowerCase();
 			sideString = sideString.replace("l", "L");
 			sideString = sideString.replace("r", "R");
+			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
 			addSequential(new EjectCube());
