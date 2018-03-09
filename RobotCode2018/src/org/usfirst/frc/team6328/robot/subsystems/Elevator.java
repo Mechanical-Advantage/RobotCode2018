@@ -45,7 +45,7 @@ public class Elevator extends Subsystem {
 	private static final double allowableError = 2;
 	private static final int configTimeout = 0;
 	private static final double maxClimbLockHeight = 0; // Maximum height climb lock should be allowed to engage at
-	private static final double resetSpeed = -0.05;
+	private static final double resetSpeed = -0.1;
 	private static final int slowTopPoint = topSoftLimit-7000; // Native units
 	private static final int slowBottomPoint = 7000;
 	private static final double slowLimitSpeed = 0.2;
@@ -63,6 +63,7 @@ public class Elevator extends Subsystem {
 	DigitalInput lowerLimit;
 	double targetPosition;
 	boolean resetCompleted = false;
+	boolean limitEnabledLast = true;
 	
 	public Elevator() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -71,7 +72,7 @@ public class Elevator extends Subsystem {
 			talonSlave2 = new TalonSRX(RobotMap.elevatorSlave2);
 			talonSlave3 = new TalonSRX(RobotMap.elevatorSlave3);
 //			climbLock = new DoubleSolenoid(RobotMap.elevatorStageLockPCM, RobotMap.elevatorStageLockSolenoid1, RobotMap.elevatorStageLockSolenoid2);
-//			brake = new DoubleSolenoid(RobotMap.elevatorBrakePCM, RobotMap.elevatorBrakeSolenoid1, RobotMap.elevatorBrakeSolenoid2);
+			brake = new DoubleSolenoid(RobotMap.elevatorBrakePCM, RobotMap.elevatorBrakeSolenoid1, RobotMap.elevatorBrakeSolenoid2);
 			gearSwitch = new DoubleSolenoid(RobotMap.elevatorGearPCM, RobotMap.elevatorGearSolenoid1, RobotMap.elevatorGearSolenoid2);
 			lowerLimit = new DigitalInput(RobotMap.elevatorLimitSwitch);
 			
@@ -126,13 +127,16 @@ public class Elevator extends Subsystem {
 			talonMaster.configAllowableClosedloopError(0, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
 			talonMaster.configAllowableClosedloopError(1, (int) (allowableError/distancePerRotation*ticksPerRotation), configTimeout);
 			
-//			brake.set(Value.kReverse);
+			brake.set(Value.kReverse);
 //			climbLock.set(Value.kReverse);
 			switchGear(ElevatorGear.HIGH);
 			
 			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
-//			brake.set(Value.kReverse);
 		}
+	}
+	
+	public void initLEDs() {
+		Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, true);
 	}
 
 	public void initDefaultCommand() {
@@ -151,10 +155,16 @@ public class Elevator extends Subsystem {
 			talonMaster.setSelectedSensorPosition(0, 0, configTimeout);
 			talonMaster.configReverseSoftLimitEnable(true, configTimeout);
 		}
-		if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
+		if (resetCompleted && talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
-		} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
+		} else if (resetCompleted && talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
+		}
+		
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isElevatorLimitEnabled() != limitEnabledLast && resetCompleted) {
+			talonMaster.configForwardSoftLimitEnable(Robot.oi.isElevatorLimitEnabled(), configTimeout);
+			talonMaster.configReverseSoftLimitEnable(Robot.oi.isElevatorLimitEnabled(), configTimeout);
+			limitEnabledLast = Robot.oi.isElevatorLimitEnabled();
 		}
 		
 		for (int i = 0; i < ElevatorPosition.values().length; i++) {
@@ -181,8 +191,8 @@ public class Elevator extends Subsystem {
 	 */
 	public boolean setPosition(double position) {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-//			brake.set(Value.kReverse);
-//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
+			brake.set(Value.kReverse);
+			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
 			targetPosition = position;
 			return true;
@@ -216,8 +226,8 @@ public class Elevator extends Subsystem {
 	public boolean holdPosition() {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
-//			brake.set(Value.kForward);
-//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
+			brake.set(Value.kForward);
+			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
 			return true;
 		} else {
 			return false;
@@ -231,8 +241,8 @@ public class Elevator extends Subsystem {
 	 */
 	public boolean driveOpenLoop(double percent) {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0)) {
-//			brake.set(Value.kReverse);
-//			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
+			brake.set(Value.kReverse);
+			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
 				talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
 			} else if (talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && percent <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
@@ -252,14 +262,18 @@ public class Elevator extends Subsystem {
 			case HIGH:
 				gearSwitch.set(Value.kForward);
 				talonMaster.selectProfileSlot(1, 0);
-				Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, true);
-				Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, false);
+				if (Robot.oi != null) {
+					Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, true);
+					Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, false);
+				}
 				break;
 			case LOW:
 				gearSwitch.set(Value.kReverse);
 				talonMaster.selectProfileSlot(0, 0);
-				Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, false);
-				Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, true);
+				if (Robot.oi != null) {
+					Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, false);
+					Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, true);
+				}
 				break;
 			default:
 				break;
@@ -312,7 +326,7 @@ public class Elevator extends Subsystem {
 	}
 	
 	public enum ElevatorPosition {
-		GROUND, SWITCH, SCALE_LOW, SCALE_MID, SCALE_HIGH, CLIMB_GRAB;
+		GROUND, SWITCH, DRIVE, SCALE_LOW, SCALE_MID, SCALE_HIGH, CLIMB_GRAB;
 		
 		public OILED getLED() {
 			switch (this) {
@@ -328,6 +342,8 @@ public class Elevator extends Subsystem {
 				return null;
 			case SWITCH:
 				return OILED.ELEVATOR_SWITCH;
+			case DRIVE:
+				return OILED.ELEVATOR_DRIVE;
 			default:
 				return null;
 			}

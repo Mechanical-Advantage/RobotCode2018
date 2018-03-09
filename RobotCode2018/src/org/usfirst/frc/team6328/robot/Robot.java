@@ -35,8 +35,6 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
@@ -87,6 +85,7 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		this.setPeriod(0.02);
 		oi = new OI();
+		elevator.initLEDs();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
 		
 		startingPositionChooser.addObject("Left", StartingPosition.LEFT);
@@ -142,13 +141,6 @@ public class Robot extends TimedRobot {
 			generateCommand.setRunWhenDisabled(true);
 			generateCommand.start();
 		}
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			DoubleSolenoid solenoid1 = new DoubleSolenoid(1, 4, 5);
-			solenoid1.set(Value.kReverse);
-			DoubleSolenoid solenoid2 = new DoubleSolenoid(1, 6, 7);
-			solenoid2.set(Value.kReverse);
-			tapeSensor = new DigitalInput(RobotMap.tapeSensor);
-		}
 		// Force compressor to run by creating a pneumatics object
 		@SuppressWarnings("unused")
 		Compressor c = new Compressor();
@@ -159,7 +151,7 @@ public class Robot extends TimedRobot {
 	public void robotPeriodic() {
 		boolean tapeSensorValue = false;
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			tapeSensorValue = tapeSensor.get();
+//			tapeSensorValue = tapeSensor.get();
 		} 
 		SmartDashboard.putBoolean("Tape Sensor", tapeSensorValue);
 		SmartDashboard.putBoolean("Cube Sensor", intake.getSensor());

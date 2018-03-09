@@ -24,6 +24,7 @@ public class Intake extends Subsystem {
 	private static final int sensorGlitchFilter = 50000; // nanoseconds
 	
 	private double intakeSpeed;
+	private boolean ejectSpeedLocked;
 	private double ejectSpeed;
 	private boolean intakeSpeedLocked;
 	private boolean enableCurrentLimit;
@@ -46,11 +47,12 @@ public class Intake extends Subsystem {
 			sensorFilter = new DigitalGlitchFilter();
 			sensorFilter.add(proximitySensor);
 			sensorFilter.setPeriodNanoSeconds(sensorGlitchFilter);
-//			retract = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
+			retractSolenoid = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
 			openSolenoid = new DoubleSolenoid(RobotMap.intakeOpenPCM, RobotMap.intakeOpenSolenoid1, RobotMap.intakeOpenSolenoid2);
 			intakeSpeed = 0.5;
 			ejectSpeed = -1;
 			intakeSpeedLocked = false;
+			ejectSpeedLocked = false;
 			invertLeft = false;
 			invertRight = true;
 			enableCurrentLimit = true;
@@ -95,7 +97,7 @@ public class Intake extends Subsystem {
 	}
 	
 	public void periodic() {
-		Robot.oi.updateLED(OILED.CUBE_SENSE_1, getSensor());
+		Robot.oi.updateLED(OILED.CUBE_SENSE_2, getSensor());
 	}
 
 	public void intake() {
@@ -107,8 +109,8 @@ public class Intake extends Subsystem {
 
 	public void eject() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, ejectSpeed);
-			rightTalon.set(ControlMode.PercentOutput, ejectSpeed);
+			leftTalon.set(ControlMode.PercentOutput, ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
+			rightTalon.set(ControlMode.PercentOutput, ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
 		}
 	}
 
@@ -120,7 +122,7 @@ public class Intake extends Subsystem {
 	}
 
 	public boolean getSensor() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || Robot.oi.isCubeSensorEnabled()) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isCubeSensorEnabled()) {
 			return proximitySensor.get();
 		} else {
 			return false;

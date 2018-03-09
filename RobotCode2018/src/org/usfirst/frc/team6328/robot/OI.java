@@ -8,19 +8,24 @@
 package org.usfirst.frc.team6328.robot;
 
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
+import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
+import org.usfirst.frc.team6328.robot.commands.ExtendIntake;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
+import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
+import org.usfirst.frc.team6328.robot.commands.ToggleIntakeOpen;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
+import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -87,25 +92,35 @@ public class OI {
 	private Button joysticksBackward = new JoystickButton(leftController, 2);
 	private Button sniperMode = new JoystickButton(rightController, 1);
 	private Button toggleGear = new JoystickButton(leftController, 1);
-	private Button openLoopDrive = new JoystickButton(oiController1, 10);
-	private Button driveDisableSwitch = new JoystickButton(oiController1, 9);
-	private Button shiftDisableSwitch;
-	private Button cubeSenseDisableSwitch;
-	private Button elevatorLimitDisableSwitch;
-	private Button driveToCube = new JoystickButton(oiController2, 9);
+	private Button openLoopDrive = new JoystickButton(oiController2, 10);
+	private Button driveDisableSwitch = new JoystickButton(oiController2, 9);
+	private Button shiftDisableSwitch = new JoystickButton(oiController2, 8);
+	private Button cubeSenseDisableSwitch = new JoystickButton(oiController2, 7);
+	private Button elevatorLimitDisableSwitch = new JoystickButton(oiController1, 12);
+	private Button driveToCube = new JoystickButton(rightController, 4);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
-	private Button highElevatorGear = new JoystickButton(rightController, 11);
-	private Button lowElevatorGear = new JoystickButton(rightController, 10);
+	private Button highElevatorGear = new JoystickButton(oiController1, 10);
+	private Button lowElevatorGear = new JoystickButton(oiController1, 9);
+	private Button climb = new JoystickButton(oiController1, 11);
+	
+	// Elevator Heights
+	private Button elevGround = new JoystickButton(oiController1, 6);
+	private Button elevSwitch = new JoystickButton(oiController1, 5);
+	private Button elevDrive = new JoystickButton(oiController1, 4);
+	private Button elevScaleL = new JoystickButton(oiController1, 3);
+	private Button elevScaleH = new JoystickButton(oiController1, 2);
+	private Button elevClimbGrab = new JoystickButton(oiController1, 1);
 	
 	// Everybot
 	private Button scoreCube = new JoystickButton(oiController2, 1);
 	private Button raiseArm = new JoystickButton(oiController2, 2);
 	private Button lowerArm = new JoystickButton(oiController2, 3);
-	private Button startIntake = new JoystickButton(oiController2, 5);
-	private Button stopIntake = new JoystickButton(oiController2, 6);
-	private Button ejectCubeTime = new JoystickButton(oiController2, 4);
-	private Button ejectCube = new JoystickButton(oiController2, 10);
+	
+	private Button startIntake = new JoystickButton(oiController2, 4);
+	private Button stopIntake = new JoystickButton(oiController2, 3);
+	private Button ejectCubeTime = new JoystickButton(oiController2, 5);
+	private Button toggleIntakeOpen = new JoystickButton(oiController2, 2);
 	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
@@ -131,9 +146,17 @@ public class OI {
 		lowerArm.whenPressed(new ResetArm());
 		IntakeCube intakeCommand = new IntakeCube(false);
 		startIntake.whenPressed(intakeCommand);
-		stopIntake.cancelWhenPressed(intakeCommand);
+		stopIntake.cancelWhenPressed(new ExtendIntake());
+		toggleIntakeOpen.whenPressed(new ToggleIntakeOpen());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
-		ejectCube.whileHeld(new EjectCube());
+		climb.whenPressed(new Climb());
+		
+		elevGround.whenPressed(new SetElevatorPosition(ElevatorPosition.GROUND));
+		elevSwitch.whenPressed(new SetElevatorPosition(ElevatorPosition.SWITCH));
+		elevDrive.whenPressed(new SetElevatorPosition(ElevatorPosition.DRIVE));
+		elevScaleL.whenPressed(new SetElevatorPosition(ElevatorPosition.SCALE_LOW));
+		elevScaleH.whenPressed(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+		elevClimbGrab.whenPressed(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
 	}
 	
 	public double getLeftAxis() {
@@ -198,6 +221,10 @@ public class OI {
 		return oiController1.getRawAxis(1);
 	}
 	
+	public double getEjectForce() {
+		return oiController2.getY();
+	}
+	
 	public boolean isShiftingEnabled() {
 		return !shiftDisableSwitch.get();
 	}
@@ -212,7 +239,7 @@ public class OI {
 	
 	
 	public void updateLED(OILED led, boolean state) {
-		boolean[] array = ledTable.getEntry("OI LEDs").getBooleanArray(new  boolean[]{false, false, false, false, false, false, false, false});
+		boolean[] array = ledTable.getEntry("OI LEDs").getBooleanArray(new boolean[]{false, false, false, false, false, false, false, false});
 		array[led.ordinal()] = state;
 		ledEntry.setBooleanArray(array);
 	}

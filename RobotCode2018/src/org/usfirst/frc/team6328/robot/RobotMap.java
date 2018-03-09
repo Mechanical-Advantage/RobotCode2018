@@ -68,7 +68,7 @@ public class RobotMap {
 	public static double robotWidth;
 	public static double robotLength;
 	public static final boolean tuningMode = false;
-	public static final RobotType robot = RobotType.ROBOT_2017;
+	public static final RobotType robot = RobotType.ORIGINAL_ROBOT_2018;
 	
 	public RobotMap() {
 		switch (robot) {
@@ -116,11 +116,20 @@ public class RobotMap {
 			elevatorGearSolenoid1 = 0;
 			elevatorGearSolenoid2 = 1;
 			elevatorGearPCM = 0;
+			elevatorBrakeSolenoid1 = 2;
+			elevatorBrakeSolenoid2 = 3;
+			elevatorBrakePCM = 1;
 			maxVelocityHigh = 7056; // ~230 in/s
 			maxVelocityLow = 3252; // 106 in/s
 			minVelocityLow = 100;
 			minVelocityHigh = 400;
 			elevatorLimitSwitch = 0;
+			intakeRetractPCM = 1;
+			intakeRetractSolenoid1 = 4;
+			intakeRetractSolenoid2 = 5;
+			intakeOpenPCM = 1;
+			intakeOpenSolenoid1 = 6;
+			intakeOpenSolenoid2 = 7;
 			intakeSensor = 1;
 			tapeSensor = 2;
 			robotLength = 32+6;
