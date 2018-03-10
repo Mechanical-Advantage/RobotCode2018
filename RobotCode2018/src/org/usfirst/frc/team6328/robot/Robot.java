@@ -24,6 +24,7 @@ import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator;
 import org.usfirst.frc.team6328.robot.subsystems.Intake;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
@@ -312,6 +313,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		Robot.driveSubsystem.enableBrakeMode(true);
+		Robot.driveSubsystem.switchGear(DriveGear.LOW);
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
