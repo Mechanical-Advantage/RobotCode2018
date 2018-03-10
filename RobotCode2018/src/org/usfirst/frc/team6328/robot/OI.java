@@ -10,11 +10,11 @@ package org.usfirst.frc.team6328.robot;
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
-import org.usfirst.frc.team6328.robot.commands.EjectCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.ExtendIntake;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
+import org.usfirst.frc.team6328.robot.commands.RetractIntake;
 import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
@@ -100,8 +100,8 @@ public class OI {
 	private Button driveToCube = new JoystickButton(rightController, 4);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
-	private Button highElevatorGear = new JoystickButton(oiController1, 10);
-	private Button lowElevatorGear = new JoystickButton(oiController1, 9);
+	private Button highElevatorGear = new JoystickButton(oiController1, 9);
+	private Button lowElevatorGear = new JoystickButton(oiController1, 10);
 	private Button climb = new JoystickButton(oiController1, 11);
 	
 	// Elevator Heights
@@ -119,6 +119,7 @@ public class OI {
 	
 	private Button startIntake = new JoystickButton(oiController2, 4);
 	private Button stopIntake = new JoystickButton(oiController2, 3);
+	private Button retractIntake = new JoystickButton(oiController2, 1);
 	private Button ejectCubeTime = new JoystickButton(oiController2, 5);
 	private Button toggleIntakeOpen = new JoystickButton(oiController2, 2);
 	
@@ -146,7 +147,8 @@ public class OI {
 		lowerArm.whenPressed(new ResetArm());
 		IntakeCube intakeCommand = new IntakeCube(false);
 		startIntake.whenPressed(intakeCommand);
-		stopIntake.cancelWhenPressed(new ExtendIntake());
+		stopIntake.whenPressed(new ExtendIntake());
+		retractIntake.whenPressed(new RetractIntake());
 		toggleIntakeOpen.whenPressed(new ToggleIntakeOpen());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
 		climb.whenPressed(new Climb());
@@ -222,7 +224,7 @@ public class OI {
 	}
 	
 	public double getEjectForce() {
-		return oiController2.getY();
+		return oiController2.getRawAxis(1)/2+0.5;
 	}
 	
 	public boolean isShiftingEnabled() {
