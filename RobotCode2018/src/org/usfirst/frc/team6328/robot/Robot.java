@@ -15,6 +15,7 @@ import java.util.StringJoiner;
 import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.CenterAuto;
+import org.usfirst.frc.team6328.robot.commands.CrossLine;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
@@ -225,7 +226,7 @@ public class Robot extends TimedRobot {
 		AutoPriority priority = autoPriorityChooser.getSelected();
 		boolean twoCubeEnabled = SmartDashboard.getBoolean("Enable 2nd Cube", true);
 		
-		Command crossLineCommand = new DriveDistanceOnHeading(120+12-RobotMap.robotLength, 0);
+		Command crossLineCommand = new CrossLine();
 		
 		switch (mode) {
 		case CROSS_LINE:
