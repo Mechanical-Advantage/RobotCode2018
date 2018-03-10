@@ -156,8 +156,10 @@ public class OI {
 		elevGround.whenPressed(new SetElevatorPosition(ElevatorPosition.GROUND));
 		elevSwitch.whenPressed(new SetElevatorPosition(ElevatorPosition.SWITCH));
 		elevDrive.whenPressed(new SetElevatorPosition(ElevatorPosition.DRIVE));
-		elevScaleL.whenPressed(new SetElevatorPosition(ElevatorPosition.SCALE_LOW));
-		elevScaleH.whenPressed(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+		elevScaleL.whileHeld(new SetElevatorPosition(ElevatorPosition.SCALE_LOW, false));
+		elevScaleL.whenReleased(new SetElevatorPosition(ElevatorPosition.DRIVE));
+		elevScaleH.whileHeld(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH, false));
+		elevScaleH.whenReleased(new SetElevatorPosition(ElevatorPosition.DRIVE));
 		elevClimbGrab.whenPressed(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
 	}
 	

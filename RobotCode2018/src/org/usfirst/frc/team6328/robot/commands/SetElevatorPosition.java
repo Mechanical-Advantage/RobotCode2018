@@ -14,14 +14,20 @@ public class SetElevatorPosition extends Command {
 	private static final double bangBangSpeed = 1;
 	
 	private ElevatorPosition targetPosition;
+	private boolean enableFinish;
 	private static final boolean motionMagic = false;
-
+	
 	public SetElevatorPosition(ElevatorPosition position) {
+		this(position, true);
+	}
+
+	public SetElevatorPosition(ElevatorPosition position, boolean enableFinish) {
 		super("SetElevatorPosition");
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.elevator);
 		targetPosition = position;
+		this.enableFinish = enableFinish;
 	}
 
 	// Called just before this Command runs the first time
@@ -45,7 +51,13 @@ public class SetElevatorPosition extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return /*(targetPosition == ElevatorPosition.GROUND ? Robot.elevator.getPosition() == 0 : */Robot.elevator.onTarget(Robot.elevator.getPositionTarget(targetPosition));
+		boolean value = Robot.elevator.onTarget(Robot.elevator.getPositionTarget(targetPosition));
+		if (enableFinish) {
+			return value;
+		} else if (value) {
+			Robot.elevator.holdPosition();
+		}
+		return false;
 	}
 
 	// Called once after isFinished returns true
