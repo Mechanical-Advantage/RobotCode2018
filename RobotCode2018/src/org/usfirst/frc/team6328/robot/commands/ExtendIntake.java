@@ -3,15 +3,17 @@ package org.usfirst.frc.team6328.robot.commands;
 import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 
 /**
  * Extends (un-retracts) the intake;
  */
-public class ExtendIntake extends InstantCommand {
+public class ExtendIntake extends TimedCommand {
+	
+	private static final double time = 0.75;
 
 	public ExtendIntake() {
-		super("ExtendIntake");
+		super("ExtendIntake", time);
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.intake);
@@ -23,6 +25,10 @@ public class ExtendIntake extends InstantCommand {
 		Robot.oi.updateLED(OILED.INTAKE_OFF, true);
 		Robot.oi.updateLED(OILED.INTAKE_ON, false);
 		Robot.oi.updateLED(OILED.INTAKE_RETRACT, false);
+		Robot.intake.intake();
 	}
 
+	protected void end() {
+		Robot.intake.stop();
+	}
 }
