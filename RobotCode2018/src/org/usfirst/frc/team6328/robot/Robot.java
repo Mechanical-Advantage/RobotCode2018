@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringJoiner;
 
+import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.CenterAuto;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
@@ -173,6 +174,7 @@ public class Robot extends TimedRobot {
 		if (driveSubsystem.getVelocityLeft() <= 2 && driveSubsystem.getVelocityRight() <= 2) {
 			Robot.driveSubsystem.enableBrakeMode(false);
 		}
+		Robot.oi.updateLED(OILED.CUBE_SENSE_3, joystickModeChooser.getSelected() != JoystickMode.SplitArcade);
 	}
 
 	/**
@@ -320,6 +322,10 @@ public class Robot extends TimedRobot {
 		// this line or comment it out.
 		if (autoCommand != null) {
 			autoCommand.cancel();
+		}
+		Robot.oi.updateLED(OILED.CUBE_SENSE_3, false);
+		if (joystickModeChooser.getSelected() != JoystickMode.SplitArcade) {
+			DriverStation.reportWarning("Not in split arcade mode", false);
 		}
 	}
 
