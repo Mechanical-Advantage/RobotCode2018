@@ -2,7 +2,6 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.RobotMap;
 
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 /**
@@ -27,9 +26,6 @@ public class CrossLine extends CommandGroup {
 		// e.g. if Command1 requires chassis, and Command2 requires arm,
 		// a CommandGroup containing them would require both the chassis and the
 		// arm.
-		Command intakeCommand = new IntakeCube(false);
-		addParallel(intakeCommand);
 		addSequential(new DriveDistanceOnHeading(120+12-RobotMap.robotLength, 0));
-		addSequential(new CancelCommand(intakeCommand));
 	}
 }
