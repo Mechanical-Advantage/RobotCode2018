@@ -53,8 +53,8 @@ public class Intake extends Subsystem {
 			ejectSpeed = -1;
 			intakeSpeedLocked = false;
 			ejectSpeedLocked = false;
-			invertLeft = false;
-			invertRight = true;
+			invertLeft = true;
+			invertRight = false;
 			enableCurrentLimit = true;
 			continuousCurrentLimit = 30;
 			peakCurrentLimit = 50;
