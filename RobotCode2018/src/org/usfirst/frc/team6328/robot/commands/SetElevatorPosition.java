@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetElevatorPosition extends Command {
 	
-	private static final double bangBangSpeed = 0.5;
+	private static final double bangBangSpeed = 1;
 	
 	private ElevatorPosition targetPosition;
 	private static final boolean motionMagic = false;
@@ -31,9 +31,9 @@ public class SetElevatorPosition extends Command {
 		if (motionMagic) {
 			Robot.elevator.setPosition(targetPositionInches);
 		} else {
-			if (targetPositionInches > Robot.elevator.getPosition()) {
+			if (targetPositionInches < Robot.elevator.getPosition()) {
 				Robot.elevator.driveOpenLoop(bangBangSpeed*-1);
-			} else if (targetPositionInches < Robot.elevator.getPosition()) {
+			} else if (targetPositionInches > Robot.elevator.getPosition()) {
 				Robot.elevator.driveOpenLoop(bangBangSpeed);
 			}
 		}
@@ -45,7 +45,7 @@ public class SetElevatorPosition extends Command {
 
 	// Make this return true when this Command no longer needs to run execute()
 	protected boolean isFinished() {
-		return Robot.elevator.onTarget(Robot.elevator.getPositionTarget(targetPosition));
+		return /*(targetPosition == ElevatorPosition.GROUND ? Robot.elevator.getPosition() == 0 : */Robot.elevator.onTarget(Robot.elevator.getPositionTarget(targetPosition));
 	}
 
 	// Called once after isFinished returns true

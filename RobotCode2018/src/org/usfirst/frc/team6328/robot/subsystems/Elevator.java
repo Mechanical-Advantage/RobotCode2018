@@ -49,7 +49,8 @@ public class Elevator extends Subsystem {
 	private static final int slowTopPoint = topSoftLimit-7000; // Native units
 	private static final int slowBottomPoint = 7000;
 	private static final double slowLimitSpeed = 0.2;
-	private static final double LEDRange = 3; // Range on both sides of position that LED turns on in
+	private static final double LEDRange = 2; // Range on both sides of position that LED turns on in
+	private static final int startingHeight = 22375; // Ticks
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -65,6 +66,7 @@ public class Elevator extends Subsystem {
 	boolean resetCompleted = false;
 	boolean limitEnabledLast = true;
 	
+	@SuppressWarnings("unused")
 	public Elevator() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster = new TalonSRX(RobotMap.elevatorMaster);
@@ -115,7 +117,6 @@ public class Elevator extends Subsystem {
 			talonMaster.configForwardSoftLimitThreshold(topSoftLimit, configTimeout);
 			talonMaster.configReverseSoftLimitThreshold(bottomSoftLimit, configTimeout);
 			talonMaster.configForwardSoftLimitEnable(true, configTimeout);
-			talonMaster.configReverseSoftLimitEnable(false, configTimeout);
 			
 			talonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 			
@@ -131,7 +132,14 @@ public class Elevator extends Subsystem {
 //			climbLock.set(Value.kReverse);
 			switchGear(ElevatorGear.HIGH);
 			
-			talonMaster.set(ControlMode.PercentOutput, resetSpeed);
+			if (startingHeight == 0) {
+				talonMaster.set(ControlMode.PercentOutput, resetSpeed);
+				talonMaster.configReverseSoftLimitEnable(false, configTimeout);
+			} else {
+				talonMaster.setSelectedSensorPosition(startingHeight, 0, configTimeout);
+				talonMaster.configReverseSoftLimitEnable(true, configTimeout);
+				resetCompleted = true;
+			}
 		}
 	}
 	
@@ -153,7 +161,9 @@ public class Elevator extends Subsystem {
 				talonMaster.neutralOutput();
 			}
 			talonMaster.setSelectedSensorPosition(0, 0, configTimeout);
-			talonMaster.configReverseSoftLimitEnable(true, configTimeout);
+			if (resetCompleted && startingHeight == 0) {
+				talonMaster.configReverseSoftLimitEnable(true, configTimeout);
+			}
 		}
 		if (resetCompleted && talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
@@ -203,7 +213,7 @@ public class Elevator extends Subsystem {
 	
 	public double getPosition() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			return talonMaster.getSelectedSensorPosition(0)/ticksPerRotation*distancePerRotation;
+			return (double) talonMaster.getSelectedSensorPosition(0)/(double) ticksPerRotation*distancePerRotation;
 		}
 		return 0;
 	}
@@ -214,7 +224,7 @@ public class Elevator extends Subsystem {
 
 	public boolean onTarget(double target) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			return Math.abs(getPosition()-targetPosition) <= allowableError && talonMaster.getControlMode() == ControlMode.MotionMagic;
+			return Math.abs(getPosition()-target) <= allowableError;
 		}
 		return false;
 	}
@@ -226,7 +236,7 @@ public class Elevator extends Subsystem {
 	public boolean holdPosition() {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
-			brake.set(Value.kForward);
+//			brake.set(Value.kForward);
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
 			return true;
 		} else {
@@ -309,15 +319,15 @@ public class Elevator extends Subsystem {
 		case GROUND:
 			return 0;
 		case SCALE_HIGH:
-			return 74;
+			return (double) 56375/(double) ticksPerRotation*distancePerRotation;
 		case SCALE_LOW:
-			return 50;
+			return (double) 43414/(double) ticksPerRotation*distancePerRotation;
 		case SCALE_MID:
 			return 62;
 		case SWITCH:
-			return 20;
+			return (double) 18469/(double) ticksPerRotation*distancePerRotation;
 		case DRIVE:
-			return 30;
+			return (double) 22121/(double) ticksPerRotation*distancePerRotation;
 		default:
 			return 0;
 		}
