@@ -9,18 +9,30 @@ import edu.wpi.first.wpilibj.command.TimedCommand;
 public class EjectCubeForTime extends TimedCommand {
 	
 	private static final double time = 0.5;
-
+	
+	private double speed;
+	
 	public EjectCubeForTime() {
+		super(time);
+		requires(Robot.intake);
+	}
+
+	public EjectCubeForTime(double speed) {
 		super(time);
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.intake);
+		this.speed = speed;
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.intake.setRetracted(false);
-		Robot.intake.eject();
+		if (speed == 0) {
+			Robot.intake.eject();
+		} else {
+			Robot.intake.eject(speed);
+		}
 	}
 
 	// Called repeatedly when this Command is scheduled to run

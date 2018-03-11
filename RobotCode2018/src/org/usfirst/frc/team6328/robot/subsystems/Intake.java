@@ -108,9 +108,13 @@ public class Intake extends Subsystem {
 	}
 
 	public void eject() {
+		eject(ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
+	}
+	
+	public void eject(double speed) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
-			rightTalon.set(ControlMode.PercentOutput, ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
+			leftTalon.set(ControlMode.PercentOutput, speed);
+			rightTalon.set(ControlMode.PercentOutput, speed);
 		}
 	}
 

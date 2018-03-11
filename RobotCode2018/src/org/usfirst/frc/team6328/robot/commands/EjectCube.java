@@ -8,18 +8,30 @@ import edu.wpi.first.wpilibj.command.Command;
  * Eject the cube while the command is running
  */
 public class EjectCube extends Command {
-
+	
+	private double speed;
+	
 	public EjectCube() {
+		super("EjectCube");
+		requires(Robot.intake);
+	}
+
+	public EjectCube(double speed) {
 		super("EjectCube");
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires(chassis);
 		requires(Robot.intake);
+		this.speed = speed;
 	}
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		Robot.intake.setRetracted(false);
-		Robot.intake.eject();
+		if (speed == 0) {
+			Robot.intake.eject();
+		} else {
+			Robot.intake.eject(speed);
+		}
 	}
 
 	// Called repeatedly when this Command is scheduled to run
