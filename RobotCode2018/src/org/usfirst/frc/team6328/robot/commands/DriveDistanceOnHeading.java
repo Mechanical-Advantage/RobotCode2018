@@ -37,11 +37,11 @@ public class DriveDistanceOnHeading extends Command {
     static final double kTurnCorrectionAmount = 0.2;
     
     // PID output will be limited to negative to positive this. Multiplied by RobotMap maxVelocity to get target
-    static final double kMaxOutput = 0.9;
+    static final double kMaxOutput = /*0.9*/0.5;
     // Limit change in one iteration to this - % of max output
-    static final double kMaxChange = 0.03;
+    static final double kMaxChange = /*0.03*/0.01;
     // If robot does not move for this many cycles, give up
-    static final int stuckCycleThreshold = 25;
+    static final int stuckCycleThreshold = 50;
     // The maximum distance the robot can move in the number of cycles above to be considered stuck
     static final double stickDistance = 0.5;
     
