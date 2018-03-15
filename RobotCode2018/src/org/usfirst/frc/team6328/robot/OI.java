@@ -132,10 +132,10 @@ public class OI {
 		
 		frontCameraButton.whenPressed(new SetCamera(true));
 		rearCameraButton.whenPressed(new SetCamera(false));
-		joysticksForward.whenPressed(new SetCamera(true));
-		joysticksBackward.whenPressed(new SetCamera(false));
-		joysticksForward.whenPressed(new ReverseJoysticks(false));
-		joysticksBackward.whenPressed(new ReverseJoysticks(true));
+//		joysticksForward.whenPressed(new SetCamera(true));
+//		joysticksBackward.whenPressed(new SetCamera(false));
+//		joysticksForward.whenPressed(new ReverseJoysticks(false));
+//		joysticksBackward.whenPressed(new ReverseJoysticks(true));
 		driveToCube.whileHeld(new DriveToCube());
 		highGear.whenPressed(new SwitchGear(DriveGear.HIGH));
 		lowGear.whenPressed(new SwitchGear(DriveGear.LOW));
