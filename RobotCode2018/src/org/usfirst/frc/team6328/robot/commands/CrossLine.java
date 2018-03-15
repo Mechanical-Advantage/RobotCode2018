@@ -26,6 +26,6 @@ public class CrossLine extends CommandGroup {
 		// e.g. if Command1 requires chassis, and Command2 requires arm,
 		// a CommandGroup containing them would require both the chassis and the
 		// arm.
-		addSequential(new DriveDistanceOnHeading(120+12-RobotMap.robotLength, 0));
+		addSequential(new DriveDistanceOnHeading(168+12-RobotMap.robotLength, 0));
 	}
 }
