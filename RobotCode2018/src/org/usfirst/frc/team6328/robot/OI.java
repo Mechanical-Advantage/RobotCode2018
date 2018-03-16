@@ -16,7 +16,6 @@ import org.usfirst.frc.team6328.robot.commands.ExtendIntake;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.RetractIntake;
-import org.usfirst.frc.team6328.robot.commands.ReverseJoysticks;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
@@ -89,7 +88,9 @@ public class OI {
 	
 	private Button frontCameraButton = new JoystickButton(rightController, 3);
 	private Button rearCameraButton = new JoystickButton(rightController, 2);
+	@SuppressWarnings("unused")
 	private Button joysticksForward = new JoystickButton(leftController, 3);
+	@SuppressWarnings("unused")
 	private Button joysticksBackward = new JoystickButton(leftController, 2);
 	private Button sniperMode = new JoystickButton(rightController, 1);
 	private Button toggleGear = new JoystickButton(leftController, 1);

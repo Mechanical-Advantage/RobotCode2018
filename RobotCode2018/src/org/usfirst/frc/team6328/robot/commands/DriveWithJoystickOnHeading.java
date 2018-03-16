@@ -1,8 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.Robot;
-import org.usfirst.frc.team6328.robot.RobotMap;
-
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.command.Command;
@@ -52,8 +50,6 @@ public class DriveWithJoystickOnHeading extends Command {
     	turnController.setOutputRange(-1, 1);
         turnController.setInputRange(-180.0f,  180.0f);
         turnController.setOutputRange(-1.0, 1.0);
-        turnController.setAbsoluteTolerance(kToleranceDegrees);
-        turnController.setToleranceBuffer(kToleranceBufSamplesAngle);
         turnController.setContinuous(true);
         turnController.setSetpoint(targetAngle);
         turnController.enable();

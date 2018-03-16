@@ -153,6 +153,7 @@ public class Elevator extends Subsystem {
 		setDefaultCommand(new JoystickElevatorControl());
 	}
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void periodic() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && getLimitSwitch()) {
