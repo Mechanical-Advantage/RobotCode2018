@@ -7,6 +7,7 @@
 
 package org.usfirst.frc.team6328.robot;
 
+import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
@@ -113,9 +114,9 @@ public class OI {
 	private Button elevClimbGrab = new JoystickButton(oiController1, 1);
 	
 	// Everybot
-	private Button scoreCube = new JoystickButton(oiController2, 1);
-	private Button raiseArm = new JoystickButton(oiController2, 2);
-	private Button lowerArm = new JoystickButton(oiController2, 3);
+	private Button scoreCube = new JoystickButton(oiController1, 11);
+	private Button raiseArm = new JoystickButton(oiController1, 9);
+	private Button lowerArm = new JoystickButton(oiController1, 10);
 	
 	private Button startIntake = new JoystickButton(oiController2, 4);
 	private Button stopIntake = new JoystickButton(oiController2, 3);
@@ -142,16 +143,20 @@ public class OI {
 		highElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.HIGH));
 		lowElevatorGear.whenPressed(new SwitchElevatorGear(ElevatorGear.LOW));
 		toggleGear.whenPressed(new ToggleGear());
-		scoreCube.whenPressed(new ArmMoveAndReset());
-		raiseArm.whenPressed(new ThrowCube());
-		lowerArm.whenPressed(new ResetArm());
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
+			scoreCube.whenPressed(new ArmMoveAndReset());
+			raiseArm.whenPressed(new ThrowCube());
+			lowerArm.whenPressed(new ResetArm());
+		}
 		IntakeCube intakeCommand = new IntakeCube(false);
 		startIntake.whenPressed(intakeCommand);
 		stopIntake.whenPressed(new ExtendIntake());
 		retractIntake.whenPressed(new RetractIntake());
 		toggleIntakeOpen.whenPressed(new ToggleIntakeOpen());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
-		climb.whenPressed(new Climb());
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			climb.whenPressed(new Climb());
+		}
 		
 		elevGround.whenPressed(new SetElevatorPosition(ElevatorPosition.GROUND));
 		elevSwitch.whenPressed(new SetElevatorPosition(ElevatorPosition.SWITCH));

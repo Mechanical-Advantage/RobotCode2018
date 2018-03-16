@@ -68,7 +68,7 @@ public class RobotMap {
 	public static double robotWidth;
 	public static double robotLength;
 	public static final boolean tuningMode = false;
-	public static final RobotType robot = RobotType.ORIGINAL_ROBOT_2018;
+	public static final RobotType robot = RobotType.EVERYBOT_2018;
 	
 	public RobotMap() {
 		switch (robot) {

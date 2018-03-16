@@ -177,11 +177,13 @@ public class Elevator extends Subsystem {
 			limitEnabledLast = Robot.oi.isElevatorLimitEnabled();
 		}
 		
-		for (int i = 0; i < ElevatorPosition.values().length; i++) {
-			ElevatorPosition position = ElevatorPosition.values()[i];
-			OILED led = position.getLED();
-			if (led != null) {
-				Robot.oi.updateLED(led, Math.abs(getPosition()-getPositionTarget(position)) <= LEDRange);
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			for (int i = 0; i < ElevatorPosition.values().length; i++) {
+				ElevatorPosition position = ElevatorPosition.values()[i];
+				OILED led = position.getLED();
+				if (led != null) {
+					Robot.oi.updateLED(led, Math.abs(getPosition()-getPositionTarget(position)) <= LEDRange);
+				}
 			}
 		}
 	}

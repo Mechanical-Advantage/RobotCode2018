@@ -36,7 +36,6 @@ import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
@@ -144,10 +143,6 @@ public class Robot extends TimedRobot {
 			generateCommand.setRunWhenDisabled(true);
 			generateCommand.start();
 		}
-		// Force compressor to run by creating a pneumatics object
-		@SuppressWarnings("unused")
-		Compressor c = new Compressor();
-		cameraSubsystem.useFrontCamera();
 	}
 	
 	@Override

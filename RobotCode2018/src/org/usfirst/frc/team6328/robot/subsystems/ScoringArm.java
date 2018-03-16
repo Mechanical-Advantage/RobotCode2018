@@ -1,5 +1,7 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.OI.OILED;
+import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.ArmJoystickControl;
@@ -47,6 +49,14 @@ public class ScoringArm extends Subsystem {
 			armTalon.configPeakCurrentDuration(peakCurrentDuration, configTimeout);
 			armTalon.enableCurrentLimit(enableCurrentLimit);
 			armTalon.setNeutralMode(brakeMode);
+		}
+	}
+	
+	@Override
+	public void periodic() {
+		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
+			Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, getForwardLimit());
+			Robot.oi.updateLED(OILED.ELEVATOR_LOW_GEAR, getBackwardLimit());
 		}
 	}
 

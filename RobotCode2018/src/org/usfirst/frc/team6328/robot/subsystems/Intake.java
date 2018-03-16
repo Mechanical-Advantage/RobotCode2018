@@ -142,7 +142,8 @@ public class Intake extends Subsystem {
 	
 	public boolean getRetracted() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			return retractSolenoid.get() == Value.kReverse;
+			// Solenoid is not driven at beginning of match but is retracted, so check if not extended
+			return retractSolenoid.get() != Value.kForward;
 		}
 		return false;
 	}
