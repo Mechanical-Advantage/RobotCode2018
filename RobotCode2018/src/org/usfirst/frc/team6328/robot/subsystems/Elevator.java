@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Elevator subsystem
@@ -186,6 +187,20 @@ public class Elevator extends Subsystem {
 					Robot.oi.updateLED(led, Math.abs(getPosition()-getPositionTarget(position)) <= LEDRange);
 				}
 			}
+			if (RobotMap.tuningMode) {
+				SmartDashboard.putNumber("Elevator Master Current", talonMaster.getOutputCurrent());
+				SmartDashboard.putNumber("Elevator Slave 1 Current", talonSlave1.getOutputCurrent());
+				SmartDashboard.putNumber("Elevator Slave 2 Current", talonSlave2.getOutputCurrent());
+				SmartDashboard.putNumber("Elevator Slave 3 Current", talonSlave3.getOutputCurrent());
+				SmartDashboard.putNumber("Elevator Master Out Voltage", talonMaster.getMotorOutputVoltage());
+				SmartDashboard.putNumber("Elevator Slave 1 Out Voltage", talonSlave1.getMotorOutputVoltage());
+				SmartDashboard.putNumber("Elevator Slave 2 Out Voltage", talonSlave2.getMotorOutputVoltage());
+				SmartDashboard.putNumber("Elevator Slave 3 Out Voltage", talonSlave3.getMotorOutputVoltage());
+				SmartDashboard.putNumber("Elevator Master Input Voltage", talonMaster.getBusVoltage());
+				SmartDashboard.putNumber("Elevator Slave 1 Input Voltage", talonSlave1.getBusVoltage());
+				SmartDashboard.putNumber("Elevator Slave 2 Input Voltage", talonSlave2.getBusVoltage());
+				SmartDashboard.putNumber("Elevator Slave 3 Input Voltage", talonSlave3.getBusVoltage());
+			}
 		}
 	}
 	
@@ -334,6 +349,56 @@ public class Elevator extends Subsystem {
 		default:
 			return 0;
 		}
+	}
+	
+	public void setDisabledSlave(int slave) {
+		switch (slave) {
+		case 1:
+			enableSlave(2);
+			enableSlave(3);
+			disableSlave(1);
+			break;
+		case 2:
+			enableSlave(1);
+			enableSlave(3);
+			disableSlave(2);
+			break;
+		case 3:
+			enableSlave(1);
+			enableSlave(2);
+			disableSlave(3);
+			break;
+		}
+	}
+	
+	public void enableAllSlaves() {
+		enableSlave(1);
+		enableSlave(2);
+		enableSlave(3);
+	}
+	
+	private TalonSRX getSlave(int slave) {
+		switch (slave) {
+		case 1:
+			return talonSlave1;
+		case 2:
+			return talonSlave2;
+		case 3:
+			return talonSlave3;
+		}
+		return null;
+	}
+	
+	private void enableSlave(int slave) {
+		TalonSRX talonSlave = getSlave(slave);
+		talonSlave.setNeutralMode(brakeMode);
+		talonSlave.follow(talonMaster);
+	}
+	
+	private void disableSlave(int slave) {
+		TalonSRX talonSlave = getSlave(slave);
+		talonSlave.setNeutralMode(NeutralMode.Coast);
+		talonSlave.neutralOutput();
 	}
 	
 	public enum ElevatorGear {

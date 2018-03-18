@@ -16,8 +16,10 @@ import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.CenterAuto;
 import org.usfirst.frc.team6328.robot.commands.CrossLine;
+import org.usfirst.frc.team6328.robot.commands.DisableElevatorSlave;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
+import org.usfirst.frc.team6328.robot.commands.EnableAllElevatorSlaves;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
 import org.usfirst.frc.team6328.robot.commands.SmartSideAuto;
@@ -143,6 +145,11 @@ public class Robot extends TimedRobot {
 			generateCommand.setRunWhenDisabled(true);
 			generateCommand.start();
 		}
+		
+		SmartDashboard.putData("Disable Elevator Slave 1", new DisableElevatorSlave(1));
+		SmartDashboard.putData("Disable Elevator Slave 2", new DisableElevatorSlave(2));
+		SmartDashboard.putData("Disable Elevator Slave 3", new DisableElevatorSlave(3));
+		SmartDashboard.putData("Enable all elevator slaves", new EnableAllElevatorSlaves());
 	}
 	
 	@Override
