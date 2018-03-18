@@ -67,23 +67,14 @@ public class OI {
 	// until it is finished as determined by it's isFinished method.
 	// button.whenReleased(new ExampleCommand());
 	
-	/*
-	 * Controls needed:
-	 * Elevator gear switch
-	 * Elevator joystick
-	 * Elevator positions
-	 * Intake manual force intake
-	 * Intake manual grab
-	 * Intake eject
-	 * Intake normal intake+hold? (Might also be default command)
-	 */
+	private static final double ejectSliderMin = 0.3;
+	
 	private boolean joysticksReversed = false;
 	
 	// map left stick to ID 0 and right to ID 1 in driver station
 	private Joystick leftController = new Joystick(0);
 	private Joystick rightController = new Joystick(1);
 	private Joystick oiController1 = new Joystick(2);
-	@SuppressWarnings("unused")
 	private Joystick oiController2 = new Joystick(3);
 	
 	private Button frontCameraButton = new JoystickButton(rightController, 3);
@@ -232,7 +223,7 @@ public class OI {
 	}
 	
 	public double getEjectForce() {
-		return oiController2.getRawAxis(1)/2+0.5;
+		return map(oiController2.getRawAxis(1), -1, 1, ejectSliderMin, 1);
 	}
 	
 	public boolean isShiftingEnabled() {
@@ -257,5 +248,10 @@ public class OI {
 	public enum OILED {
 		CUBE_SENSE_1, CUBE_SENSE_2, CUBE_SENSE_3, INTAKE_OPEN, INTAKE_RETRACT, INTAKE_OFF, INTAKE_ON, ELEVATOR_LOW_GEAR, ELEVATOR_HIGH_GEAR,
 		ELEVATOR_BRAKE, CLIMB, ELEVATOR_GROUND, ELEVATOR_SWITCH, ELEVATOR_DRIVE, ELEVATOR_SCALE_LOW, ELEVATOR_SCALE_HIGH, CLIMB_GRAB
+	}
+	
+	private double map(double x, double in_min, double in_max, double out_min, double out_max)
+	{
+	  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
 }
