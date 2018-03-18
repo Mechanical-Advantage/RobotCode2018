@@ -16,9 +16,11 @@ import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.CenterAuto;
 import org.usfirst.frc.team6328.robot.commands.CrossLine;
+import org.usfirst.frc.team6328.robot.commands.DisableDriveSlave;
 import org.usfirst.frc.team6328.robot.commands.DisableElevatorSlave;
 import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
+import org.usfirst.frc.team6328.robot.commands.EnableAllDriveSlaves;
 import org.usfirst.frc.team6328.robot.commands.EnableAllElevatorSlaves;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
@@ -29,6 +31,7 @@ import org.usfirst.frc.team6328.robot.commands.VelocityPIDTuner;
 import org.usfirst.frc.team6328.robot.subsystems.CameraSystem;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrainSlaveDisableTest;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator;
 import org.usfirst.frc.team6328.robot.subsystems.Intake;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
@@ -61,7 +64,7 @@ import openrio.powerup.MatchData.OwnedSide;
 public class Robot extends TimedRobot {
 	public static final RobotMap robotMap = new RobotMap();
 	
-	public static final DriveTrain driveSubsystem = new DriveTrain();
+	public static final DriveTrainSlaveDisableTest driveSubsystem = new DriveTrainSlaveDisableTest();
 	public static final Elevator elevator = new Elevator();
 	public static final Intake intake = new Intake();
 	public static final ScoringArm scoringArm = new ScoringArm();
@@ -150,6 +153,10 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putData("Disable Elevator Slave 2", new DisableElevatorSlave(2));
 		SmartDashboard.putData("Disable Elevator Slave 3", new DisableElevatorSlave(3));
 		SmartDashboard.putData("Enable all elevator slaves", new EnableAllElevatorSlaves());
+		SmartDashboard.putData("Disable Drive Slave 1", new DisableDriveSlave(1));
+		SmartDashboard.putData("Disable Drive Slave 2", new DisableDriveSlave(2));
+		SmartDashboard.putData("Disable Drive Slave 3", new DisableDriveSlave(3));
+		SmartDashboard.putData("Enable all Drive slaves", new EnableAllDriveSlaves());
 	}
 	
 	@Override
