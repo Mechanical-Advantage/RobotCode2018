@@ -104,6 +104,8 @@ public class Intake extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
 			rightTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
+			Robot.oi.updateLED(OILED.INTAKE_ON, true);
+			Robot.oi.updateLED(OILED.INTAKE_OFF, false);
 		}
 	}
 
@@ -122,6 +124,8 @@ public class Intake extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.neutralOutput();
 			rightTalon.neutralOutput();
+			Robot.oi.updateLED(OILED.INTAKE_ON, false);
+			Robot.oi.updateLED(OILED.INTAKE_OFF, true);
 		}
 	}
 
@@ -137,6 +141,7 @@ public class Intake extends Subsystem {
 	public void setRetracted(boolean retracted) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			retractSolenoid.set(retracted ? Value.kReverse : Value.kForward);
+			Robot.oi.updateLED(OILED.INTAKE_RETRACT, retracted);
 		}
 	}
 	

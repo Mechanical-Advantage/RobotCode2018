@@ -1,6 +1,5 @@
 package org.usfirst.frc.team6328.robot.commands;
 
-import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
@@ -24,9 +23,6 @@ public class ExtendIntake extends TimedCommand {
 	// Called once when the command executes
 	protected void initialize() {
 		Robot.intake.setRetracted(false);
-		Robot.oi.updateLED(OILED.INTAKE_OFF, true);
-		Robot.oi.updateLED(OILED.INTAKE_ON, false);
-		Robot.oi.updateLED(OILED.INTAKE_RETRACT, false);
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.intake.getRetracted()) {
 			Robot.intake.intake();
 		}

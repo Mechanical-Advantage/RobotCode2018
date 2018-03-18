@@ -12,10 +12,8 @@ import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
-import org.usfirst.frc.team6328.robot.commands.ExtendIntake;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
-import org.usfirst.frc.team6328.robot.commands.RetractIntake;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
@@ -23,6 +21,7 @@ import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.commands.ToggleIntakeOpen;
+import org.usfirst.frc.team6328.robot.commands.ToggleIntakeRetracted;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
@@ -142,8 +141,8 @@ public class OI {
 		}
 		IntakeCube intakeCommand = new IntakeCube(false);
 		startIntake.whenPressed(intakeCommand);
-		stopIntake.whenPressed(new ExtendIntake());
-		retractIntake.whenPressed(new RetractIntake());
+		stopIntake.cancelWhenPressed(intakeCommand);
+		retractIntake.whenPressed(new ToggleIntakeRetracted());
 		toggleIntakeOpen.whenPressed(new ToggleIntakeOpen());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
