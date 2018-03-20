@@ -111,6 +111,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
 			addSequential(new DriveToCube());
+			addParallel(new IntakeCube(false));
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new EjectCube(switchFrontSpeed));
