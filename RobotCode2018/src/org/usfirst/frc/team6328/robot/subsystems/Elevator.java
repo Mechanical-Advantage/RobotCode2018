@@ -8,6 +8,8 @@ import org.usfirst.frc.team6328.robot.commands.JoystickElevatorControl;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -108,6 +110,21 @@ public class Elevator extends Subsystem {
 			
 			talonMaster.configNominalOutputForward(nominalOutput, configTimeout);
 			talonMaster.configNominalOutputReverse(nominalOutput, configTimeout);
+			talonSlave1.configNominalOutputForward(nominalOutput, configTimeout);
+			talonSlave1.configNominalOutputReverse(nominalOutput, configTimeout);
+			talonSlave2.configNominalOutputForward(nominalOutput, configTimeout);
+			talonSlave2.configNominalOutputReverse(nominalOutput, configTimeout);
+			talonSlave3.configNominalOutputForward(nominalOutput, configTimeout);
+			talonSlave3.configNominalOutputReverse(nominalOutput, configTimeout);
+			
+			talonMaster.configPeakOutputForward(1, configTimeout);
+			talonMaster.configPeakOutputReverse(-1, configTimeout);
+			talonSlave1.configPeakOutputForward(1, configTimeout);
+			talonSlave1.configPeakOutputReverse(-1, configTimeout);
+			talonSlave2.configPeakOutputForward(1, configTimeout);
+			talonSlave2.configPeakOutputReverse(-1, configTimeout);
+			talonSlave3.configPeakOutputForward(1, configTimeout);
+			talonSlave3.configPeakOutputReverse(-1, configTimeout);
 			
 			setPID(0, kPLow, kILow, kDLow, kFLow, kIZoneLow);
 			setPID(1, kPHigh, kIHigh, kDHigh, kFHigh, kIZoneHigh);
@@ -118,6 +135,22 @@ public class Elevator extends Subsystem {
 			talonMaster.configForwardSoftLimitThreshold(topSoftLimit, configTimeout);
 			talonMaster.configReverseSoftLimitThreshold(bottomSoftLimit, configTimeout);
 			talonMaster.configForwardSoftLimitEnable(true, configTimeout);
+			
+			talonSlave1.configForwardSoftLimitEnable(false, configTimeout);
+			talonSlave2.configForwardSoftLimitEnable(false, configTimeout);
+			talonSlave3.configForwardSoftLimitEnable(false, configTimeout);
+			talonSlave1.configReverseSoftLimitEnable(false, configTimeout);
+			talonSlave2.configReverseSoftLimitEnable(false, configTimeout);
+			talonSlave3.configReverseSoftLimitEnable(false, configTimeout);
+			
+			talonMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave1.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave2.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave3.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonMaster.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave1.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave2.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
+			talonSlave3.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.NormallyOpen, configTimeout);
 			
 			talonMaster.configSelectedFeedbackSensor(encoderType, 0, configTimeout);
 			
@@ -174,8 +207,7 @@ public class Elevator extends Subsystem {
 		}
 		
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isElevatorLimitEnabled() != limitEnabledLast && resetCompleted) {
-			talonMaster.configForwardSoftLimitEnable(Robot.oi.isElevatorLimitEnabled(), configTimeout);
-			talonMaster.configReverseSoftLimitEnable(Robot.oi.isElevatorLimitEnabled(), configTimeout);
+			talonMaster.overrideSoftLimitsEnable(Robot.oi.isElevatorLimitEnabled());
 			limitEnabledLast = Robot.oi.isElevatorLimitEnabled();
 		}
 		
