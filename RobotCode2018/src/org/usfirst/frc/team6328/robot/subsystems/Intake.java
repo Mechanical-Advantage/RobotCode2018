@@ -40,6 +40,7 @@ public class Intake extends Subsystem {
 	DoubleSolenoid openSolenoid;
 	DigitalInput proximitySensor;
 	DigitalGlitchFilter sensorFilter;
+	boolean cubeSensedLast = false;
 
 	public Intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -97,7 +98,11 @@ public class Intake extends Subsystem {
 	}
 	
 	public void periodic() {
-		Robot.oi.updateLED(OILED.CUBE_SENSE_2, getSensor());
+		boolean sensor = getSensor();
+		if (sensor != cubeSensedLast) {
+			Robot.oi.updateLED(OILED.CUBE_SENSE_2, sensor);
+			cubeSensedLast = sensor;
+		}
 	}
 
 	public void intake() {
