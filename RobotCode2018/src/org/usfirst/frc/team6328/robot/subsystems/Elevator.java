@@ -68,6 +68,7 @@ public class Elevator extends Subsystem {
 	double targetPosition;
 	boolean resetCompleted = false;
 	boolean limitEnabledLast = true;
+	boolean elevatorEnabledLast = true;
 	
 	@SuppressWarnings("unused")
 	public Elevator() {
@@ -200,9 +201,9 @@ public class Elevator extends Subsystem {
 				talonMaster.configReverseSoftLimitEnable(true, configTimeout);
 			}
 		}
-		if (resetCompleted && talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {
+		if (resetCompleted && Robot.oi.isElevatorLimitEnabled() && Robot.oi.isElevatorEnabled() && talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && talonMaster.getMotorOutputPercent() >= slowLimitSpeed) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed);
-		} else if (resetCompleted && talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1 && Robot.oi.isElevatorLimitEnabled()) {
+		} else if (resetCompleted && Robot.oi.isElevatorLimitEnabled() && Robot.oi.isElevatorEnabled() && talonMaster.getSelectedSensorPosition(0) <= slowBottomPoint && talonMaster.getMotorOutputPercent() <= slowLimitSpeed*-1) {
 			talonMaster.set(ControlMode.PercentOutput, slowLimitSpeed*-1);
 		}
 		
@@ -212,15 +213,20 @@ public class Elevator extends Subsystem {
 		}
 		
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			for (int i = 0; i < ElevatorPosition.values().length; i++) {
+			if (!Robot.oi.isElevatorEnabled() != elevatorEnabledLast) {
+				talonMaster.neutralOutput();
+				elevatorEnabledLast = Robot.oi.isElevatorEnabled();
+			}
+			
+			/*for (int i = 0; i < ElevatorPosition.values().length; i++) {
 				ElevatorPosition position = ElevatorPosition.values()[i];
 				OILED led = position.getLED();
 				if (led != null) {
 					Robot.oi.updateLED(led, Math.abs(getPosition()-getPositionTarget(position)) <= LEDRange);
 				}
-			}
+			}*/
 			if (RobotMap.tuningMode) {
-				SmartDashboard.putNumber("Elevator Master Current", talonMaster.getOutputCurrent());
+				/*SmartDashboard.putNumber("Elevator Master Current", talonMaster.getOutputCurrent());
 				SmartDashboard.putNumber("Elevator Slave 1 Current", talonSlave1.getOutputCurrent());
 				SmartDashboard.putNumber("Elevator Slave 2 Current", talonSlave2.getOutputCurrent());
 				SmartDashboard.putNumber("Elevator Slave 3 Current", talonSlave3.getOutputCurrent());
@@ -231,7 +237,7 @@ public class Elevator extends Subsystem {
 				SmartDashboard.putNumber("Elevator Master Input Voltage", talonMaster.getBusVoltage());
 				SmartDashboard.putNumber("Elevator Slave 1 Input Voltage", talonSlave1.getBusVoltage());
 				SmartDashboard.putNumber("Elevator Slave 2 Input Voltage", talonSlave2.getBusVoltage());
-				SmartDashboard.putNumber("Elevator Slave 3 Input Voltage", talonSlave3.getBusVoltage());
+				SmartDashboard.putNumber("Elevator Slave 3 Input Voltage", talonSlave3.getBusVoltage());*/
 			}
 		}
 	}
@@ -250,7 +256,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the target position was actually applied
 	 */
 	public boolean setPosition(double position) {
-		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isElevatorEnabled()) {
 			brake.set(Value.kReverse);
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
@@ -300,7 +306,7 @@ public class Elevator extends Subsystem {
 	 * @return Whether the change succeeded
 	 */
 	public boolean driveOpenLoop(double percent) {
-		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0)) {
+		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && !(getLimitSwitch() && percent < 0) && Robot.oi.isElevatorEnabled()) {
 			brake.set(Value.kReverse);
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			if (talonMaster.getSelectedSensorPosition(0) >= slowTopPoint && percent >= slowLimitSpeed && Robot.oi.isElevatorLimitEnabled()) {

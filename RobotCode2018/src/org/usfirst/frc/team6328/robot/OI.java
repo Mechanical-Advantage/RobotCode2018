@@ -89,6 +89,7 @@ public class OI {
 	private Button shiftDisableSwitch = new JoystickButton(oiController2, 8);
 	private Button cubeSenseDisableSwitch = new JoystickButton(oiController2, 7);
 	private Button elevatorLimitDisableSwitch = new JoystickButton(oiController1, 12);
+	private Button elevatorDisableSwitch = new JoystickButton(oiController2, 6);
 	private Button driveToCube = new JoystickButton(rightController, 4);
 	private Button highGear = new JoystickButton(leftController, 5);
 	private Button lowGear = new JoystickButton(leftController, 4);
@@ -235,6 +236,10 @@ public class OI {
 	
 	public boolean isElevatorLimitEnabled() {
 		return !elevatorLimitDisableSwitch.get();
+	}
+	
+	public boolean isElevatorEnabled() {
+		return !elevatorDisableSwitch.get();
 	}
 	
 	
