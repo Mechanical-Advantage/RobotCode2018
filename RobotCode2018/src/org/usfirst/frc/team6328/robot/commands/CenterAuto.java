@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -20,6 +21,7 @@ public class CenterAuto extends CommandGroup {
 			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
+			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(ejectSpeed));
 		}
 	}
