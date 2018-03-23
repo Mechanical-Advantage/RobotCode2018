@@ -146,10 +146,12 @@ public class Robot extends TimedRobot {
 			generateCommand.start();
 		}
 		
-		SmartDashboard.putData("Disable Elevator Slave 1", new DisableElevatorSlave(1));
-		SmartDashboard.putData("Disable Elevator Slave 2", new DisableElevatorSlave(2));
-		SmartDashboard.putData("Disable Elevator Slave 3", new DisableElevatorSlave(3));
-		SmartDashboard.putData("Enable all elevator slaves", new EnableAllElevatorSlaves());
+		if (RobotMap.tuningMode) {
+			SmartDashboard.putData("Disable Elevator Slave 1", new DisableElevatorSlave(1));
+			SmartDashboard.putData("Disable Elevator Slave 2", new DisableElevatorSlave(2));
+			SmartDashboard.putData("Disable Elevator Slave 3", new DisableElevatorSlave(3));
+			SmartDashboard.putData("Enable all elevator slaves", new EnableAllElevatorSlaves());
+		}
 	}
 	
 	@Override
