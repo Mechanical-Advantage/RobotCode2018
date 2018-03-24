@@ -10,9 +10,11 @@ package org.usfirst.frc.team6328.robot;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.Climb;
+import org.usfirst.frc.team6328.robot.commands.CloseIntake;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
+import org.usfirst.frc.team6328.robot.commands.OpenIntake;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
@@ -114,7 +116,7 @@ public class OI {
 	private Button stopIntake = new JoystickButton(oiController2, 3);
 	private Button retractIntake = new JoystickButton(oiController2, 1);
 	private Button ejectCubeTime = new JoystickButton(oiController2, 5);
-	private Button toggleIntakeOpen = new JoystickButton(oiController2, 2);
+	private Button intakeOpen = new JoystickButton(oiController2, 2);
 	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
@@ -144,7 +146,8 @@ public class OI {
 		startIntake.whenPressed(intakeCommand);
 		stopIntake.cancelWhenPressed(intakeCommand);
 		retractIntake.whenPressed(new ToggleIntakeRetracted());
-		toggleIntakeOpen.whenPressed(new ToggleIntakeOpen());
+		intakeOpen.whenPressed(new OpenIntake());
+		intakeOpen.whenReleased(new CloseIntake());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			climb.whenPressed(new Climb());
