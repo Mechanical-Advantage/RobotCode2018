@@ -16,6 +16,7 @@ public class AutoTruthTable {
 	private static final byte switchPriority = 0x08;
 	private static final byte scalePriority = 0x10;
 	private static final byte twoCube = 0x20;
+	private static final byte force = 0x40;
 	
 	/*
 	 * Mask (first) has all values that matter for row, set (second) has all values that are 1
@@ -30,11 +31,12 @@ public class AutoTruthTable {
 					crossMiddleOK|twoCube, AutoDestination.SCALE_OPPOSITE, AutoDestination.SWITCH_OPPOSITE),
 			new TableRow(switchSame|crossMiddleOK|switchPriority|scalePriority,
 					crossMiddleOK|switchPriority, AutoDestination.SWITCH_OPPOSITE, null),
-			// Next 2 rows temporarily changed to prevent unintended scale autos until it is tested
 			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority,
 					scaleSame, AutoDestination.SCALE_SAME, null),
-			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority,
-					scaleSame|switchPriority, null, null),
+			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority|force,
+					scaleSame|switchPriority|force, null, null),
+			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority|force,
+					scaleSame|switchPriority, AutoDestination.SCALE_SAME, null),
 			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority|twoCube,
 					scaleSame|crossMiddleOK, AutoDestination.SCALE_SAME, null),
 			new TableRow(switchSame|scaleSame|switchPriority|twoCube,
@@ -43,8 +45,12 @@ public class AutoTruthTable {
 					scaleSame|crossMiddleOK|twoCube, AutoDestination.SCALE_SAME, AutoDestination.SWITCH_OPPOSITE),
 			new TableRow(switchSame|scaleSame|switchPriority|twoCube,
 					switchSame|scaleSame|twoCube, AutoDestination.SCALE_SAME, AutoDestination.SWITCH_SAME),
-			new TableRow(switchSame|scaleSame|crossMiddleOK,
+			new TableRow(switchSame|scaleSame|crossMiddleOK|scalePriority,
 					switchSame, AutoDestination.SWITCH_SAME, null),
+			new TableRow(switchSame|scaleSame|crossMiddleOK|scalePriority|force,
+					switchSame|scalePriority|force, null, null),
+			new TableRow(switchSame|scaleSame|crossMiddleOK|scalePriority|force,
+					switchSame|scalePriority, AutoDestination.SWITCH_SAME, null),
 			new TableRow(switchSame|scaleSame|crossMiddleOK|scalePriority|twoCube,
 					switchSame|crossMiddleOK, AutoDestination.SWITCH_SAME, null),
 			new TableRow(switchSame|scaleSame|switchPriority|scalePriority,
@@ -61,11 +67,12 @@ public class AutoTruthTable {
 	 * @param switchPriority Whether the switch has priority
 	 * @param scalePriority Whether the scale has priority
 	 * @param twoCube Whether to attempt a second cube
+	 * @param force Whether to prevent ever not violating priority
 	 * @return The two destinations. If just one destination is found, the second will be null. 
 	 * If the first is null, it means cross line. If the return value itself is null, no match was found.
 	 */
 	public static SelectedAutoDestinations findRow(boolean switchSame, boolean scaleSame, boolean crossMiddleOK, 
-			boolean switchPriority, boolean scalePriority, boolean twoCube) {
+			boolean switchPriority, boolean scalePriority, boolean twoCube, boolean force) {
 		int state = 0;
 		
 		// Generate the state as a byte from the input
@@ -86,6 +93,9 @@ public class AutoTruthTable {
 		}
 		if (twoCube) {
 			state |= AutoTruthTable.twoCube;
+		}
+		if (force) {
+			state |= AutoTruthTable.force;
 		}
 		
 		TableRow row = null;
