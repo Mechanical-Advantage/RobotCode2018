@@ -17,7 +17,7 @@ public class SmartSideAuto extends InstantCommand {
 	private static final double cubePickUpToScaleDistance = 20;
 	private static final double scaleBackUpDistance = -12; // Should be negative
 	private static final double scaleCrossDistance = 150; // How far to drive along space between switch and scale
-	private static final double scaleFrontSpeed = 0.6;
+	private static final double scaleFrontSpeed = 0.3;
 	private static final double switchFrontSpeed = 0.5;
 	private static final double switchEndSpeed = 0.8;
 		
@@ -81,7 +81,7 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
@@ -92,8 +92,9 @@ public class SmartSideAuto extends InstantCommand {
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide() {
 //			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
+			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
-			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+//			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
 		}
