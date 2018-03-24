@@ -51,7 +51,7 @@ public class Intake extends Subsystem {
 			retractSolenoid = new DoubleSolenoid(RobotMap.intakeRetractPCM, RobotMap.intakeRetractSolenoid1, RobotMap.intakeRetractSolenoid2);
 			openSolenoid = new DoubleSolenoid(RobotMap.intakeOpenPCM, RobotMap.intakeOpenSolenoid1, RobotMap.intakeOpenSolenoid2);
 			intakeSpeed = 0.5;
-			ejectSpeed = -1;
+			ejectSpeed = 1;
 			intakeSpeedLocked = false;
 			ejectSpeedLocked = false;
 			invertLeft = true;
@@ -64,7 +64,7 @@ public class Intake extends Subsystem {
 		}
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			intakeSpeed = 0.2;
-			ejectSpeed = -1;
+			ejectSpeed = 1;
 			intakeSpeedLocked = false;
 			invertLeft = false;
 			invertRight = true;
@@ -115,13 +115,14 @@ public class Intake extends Subsystem {
 	}
 
 	public void eject() {
-		eject(ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce()*-1);
+		eject(ejectSpeedLocked ? ejectSpeed: Robot.oi.getEjectForce());
 	}
 	
 	public void eject(double speed) {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, speed);
-			rightTalon.set(ControlMode.PercentOutput, speed);
+			// Negative power ejects
+			leftTalon.set(ControlMode.PercentOutput, speed*-1);
+			rightTalon.set(ControlMode.PercentOutput, speed*-1);
 		}
 	}
 

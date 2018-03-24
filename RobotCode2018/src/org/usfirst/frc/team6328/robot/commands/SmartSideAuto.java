@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -71,7 +72,8 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
-			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading));
+			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading)); // TODO this isn't really needed
+			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
 		}
@@ -81,6 +83,7 @@ public class SmartSideAuto extends InstantCommand {
 		public SwitchSameSide() {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
+			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
 		}
@@ -114,6 +117,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new IntakeCube(false));
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
+			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(switchFrontSpeed));
 		}
 	}
@@ -157,6 +161,7 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new DriveToCube());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
+			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(switchFrontSpeed));
 		}
 	}
