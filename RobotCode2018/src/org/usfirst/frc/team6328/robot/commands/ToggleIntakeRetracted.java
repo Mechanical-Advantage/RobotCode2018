@@ -23,8 +23,8 @@ public class ToggleIntakeRetracted extends TimedCommand {
 	// Called just before this Command runs the first time
 	protected void initialize() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			Robot.intake.intake();
 			if (Robot.intake.getRetracted()) {
+				Robot.intake.intake();
 				Robot.intake.setRetracted(false);
 			} else {
 				Robot.intake.setRetracted(true);
