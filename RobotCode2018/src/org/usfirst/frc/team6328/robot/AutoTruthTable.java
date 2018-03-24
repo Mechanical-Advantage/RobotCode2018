@@ -30,8 +30,11 @@ public class AutoTruthTable {
 					crossMiddleOK|twoCube, AutoDestination.SCALE_OPPOSITE, AutoDestination.SWITCH_OPPOSITE),
 			new TableRow(switchSame|crossMiddleOK|switchPriority|scalePriority,
 					crossMiddleOK|switchPriority, AutoDestination.SWITCH_OPPOSITE, null),
-			new TableRow(switchSame|scaleSame|crossMiddleOK,
+			// Next 2 rows temporarily changed to prevent unintended scale autos until it is tested
+			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority,
 					scaleSame, AutoDestination.SCALE_SAME, null),
+			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority,
+					scaleSame|switchPriority, null, null),
 			new TableRow(switchSame|scaleSame|crossMiddleOK|switchPriority|twoCube,
 					scaleSame|crossMiddleOK, AutoDestination.SCALE_SAME, null),
 			new TableRow(switchSame|scaleSame|switchPriority|twoCube,
