@@ -292,7 +292,7 @@ public class Elevator extends Subsystem {
 	public boolean holdPosition() {
 		if (resetCompleted && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			talonMaster.neutralOutput();
-//			brake.set(Value.kForward);
+			brake.set(Value.kForward);
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
 			return true;
 		} else {
