@@ -213,8 +213,10 @@ public class Elevator extends Subsystem {
 		}
 		
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			if (!Robot.oi.isElevatorEnabled() != elevatorEnabledLast) {
-				talonMaster.neutralOutput();
+			if (Robot.oi.isElevatorEnabled() != elevatorEnabledLast) {
+				if (!Robot.oi.isElevatorEnabled()) {
+					talonMaster.neutralOutput();
+				}
 				elevatorEnabledLast = Robot.oi.isElevatorEnabled();
 			}
 			
