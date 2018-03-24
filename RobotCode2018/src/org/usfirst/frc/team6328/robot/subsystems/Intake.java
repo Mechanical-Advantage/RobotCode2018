@@ -97,6 +97,13 @@ public class Intake extends Subsystem {
 		//setDefaultCommand(new MySpecialCommand());
 	}
 	
+	public void initLEDs() {
+		Robot.oi.updateLED(OILED.INTAKE_RETRACT, getRetracted());
+		Robot.oi.updateLED(OILED.INTAKE_OPEN, getOpen());
+		Robot.oi.updateLED(OILED.INTAKE_OFF, true);
+		Robot.oi.updateLED(OILED.INTAKE_ON, false);
+	}
+	
 	public void periodic() {
 		boolean sensor = getSensor();
 		if (sensor != cubeSensedLast) {

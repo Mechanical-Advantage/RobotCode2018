@@ -90,6 +90,7 @@ public class Robot extends TimedRobot {
 		this.setPeriod(0.02);
 		oi = new OI();
 		elevator.initLEDs();
+		intake.initLEDs();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
 		
 		startingPositionChooser.addObject("Left", StartingPosition.LEFT);
