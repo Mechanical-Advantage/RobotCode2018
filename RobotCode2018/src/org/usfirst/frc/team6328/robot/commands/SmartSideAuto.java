@@ -103,8 +103,9 @@ public class SmartSideAuto extends InstantCommand {
 	private class ScaleOppositeSide extends CommandGroup {
 		public ScaleOppositeSide() {
 //			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
-			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, true));
-			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addParallel(new TimedLift());
+			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, false)); // convergence disabled as possible workaround to improve chances
+//			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
 		}
@@ -164,6 +165,13 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(switchFrontSpeed));
+		}
+	}
+	
+	private class TimedLift extends CommandGroup {
+		public TimedLift() {
+			addSequential(new Delay(6));
+			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 		}
 	}
 	
