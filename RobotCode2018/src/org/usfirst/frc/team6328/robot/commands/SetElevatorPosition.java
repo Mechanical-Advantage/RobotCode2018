@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetElevatorPosition extends Command {
 	
-	private static final double bangBangSpeed = 1;
+	private static final double bangBangSpeed = 0.4;
 	
 	private ElevatorPosition targetPosition;
 	private boolean enableFinish;
@@ -62,10 +62,12 @@ public class SetElevatorPosition extends Command {
 
 	// Called once after isFinished returns true
 	protected void end() {
+		Robot.elevator.holdPosition();
 	}
 
 	// Called when another command which requires one or more of the same
 	// subsystems is scheduled to run
 	protected void interrupted() {
+		end();
 	}
 }

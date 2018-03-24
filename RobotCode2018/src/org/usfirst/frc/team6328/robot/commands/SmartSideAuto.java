@@ -68,7 +68,7 @@ public class SmartSideAuto extends InstantCommand {
 
 	private class SwitchOppositeSide extends CommandGroup {
 		public SwitchOppositeSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
@@ -91,7 +91,7 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
@@ -101,7 +101,7 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class ScaleOppositeSide extends CommandGroup {
 		public ScaleOppositeSide() {
-			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
+//			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, true));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
