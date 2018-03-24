@@ -252,8 +252,8 @@ public class DriveTrain extends Subsystem {
 //	@Override
 //	public void periodic() {
 //		if (RobotMap.tuningMode) {
-//			SmartDashboard.putNumber("Drive Error", (rightTalonMaster.getClosedLoopError(0)+leftTalonMaster.getClosedLoopError(0))/2);
-//			SmartDashboard.putNumber("Drive I accum", (rightTalonMaster.getIntegralAccumulator(0)+leftTalonMaster.getIntegralAccumulator(0))/2);
+////			SmartDashboard.putNumber("Drive Error", (rightTalonMaster.getClosedLoopError(0)+leftTalonMaster.getClosedLoopError(0))/2);
+////			SmartDashboard.putNumber("Drive I accum", (rightTalonMaster.getIntegralAccumulator(0)+leftTalonMaster.getIntegralAccumulator(0))/2);
 //		}
 //	}
 
@@ -335,10 +335,18 @@ public class DriveTrain extends Subsystem {
 	    			}
 	    		}
 	    		int maxVelocity;
-	    		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || (currentGear == DriveGear.LOW && !alwaysHighMaxVel)) {
-	    			maxVelocity = RobotMap.maxVelocityLow;
+	    		// actualMaxVelocity is used to make open loop scaling accurate
+	    		int actualMaxVelocity;
+	    		if (RobotMap.robot != RobotType.ORIGINAL_ROBOT_2018 || (currentGear == DriveGear.LOW)) {
+	    			if (!alwaysHighMaxVel) {
+	    				maxVelocity = RobotMap.maxVelocityLow;
+	    			} else {
+	    				maxVelocity = RobotMap.maxVelocityHigh;
+	    			}
+	    			actualMaxVelocity = RobotMap.maxVelocityLow;
 	    		} else {
 	    			maxVelocity = RobotMap.maxVelocityHigh;
+	    			actualMaxVelocity = RobotMap.maxVelocityHigh;
 	    		}
 	    		left*=maxVelocity;
 	    		right*=maxVelocity;
@@ -346,8 +354,8 @@ public class DriveTrain extends Subsystem {
 	    		right = calcActualVelocity(right);
 	    		
 	    		if (Robot.oi.getOpenLoop()) {
-	    			rightTalonMaster.set(ControlMode.PercentOutput, right/maxVelocity);
-	    			leftTalonMaster.set(ControlMode.PercentOutput, left/maxVelocity);
+	    			rightTalonMaster.set(ControlMode.PercentOutput, right/actualMaxVelocity);
+	    			leftTalonMaster.set(ControlMode.PercentOutput, left/actualMaxVelocity);
 	    		} else {
 	    			rightTalonMaster.set(ControlMode.Velocity, right);
 	    			leftTalonMaster.set(ControlMode.Velocity, left);
