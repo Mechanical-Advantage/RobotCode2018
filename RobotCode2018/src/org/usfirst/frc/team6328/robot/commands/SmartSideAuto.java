@@ -17,7 +17,7 @@ public class SmartSideAuto extends InstantCommand {
 	private static final double scaleBackUpDistance = -12; // Should be negative
 	private static final double scaleCrossDistance = 150; // How far to drive along space between switch and scale
 	private static final double scaleFrontSpeed = 0.6;
-	private static final double switchFrontSpeed = 0.7;
+	private static final double switchFrontSpeed = 0.5;
 	private static final double switchEndSpeed = 0.8;
 		
 	private boolean leftSide;
@@ -67,41 +67,41 @@ public class SmartSideAuto extends InstantCommand {
 
 	private class SwitchOppositeSide extends CommandGroup {
 		public SwitchOppositeSide() {
-			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
 			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading));
+			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
 		}
 	}
 	
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide() {
-			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
+			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
 		}
 	}
 	
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide() {
-			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
 		}
 	}
 	
 	private class ScaleOppositeSide extends CommandGroup {
 		public ScaleOppositeSide() {
-			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, true));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
 		}
 	}

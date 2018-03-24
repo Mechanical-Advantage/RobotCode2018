@@ -11,17 +11,17 @@ import openrio.powerup.MatchData.OwnedSide;
  */
 public class CenterAuto extends CommandGroup {
 	
-	private static final double ejectSpeed = 0.6;
+	private static final double ejectSpeed = 0.4;
 	
 	public CenterAuto(OwnedSide switchSide) {
 		if (switchSide == OwnedSide.LEFT || switchSide == OwnedSide.RIGHT) {
 			String sideString = switchSide.toString().toLowerCase();
 			sideString = sideString.replace("l", "L");
 			sideString = sideString.replace("r", "R");
-			addParallel(new ExtendIntake());
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
+			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(ejectSpeed));
 		}
 	}
