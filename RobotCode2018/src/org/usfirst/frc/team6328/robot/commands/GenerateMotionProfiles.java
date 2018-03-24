@@ -20,7 +20,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 74;
+	public static final int waypointVersion = 75;
 	
 	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 200); // jerk actually matters
@@ -80,8 +80,8 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	 switchFront = new Waypoint(140-(RobotMap.robotLength/2), plateCenterDistance, 0);
 	    	 switchFrontOpposite = new Waypoint(switchCenterDistance-28-(RobotMap.robotLength/2), plateCenterDistance*-1, 0);
 	    	 switchBack = new Waypoint(switchCenterDistance+28+(RobotMap.robotLength/2), plateCenterDistance, Pathfinder.d2r(180));
-	    	 scaleFront = new Waypoint(300-(RobotMap.robotLength/2), 90-12, 0);
-	    	 scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, 0);
+	    	 scaleFront = new Waypoint(300-(RobotMap.robotLength/2), 90-12, Pathfinder.d2r(-25));
+	    	 scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, Pathfinder.d2r(25));
 	    	 sideSwitchPrepareCrossingPoint = new Waypoint(switchCenterDistance+120, halfSwitchWidth+32, Pathfinder.d2r(/*-135*/180));
     }
 
@@ -118,11 +118,11 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	};
 	    	generateProfile("sideToOppositeSwitch");
 	    	
-	    	points = new Waypoint[] {
-	    			sideStart,
-	    			switchFront
-	    	};
-	    	generateProfile("sideToSwitchFront");
+//	    	points = new Waypoint[] {
+//	    			sideStart,
+//	    			switchFront
+//	    	};
+//	    	generateProfile("sideToSwitchFront");
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
@@ -181,11 +181,11 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	};
 	    	generateProfile("centerToLeftSwitch");
 	    	
-	    	points = new Waypoint[] {
-	    			new Waypoint(0, 0, 0),
-	    			new Waypoint(8*12, 0, 0)
-	    	};
-	    	generateProfile("8straight");
+//	    	points = new Waypoint[] {
+//	    			new Waypoint(0, 0, 0),
+//	    			new Waypoint(8*12, 0, 0)
+//	    	};
+//	    	generateProfile("8straight");
     	
 //    	Example custom config
 //    	config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC,
