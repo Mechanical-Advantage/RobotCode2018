@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class SetElevatorPosition extends Command {
 	
-	private static final double bangBangSpeed = 0.4;
+	private static final double bangBangSpeed = 0.5;
 	
 	private ElevatorPosition targetPosition;
 	private boolean enableFinish;
