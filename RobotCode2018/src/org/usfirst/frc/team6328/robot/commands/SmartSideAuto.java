@@ -72,8 +72,8 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
-			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading)); // TODO this isn't really needed
-			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
+//			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading)); // TODO this isn't really needed
+			addSequential(new DriveForTime(2, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
 		}
