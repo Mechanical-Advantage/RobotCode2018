@@ -27,7 +27,7 @@ public class EjectCubeForTime extends TimedCommand {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		Robot.intake.setRetracted(false);
+//		Robot.intake.setRetracted(false);
 		if (speed == 0) {
 			Robot.intake.eject();
 		} else {

@@ -15,7 +15,7 @@ public class IntakeCube extends Command {
 	
 	@Override
 	protected void initialize() {
-		Robot.intake.setRetracted(false);
+//		Robot.intake.setRetracted(false);
 		Robot.intake.intake();
 	}
 	
