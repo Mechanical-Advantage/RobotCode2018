@@ -1,8 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
-import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
-
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import openrio.powerup.MatchData.OwnedSide;
 
