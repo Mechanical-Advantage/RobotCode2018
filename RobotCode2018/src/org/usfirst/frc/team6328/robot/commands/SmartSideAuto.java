@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio.ConvergenceMode;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
@@ -104,7 +105,7 @@ public class SmartSideAuto extends InstantCommand {
 		public ScaleOppositeSide() {
 //			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addParallel(new TimedLift());
-			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, false)); // convergence disabled as possible workaround to improve chances
+			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.IF_FLAT)); // convergence disabled if on platform
 //			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));

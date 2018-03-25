@@ -35,6 +35,9 @@ public class RunMotionProfileOnRio extends Command {
 	private TunableNumber kV = new TunableNumber("Profile V");
 	private TunableNumber kA = new TunableNumber("Profile A");
 	
+	private float tiltThreshold;
+	private DriveGear gear;
+	
 	private CustomDistanceFollower leftFollower, rightFollower;
 	private double initialYaw;
 	private double initialProfileYaw;
@@ -47,10 +50,9 @@ public class RunMotionProfileOnRio extends Command {
 	private boolean flipLeftRight;
 	private boolean absHeading;
 	private boolean backwards;
-	private boolean endConverge;
+	private ConvergenceMode endConverge;
 	private boolean trajectoryLoaded = false;
 	private String filename;
-	private DriveGear gear;
 	
 	/*
      * Tuning Notes:
@@ -59,8 +61,12 @@ public class RunMotionProfileOnRio extends Command {
      * D should be significantly lower than P
      * Too much D will overcorrect, robot will go too fast, not much is needed, in my initial test, any causes problems
      */
+	
+	public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards, boolean endConverge) {
+		this(trajectory, flipLeftRight, absHeading, backwards, endConverge ? ConvergenceMode.ALWAYS : ConvergenceMode.NEVER);
+}
 
-    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards, boolean endConverge) {
+    public RunMotionProfileOnRio(Trajectory trajectory, boolean flipLeftRight, boolean absHeading, boolean backwards, ConvergenceMode endConverge) {
     		super("RunMotionProfileOnRio");
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -73,6 +79,10 @@ public class RunMotionProfileOnRio extends Command {
     }
     
     public RunMotionProfileOnRio(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards, boolean endConverge) {
+    		this(filename, flipLeftRight, absHeading, backwards, endConverge ? ConvergenceMode.ALWAYS : ConvergenceMode.NEVER);
+    }
+    
+    public RunMotionProfileOnRio(String filename, boolean flipLeftRight, boolean absHeading, boolean backwards, ConvergenceMode endConverge) {
     		this.flipLeftRight = flipLeftRight;
 		this.absHeading = absHeading;
 		this.backwards = backwards;
@@ -113,6 +123,7 @@ public class RunMotionProfileOnRio extends Command {
 			gear = DriveGear.HIGH;
 			kV.setDefault(1.11);
 			kA.setDefault(0.12);
+			tiltThreshold = 5;
 			break;
 		case EVERYBOT_2018:
 			break;
@@ -266,9 +277,10 @@ public class RunMotionProfileOnRio extends Command {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
+    		boolean tilted = Math.abs(Robot.ahrs.getRoll()) <= tiltThreshold || Math.abs(Robot.ahrs.getPitch()) <= tiltThreshold;
     		// current segment and heading should be same on left and right, only check one
     		// At end of profile only correct angle
-		return leftFollower.isFinished() && (!endConverge || !enableGyroCorrection ||
+		return leftFollower.isFinished() && (endConverge == ConvergenceMode.NEVER || (endConverge == ConvergenceMode.IF_FLAT && !tilted) || !enableGyroCorrection ||
 				(Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
 				<=AngleErrorThreshold.get()));
     }
@@ -304,6 +316,15 @@ public class RunMotionProfileOnRio extends Command {
     // subsystems is scheduled to run
     protected void interrupted() {
     		end();
+    }
+    
+    public enum ConvergenceMode {
+    		NEVER,
+    		/**
+    		 * Only finish if the robot is flat
+    		 */
+    		IF_FLAT,
+    		ALWAYS
     }
     
     
