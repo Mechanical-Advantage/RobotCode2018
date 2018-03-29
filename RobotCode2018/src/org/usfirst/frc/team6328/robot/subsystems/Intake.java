@@ -63,9 +63,9 @@ public class Intake extends Subsystem {
 
 		}
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
-			intakeSpeed = 0.2;
+			intakeSpeed = 1;
 			ejectSpeed = 1;
-			intakeSpeedLocked = false;
+			intakeSpeedLocked = true;
 			invertLeft = false;
 			invertRight = true;
 			enableCurrentLimit = true;
@@ -114,8 +114,14 @@ public class Intake extends Subsystem {
 
 	public void intake() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
-			leftTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
-			rightTalon.set(ControlMode.PercentOutput, intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
+			intake(intakeSpeedLocked ? intakeSpeed : Robot.oi.getIntakeLevel());
+		}
+	}
+	
+	public void intake(double speed) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
+			leftTalon.set(ControlMode.PercentOutput, speed);
+			rightTalon.set(ControlMode.PercentOutput, speed);
 			Robot.oi.updateLED(OILED.INTAKE_ON, true);
 			Robot.oi.updateLED(OILED.INTAKE_OFF, false);
 		}

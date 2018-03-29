@@ -15,6 +15,7 @@ import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.OpenIntake;
+import org.usfirst.frc.team6328.robot.commands.PulseIntake;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
@@ -144,7 +145,8 @@ public class OI {
 		}
 		IntakeCube intakeCommand = new IntakeCube(false);
 		startIntake.whenPressed(intakeCommand);
-		stopIntake.cancelWhenPressed(intakeCommand);
+		startIntake.whileHeld(intakeCommand);
+		stopIntake.whenPressed(new PulseIntake());
 		retractIntake.whenPressed(new ToggleIntakeRetracted());
 		intakeOpen.whenPressed(new OpenIntake());
 		intakeOpen.whenReleased(new CloseIntake());
