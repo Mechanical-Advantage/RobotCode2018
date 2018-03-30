@@ -154,7 +154,9 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putData("Disable Elevator Slave 3", new DisableElevatorSlave(3));
 			SmartDashboard.putData("Enable all elevator slaves", new EnableAllElevatorSlaves());
 		}
-		cameraSubsystem.useFrontCamera();
+		if (RobotMap.robot != RobotType.EVERYBOT_2018) {
+			cameraSubsystem.useFrontCamera();
+		}
 	}
 	
 	@Override
