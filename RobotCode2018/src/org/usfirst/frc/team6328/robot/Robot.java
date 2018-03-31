@@ -35,6 +35,7 @@ import org.usfirst.frc.team6328.robot.subsystems.PixyI2C;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyException;
 import org.usfirst.frc.team6328.robot.subsystems.PixyI2C.PixyPacket;
 import org.usfirst.frc.team6328.robot.subsystems.ScoringArm;
+import org.usfirst.frc.team6328.robot.subsystems.Spork;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -65,6 +66,7 @@ public class Robot extends TimedRobot {
 	public static final Elevator elevator = new Elevator();
 	public static final Intake intake = new Intake();
 	public static final ScoringArm scoringArm = new ScoringArm();
+	public static final Spork spork = new Spork();
 	
 	public static OI oi;
 	public static final AHRS ahrs = new AHRS(SPI.Port.kMXP);

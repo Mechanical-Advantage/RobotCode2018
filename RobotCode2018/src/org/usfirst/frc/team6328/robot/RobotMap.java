@@ -53,6 +53,11 @@ public class RobotMap {
 	public static int intakeOpenSolenoid2;
 	public static int intakeOpenPCM;
 	public static int intakeSensor; // DIO
+	public static int sporkLeft;
+	public static int sporkRight;
+	public static int sporkLockSolenoid1;
+	public static int sporkLockSolenoid2;
+	public static int sporkLockPCM;
 	public static int minVelocityLow; // lower values will be treated as this value, RPM
 	public static int maxVelocityLow; // maximum velocity when sticks are fully forward (value of 1), RPM
 	public static int maxVelocityHigh;
