@@ -6,7 +6,6 @@ import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -34,20 +33,20 @@ public class DriveDistanceOnHeading extends Command {
     private double kFAngle;
     private double kToleranceDegrees;
     static final int kToleranceBufSamplesAngle = 10;
-    static final double kTurnCorrectionAmount = 0.2;
+    private double kTurnCorrectionAmount = 0.2;
     
     // PID output will be limited to negative to positive this. Multiplied by RobotMap maxVelocity to get target
-    static final double kMaxOutput = /*0.9*/0.5;
+    private double kMaxOutput = 0.9;
     // Limit change in one iteration to this - % of max output
-    static final double kMaxChange = /*0.03*/0.01;
+    private double kMaxChange = 0.03;
     // If robot does not move for this many cycles, give up
-    static final int stuckCycleThreshold = 50;
+    private static final int stuckCycleThreshold = 50;
     // The maximum distance the robot can move in the number of cycles above to be considered stuck
-    static final double stickDistance = 0.5;
+    private static final double stickDistance = 0.5;
     
     private DriveGear gear;
 
-    static final double maxOutputVelocityChange = kMaxOutput * kMaxChange;
+    private double maxOutputVelocityChange = kMaxOutput * kMaxChange;
     private PIDControllerFixed distanceController;
     private PIDControllerFixed turnController;
 	private double targetDistance;
@@ -62,11 +61,60 @@ public class DriveDistanceOnHeading extends Command {
 	private double lastDistance;
 	private int stuckCycles;
     
+	/**
+     * Construct a new DriveDistanceOnHeading command using the starting heading
+     * @param distance Distance to drive
+     */
     public DriveDistanceOnHeading(double distance) {
-    	this(distance, 0);
-    	useStartingYaw = true;
+    		this(distance, 0);
+    		useStartingYaw = true;
     }
     
+    /**
+     * Construct a new DriveDistanceOnHeading command using the starting heading
+     * @param distance Distance to drive
+     * @param toleranceInches How many inches off the end distance can be (pass 0 to use default)
+     * @param maxChange Maximum percent velocity change per cycle (pass 0 to use default)
+     * @param maxOutput Maximum percent velocity (pass 0 to use default)
+     */
+    public DriveDistanceOnHeading(double distance, double toleranceInches, double maxChange, double maxOutput) {
+    		this(distance, 0, toleranceInches, maxChange, maxOutput);
+    		useStartingYaw = true;
+    }
+    
+    /**
+     * Construct a new DriveDistanceOnHeading command with a defined heading
+     * @param distance Distance to drive
+     * @param heading Heading to try to follow
+     * @param toleranceInches How many inches off the end distance can be (pass 0 to use default)
+     * @param maxChange Maximum percent velocity change per cycle (pass 0 to use default)
+     * @param maxOutput Maximum percent velocity (pass 0 to use default)
+     */
+    public DriveDistanceOnHeading(double distance, double heading, double toleranceInches, double maxChange, double maxOutput) {
+		this(distance, heading);
+		boolean maxPercentsChanged = false;
+    		if (maxOutput != 0) {
+    			kMaxOutput = maxOutput;
+    			kTurnCorrectionAmount *= kMaxOutput; // If a different max output is specified, calculate turn range as percent of that
+    			maxPercentsChanged = true;
+    		}
+    		if (maxChange != 0) {
+    			kMaxChange = maxChange;
+    			maxPercentsChanged = true;
+    		}
+    		if (maxPercentsChanged) {
+    			maxOutputVelocityChange = kMaxOutput * kMaxChange;
+    		}
+    		if (toleranceInches != 0) {
+    			kToleranceInches = toleranceInches;
+    		}
+    }
+    
+    /**
+     * Construct a new DriveDistanceOnHeading command with a defined heading
+     * @param distance Distance to drive
+     * @param heading Heading to try to follow
+     */
     public DriveDistanceOnHeading(double distance, double heading) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);

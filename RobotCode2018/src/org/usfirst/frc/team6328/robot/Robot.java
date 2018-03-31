@@ -116,9 +116,12 @@ public class Robot extends TimedRobot {
         		tuningModeChooser.addObject("15 foot straight line", new DriveDistanceOnHeading(180));
         		tuningModeChooser.addObject("10 foot straight line", new DriveDistanceOnHeading(120));
         		tuningModeChooser.addObject("5 foot straight line", new DriveDistanceOnHeading(60));
+        		tuningModeChooser.addObject("Slow 5 foot straight line", new DriveDistanceOnHeading(60, 0, 0.005, 0.1));
+        		tuningModeChooser.addObject("Imprecise 5 foot straight line", new DriveDistanceOnHeading(60, 12, 0, 0));
         		tuningModeChooser.addObject("Velocity PID Tuner", new VelocityPIDTuner());
         		tuningModeChooser.addObject("side switch to start profile", new RunMotionProfileOnRio("backwardsTest", false, false, true, true));
         		tuningModeChooser.addObject("Turn 90 degrees", new TurnToAngle(90));
+        		tuningModeChooser.addObject("Imprecise turn 90 degrees", new TurnToAngle(90, 15));
         		tuningModeChooser.addObject("8 foot straight profile", new RunMotionProfileOnRio("8straight", false, false, false, true));
         		tuningModeChooser.addObject("Profile Flip Test", new RunMotionProfileOnRio("centerToLeftSwitch", true, false, false, true));
          	SmartDashboard.putData("Tuning Auto Mode", tuningModeChooser);

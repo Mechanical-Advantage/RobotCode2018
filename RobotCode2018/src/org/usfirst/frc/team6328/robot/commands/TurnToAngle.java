@@ -29,6 +29,16 @@ public class TurnToAngle extends Command implements PIDOutput {
     
     private double rotateToAngleRate;
     
+    public TurnToAngle(double angle, boolean absoluteAngle, double tolerance) {
+		this(angle, absoluteAngle);
+		kToleranceDegrees = tolerance;
+    }
+    
+    public TurnToAngle(double angle, double tolerance) {
+    		this(angle);
+    		kToleranceDegrees = tolerance;
+    }
+    
     public TurnToAngle(double angle) {
     		this(angle, false);
     }
