@@ -71,6 +71,7 @@ public class Elevator extends Subsystem {
 	boolean limitEnabledLast = true;
 	boolean elevatorEnabledLast = true;
 	boolean secondCameraLast = false;
+	boolean isMoving = false;
 	
 	@SuppressWarnings("unused")
 	public Elevator() {
@@ -214,14 +215,16 @@ public class Elevator extends Subsystem {
 			limitEnabledLast = Robot.oi.isElevatorLimitEnabled();
 		}
 		
-		boolean secondCamera = getPosition() >= upCameraHeight;
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && secondCamera != secondCameraLast) {
-			if (secondCamera) {
-				Robot.cameraSubsystem.useSecondCamera();
-			} else {
-				Robot.cameraSubsystem.useFrontCamera();
+		if (isMoving && RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			boolean secondCamera = getPosition() >= upCameraHeight;
+			if (secondCamera != secondCameraLast) {
+				if (secondCamera) {
+					Robot.cameraSubsystem.useSecondCamera();
+				} else {
+					Robot.cameraSubsystem.useFrontCamera();
+				}
+				secondCameraLast = secondCamera;
 			}
-			secondCameraLast = secondCamera;
 		}
 		
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -275,6 +278,7 @@ public class Elevator extends Subsystem {
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, false);
 			talonMaster.set(ControlMode.MotionMagic, position/distancePerRotation*ticksPerRotation);
 			targetPosition = position;
+			isMoving = true;
 			return true;
 		} else {
 			return false;
@@ -308,6 +312,7 @@ public class Elevator extends Subsystem {
 			talonMaster.neutralOutput();
 			brake.set(Value.kForward);
 			Robot.oi.updateLED(OILED.ELEVATOR_BRAKE, true);
+			isMoving = false;
 			return true;
 		} else {
 			return false;
@@ -330,6 +335,7 @@ public class Elevator extends Subsystem {
 			} else {
 				talonMaster.set(ControlMode.PercentOutput, percent);
 			}
+			isMoving = true;
 			return true;
 		} else {
 			return false;
