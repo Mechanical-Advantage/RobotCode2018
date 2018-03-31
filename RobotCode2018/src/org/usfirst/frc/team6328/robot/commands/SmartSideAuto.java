@@ -13,10 +13,14 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
  */
 public class SmartSideAuto extends InstantCommand {
 	
-	private static final double switchSideDriveDistance = 28;
 	private static final double cubePickUpToSwitchDistance = 12;
 	private static final double cubePickUpToScaleDistance = 20;
-	private static final double scaleBackUpDistance = -12; // Should be negative
+	private static final double scaleBackUpDistance = 42;
+	private static final double scaleBackUpTolerance = 2;
+	private static final double frontSwitchBackUpDistance = 30;
+	private static final double frontSwitchBackUpTolerance = 2;
+	private static final double endSwitchBackUpDistance = 30;
+	private static final double endSwitchBackUpTolerance = 2;
 	private static final double scaleCrossDistance = 150; // How far to drive along space between switch and scale
 	private static final double scaleFrontSpeed = 0.3;
 	private static final double switchFrontSpeed = 0.5;
@@ -35,7 +39,7 @@ public class SmartSideAuto extends InstantCommand {
 			if (secondDest == AutoDestination.SWITCH_OPPOSITE) {
 				command = new BothOppositeSide();
 			} else {
-				command = new ScaleOppositeSide();
+				command = new ScaleOppositeSide(true);
 			}
 			break;
 		case SCALE_SAME:
@@ -44,7 +48,7 @@ public class SmartSideAuto extends InstantCommand {
 			} else if (secondDest == AutoDestination.SWITCH_OPPOSITE) {
 				command = new ScaleSameSideTwoCube();
 			} else {
-				command = new ScaleSameSide();
+				command = new ScaleSameSide(true);
 			}
 			break;
 		case SWITCH_OPPOSITE:
@@ -54,7 +58,7 @@ public class SmartSideAuto extends InstantCommand {
 			if (secondDest == AutoDestination.SCALE_OPPOSITE) {
 				command = new SwitchSameSideTwoCube();
 			} else {
-				command = new SwitchSameSide();
+				command = new SwitchSameSide(true);
 			}
 			break;
 		default:
@@ -69,46 +73,57 @@ public class SmartSideAuto extends InstantCommand {
 
 	private class SwitchOppositeSide extends CommandGroup {
 		public SwitchOppositeSide() {
-//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
-//			addSequential(new DriveDistanceOnHeading(switchSideDriveDistance, heading)); // TODO this isn't really needed
 			addSequential(new DriveForTime(2, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
+			addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? -90 : 90, endSwitchBackUpTolerance, 0, 0));
+			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+			addSequential(new TurnToAngle(0, true));
 		}
 	}
 	
 	private class SwitchSameSide extends CommandGroup {
-		public SwitchSameSide() {
-//			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
+		public SwitchSameSide(boolean enableBackup) {
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(switchEndSpeed));
+			if (enableBackup) {
+				addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? 90 : -90, endSwitchBackUpTolerance, 0, 0));
+				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+				addSequential(new TurnToAngle(0, true));
+			}
 		}
 	}
 	
 	private class ScaleSameSide extends CommandGroup {
-		public ScaleSameSide() {
-//			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
+		public ScaleSameSide(boolean enableBackup) {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
-//			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
+			if (enableBackup) {
+				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
+				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+				addSequential(new TurnToAngle(-135, true));
+			}
 		}
 	}
 	
 	private class ScaleOppositeSide extends CommandGroup {
-		public ScaleOppositeSide() {
-//			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
+		public ScaleOppositeSide(boolean enableBackup) {
 			addParallel(new TimedLift());
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.IF_FLAT)); // convergence disabled if on platform
-//			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCube(scaleFrontSpeed));
+			if (enableBackup) {
+				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
+				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+				addSequential(new TurnToAngle(160, true));
+			}
 		}
 	}
 	
@@ -122,26 +137,28 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(switchFrontSpeed));
+			addSequential(new DriveDistanceOnHeading(-frontSwitchBackUpDistance, 180, frontSwitchBackUpTolerance, 0, 0));
+			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
 	}
 	
 	private class BothSameSide extends CommandGroup {
 		public BothSameSide() {
-			addSequential(new ScaleSameSide());
+			addSequential(new ScaleSameSide(false));
 			addSequential(new ScaleToSameSwitch());
 		}
 	}
 	
 	private class BothOppositeSide extends CommandGroup {
 		public BothOppositeSide() {
-			addSequential(new ScaleOppositeSide());
+			addSequential(new ScaleOppositeSide(false));
 			addSequential(new ScaleToSameSwitch());
 		}
 	}
 	
 	private class SwitchSameSideTwoCube extends CommandGroup {
 		public SwitchSameSideTwoCube() {
-			addSequential(new SwitchSameSide());
+			addSequential(new SwitchSameSide(false));
 			addSequential(new RunMotionProfileOnRio("sideSwitchPrepareCrossing", leftSide, true, true, true));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new RunMotionProfileOnRio("sideSwitchCross", leftSide, true, false, true));
@@ -151,13 +168,15 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new DriveDistanceOnHeading(cubePickUpToScaleDistance, 0));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new EjectCube(scaleFrontSpeed));
-			addSequential(new DriveDistanceOnHeading(scaleBackUpDistance, 0));
+			addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
+			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
+			addSequential(new TurnToAngle(180, true));
 		}
 	}
 	
 	private class ScaleSameSideTwoCube extends CommandGroup {
 		public ScaleSameSideTwoCube() {
-			addSequential(new ScaleSameSide());
+			addSequential(new ScaleSameSide(false));
 			addSequential(new RunMotionProfileOnRio("scalePrepareCrossing", leftSide, true, true, true));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new DriveDistanceOnHeading(scaleCrossDistance, -90));
@@ -166,6 +185,8 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new EjectCube(switchFrontSpeed));
+			addSequential(new DriveDistanceOnHeading(-frontSwitchBackUpDistance, 180, frontSwitchBackUpTolerance, 0, 0));
+			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
 	}
 	

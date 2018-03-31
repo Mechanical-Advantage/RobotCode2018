@@ -10,6 +10,8 @@ public class SwitchStraightDelivery extends CommandGroup {
 
 	private static final double switchDistance = 140;
 	private static final double ejectSpeed = 0.4;
+	private static final double backUpDistance = 30;
+	private static final double backUpTolerance = 3;
 	
 	public SwitchStraightDelivery() {
 //		addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
@@ -17,5 +19,7 @@ public class SwitchStraightDelivery extends CommandGroup {
 		addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 		addSequential(new ExtendIntake());
 		addSequential(new EjectCube(ejectSpeed));
+		addSequential(new DriveDistanceOnHeading(-backUpDistance, 0, backUpTolerance, 0, 0));
+		addSequential(new SetElevatorPosition(ElevatorPosition.GROUND));
 	}
 }
