@@ -25,9 +25,11 @@ import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.commands.ToggleIntakeOpen;
 import org.usfirst.frc.team6328.robot.commands.ToggleIntakeRetracted;
+import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
+import org.usfirst.frc.team6328.robot.triggers.MultiButtonTrigger;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -35,6 +37,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.Trigger;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -119,6 +122,8 @@ public class OI {
 	private Button ejectCubeTime = new JoystickButton(oiController2, 5);
 	private Button intakeOpen = new JoystickButton(oiController2, 2);
 	
+//	private Trigger testMultiButton = new MultiButtonTrigger(new JoystickButton(leftController, 6), new JoystickButton(leftController, 7));
+	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
 
@@ -163,6 +168,8 @@ public class OI {
 		elevScaleH.whileHeld(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH, false));
 		elevScaleH.whenReleased(new SetElevatorPosition(ElevatorPosition.DRIVE));
 		elevClimbGrab.whenPressed(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
+		
+//		testMultiButton.whenActive(new TurnToAngle(45));
 	}
 	
 	public double getLeftAxis() {
