@@ -26,9 +26,9 @@ public class SetCamera extends InstantCommand {
     		Robot.cameraSubsystem.useFrontCamera();
     	}
     	else {
-    		Robot.cameraSubsystem.useRearCamera();
+    		Robot.cameraSubsystem.useSecondCamera();
     	}
-    	SmartDashboard.putString("Current Camera", frontCamera ? "Front" : "Rear");
+    	SmartDashboard.putString("Current Camera", frontCamera ? "Front" : "Second");
     }
 
 }

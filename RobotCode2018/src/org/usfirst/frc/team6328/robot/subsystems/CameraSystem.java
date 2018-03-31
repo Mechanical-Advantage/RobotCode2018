@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class CameraSystem extends Subsystem {
 
 	private UsbCamera frontCamera;
-	private UsbCamera rearCamera;
+	private UsbCamera secondCamera;
 	private boolean serverCreated = false;
 	private boolean frontCameraAdded = false;
-	private boolean rearCameraAdded = false;
+	private boolean secondCameraAdded = false;
 	private int frontCameraID;
-	private int rearCameraID;
+	private int secondCameraID;
 
 	// Put methods for controlling this subsystem
 	// here. Call these from Commands.
@@ -29,9 +29,19 @@ public class CameraSystem extends Subsystem {
 	}
 
 	public CameraSystem() {
-		if (RobotMap.robot == RobotType.ROBOT_2017) {
+		switch (RobotMap.robot) {
+		case ROBOT_2017:
 			frontCameraID = 2;
-			rearCameraID = 0;
+			secondCameraID = 0;
+			break;
+		case ORIGINAL_ROBOT_2018:
+			frontCameraID = 0;
+			secondCameraID = 2;
+			break;
+		case EVERYBOT_2018:
+		case PRACTICE:
+		default:
+			break;
 		}
 	}
 
@@ -49,7 +59,7 @@ public class CameraSystem extends Subsystem {
 			if (!serverCreated) {
 				frontCamera = setupServer(frontCameraID);
 			} else {
-				frontCamera = new UsbCamera("Second Camera", 2);
+				frontCamera = new UsbCamera("Second Camera", frontCameraID);
 			}
 			frontCamera.setResolution(320, 240);
 			frontCamera.setFPS(15);
@@ -59,20 +69,20 @@ public class CameraSystem extends Subsystem {
 		System.out.println("Switching to front camera");
 	}
 
-	public void useRearCamera() {
-		if (RobotMap.robot == RobotType.ROBOT_2017) {
-			if (!rearCameraAdded) {
+	public void useSecondCamera() {
+		if (RobotMap.robot == RobotType.ROBOT_2017 || RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			if (!secondCameraAdded) {
 				if (!serverCreated) {
-					rearCamera = setupServer(rearCameraID);
+					secondCamera = setupServer(secondCameraID);
 				} else {
-					rearCamera = new UsbCamera("Second Camera", 0);
+					secondCamera = new UsbCamera("Second Camera", secondCameraID);
 				}
-				rearCamera.setResolution(320, 240);
-				rearCamera.setFPS(15);
-				rearCameraAdded = true;
+				secondCamera.setResolution(320, 240);
+				secondCamera.setFPS(15);
+				secondCameraAdded = true;
 			}
-			CameraServer.getInstance().getServer().setSource(rearCamera);
-			System.out.println("Switching to rear camera");
+			CameraServer.getInstance().getServer().setSource(secondCamera);
+			System.out.println("Switching to second camera");
 		}
 	}
 }

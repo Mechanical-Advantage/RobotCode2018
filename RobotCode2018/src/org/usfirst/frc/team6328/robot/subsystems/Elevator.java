@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Elevator subsystem
@@ -52,8 +51,10 @@ public class Elevator extends Subsystem {
 	private static final int slowTopPoint = topSoftLimit-7000; // Native units
 	private static final int slowBottomPoint = 7000;
 	private static final double slowLimitSpeed = 0.2;
+	@SuppressWarnings("unused")
 	private static final double LEDRange = 2; // Range on both sides of position that LED turns on in
 	private static final int startingHeight = 22375; // Ticks
+	private static final double upCameraHeight = 30; // Inches, height above which second camera is used
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final NeutralMode brakeMode = NeutralMode.Brake;
 
@@ -69,6 +70,7 @@ public class Elevator extends Subsystem {
 	boolean resetCompleted = false;
 	boolean limitEnabledLast = true;
 	boolean elevatorEnabledLast = true;
+	boolean secondCameraLast = false;
 	
 	@SuppressWarnings("unused")
 	public Elevator() {
@@ -210,6 +212,16 @@ public class Elevator extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && Robot.oi.isElevatorLimitEnabled() != limitEnabledLast && resetCompleted) {
 			talonMaster.overrideSoftLimitsEnable(Robot.oi.isElevatorLimitEnabled());
 			limitEnabledLast = Robot.oi.isElevatorLimitEnabled();
+		}
+		
+		boolean secondCamera = getPosition() >= upCameraHeight;
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && secondCamera != secondCameraLast) {
+			if (secondCamera) {
+				Robot.cameraSubsystem.useSecondCamera();
+			} else {
+				Robot.cameraSubsystem.useFrontCamera();
+			}
+			secondCameraLast = secondCamera;
 		}
 		
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
