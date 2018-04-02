@@ -39,6 +39,7 @@ import org.usfirst.frc.team6328.robot.subsystems.Spork;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
@@ -161,6 +162,11 @@ public class Robot extends TimedRobot {
 		}
 		if (RobotMap.robot != RobotType.EVERYBOT_2018) {
 			cameraSubsystem.useFrontCamera();
+		}
+		
+		if (RobotMap.robot == RobotType.ROBOT_2017) {
+			@SuppressWarnings("unused")
+			Compressor c = new Compressor();
 		}
 	}
 	
