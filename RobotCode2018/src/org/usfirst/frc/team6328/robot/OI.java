@@ -16,6 +16,7 @@ import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.OpenIntake;
 import org.usfirst.frc.team6328.robot.commands.PulseIntake;
+import org.usfirst.frc.team6328.robot.commands.ReleaseSpork;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
@@ -23,9 +24,7 @@ import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
 import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
-import org.usfirst.frc.team6328.robot.commands.ToggleIntakeOpen;
 import org.usfirst.frc.team6328.robot.commands.ToggleIntakeRetracted;
-import org.usfirst.frc.team6328.robot.commands.TurnToAngle;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
@@ -37,7 +36,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.buttons.Trigger;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -116,13 +114,15 @@ public class OI {
 	private Button raiseArm = new JoystickButton(oiController1, 9);
 	private Button lowerArm = new JoystickButton(oiController1, 10);
 	
-	private Button startIntake = new JoystickButton(oiController2, 4);
+	private Button runIntake = new JoystickButton(oiController2, 4);
 	private Button stopIntake = new JoystickButton(oiController2, 3);
 	private Button retractIntake = new JoystickButton(oiController2, 1);
 	private Button ejectCubeTime = new JoystickButton(oiController2, 5);
 	private Button intakeOpen = new JoystickButton(oiController2, 2);
 	
-//	private Trigger testMultiButton = new MultiButtonTrigger(new JoystickButton(leftController, 6), new JoystickButton(leftController, 7));
+	// Spork
+	private MultiButtonTrigger releaseSpork = new MultiButtonTrigger(new JoystickButton(leftController, 11), 
+			new JoystickButton(rightController, 6));
 	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
@@ -149,8 +149,8 @@ public class OI {
 			lowerArm.whenPressed(new ResetArm());
 		}
 		IntakeCube intakeCommand = new IntakeCube(false);
-		startIntake.whenPressed(intakeCommand);
-		startIntake.whileHeld(intakeCommand);
+		runIntake.whenPressed(intakeCommand);
+		runIntake.whileHeld(intakeCommand);
 		stopIntake.whenPressed(new PulseIntake());
 		retractIntake.whenPressed(new ToggleIntakeRetracted());
 		intakeOpen.whenPressed(new OpenIntake());
@@ -169,7 +169,7 @@ public class OI {
 		elevScaleH.whenReleased(new SetElevatorPosition(ElevatorPosition.DRIVE));
 		elevClimbGrab.whenPressed(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
 		
-//		testMultiButton.whenActive(new TurnToAngle(45));
+		releaseSpork.whenPressed(new ReleaseSpork());
 	}
 	
 	public double getLeftAxis() {
