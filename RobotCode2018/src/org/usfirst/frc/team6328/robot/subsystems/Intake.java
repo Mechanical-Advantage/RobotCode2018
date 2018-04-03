@@ -110,7 +110,6 @@ public class Intake extends Subsystem {
 			Robot.oi.updateLED(OILED.CUBE_SENSE_2, sensor);
 			cubeSensedLast = sensor;
 		}
-		System.out.println(Robot.oi.getIntakeLevel());
 	}
 
 	public void intake() {
