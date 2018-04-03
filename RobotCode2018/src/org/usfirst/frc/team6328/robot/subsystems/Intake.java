@@ -65,7 +65,7 @@ public class Intake extends Subsystem {
 		if (RobotMap.robot == RobotType.EVERYBOT_2018) {
 			intakeSpeed = 1;
 			ejectSpeed = 1;
-			intakeSpeedLocked = true;
+			intakeSpeedLocked = false;
 			invertLeft = false;
 			invertRight = true;
 			enableCurrentLimit = true;
@@ -110,6 +110,7 @@ public class Intake extends Subsystem {
 			Robot.oi.updateLED(OILED.CUBE_SENSE_2, sensor);
 			cubeSensedLast = sensor;
 		}
+		System.out.println(Robot.oi.getIntakeLevel());
 	}
 
 	public void intake() {
