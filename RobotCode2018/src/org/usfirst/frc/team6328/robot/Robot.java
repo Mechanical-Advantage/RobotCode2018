@@ -21,6 +21,7 @@ import org.usfirst.frc.team6328.robot.commands.DriveDistanceOnHeading;
 import org.usfirst.frc.team6328.robot.commands.DriveWithJoystick.JoystickMode;
 import org.usfirst.frc.team6328.robot.commands.EnableAllElevatorSlaves;
 import org.usfirst.frc.team6328.robot.commands.GenerateMotionProfiles;
+import org.usfirst.frc.team6328.robot.commands.PneumaticsTest;
 import org.usfirst.frc.team6328.robot.commands.RunMotionProfileOnRio;
 import org.usfirst.frc.team6328.robot.commands.SmartSideAuto;
 import org.usfirst.frc.team6328.robot.commands.SwitchStraightDelivery;
@@ -168,6 +169,9 @@ public class Robot extends TimedRobot {
 			@SuppressWarnings("unused")
 			Compressor c = new Compressor();
 		}
+		
+		Command test = new PneumaticsTest();
+		SmartDashboard.putData(test);
 	}
 	
 	@Override
