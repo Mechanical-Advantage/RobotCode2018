@@ -2,17 +2,17 @@ package org.usfirst.frc.team6328.robot.triggers;
 
 import java.util.Arrays;
 
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.Trigger;
 
 /**
  * A trigger that requires multiple buttons to be pressed
  */
-public class MultiButtonTrigger extends Trigger {
+public class MultiButtonTrigger extends Button {
 	
-	JoystickButton[] buttons;
+	Trigger[] buttons;
 	
-	public MultiButtonTrigger(JoystickButton...buttons) {
+	public MultiButtonTrigger(Trigger...buttons) {
 		this.buttons = buttons;
 	}
 
