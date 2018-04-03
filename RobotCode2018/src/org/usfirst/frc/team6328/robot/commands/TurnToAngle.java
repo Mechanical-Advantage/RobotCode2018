@@ -108,11 +108,11 @@ public class TurnToAngle extends Command implements PIDOutput {
         turnController.setToleranceBuffer(kToleranceBufSamples);
         turnController.setContinuous(true);
         
-        targetAngle = absoluteAngle ? targetAngle : Robot.ahrs.getYaw()+targetAngle;
+        double currentTargetAngle = absoluteAngle ? targetAngle : Robot.ahrs.getYaw()+targetAngle;
         // limit input to -180 to 180
-        targetAngle = (targetAngle>180) ? -180+(targetAngle-180) : targetAngle;
-        targetAngle = (targetAngle<-180) ? 180+(targetAngle+180) : targetAngle;
-        turnController.setSetpoint(targetAngle);
+        currentTargetAngle = (currentTargetAngle>180) ? -180+(currentTargetAngle-180) : currentTargetAngle;
+        currentTargetAngle = (currentTargetAngle<-180) ? 180+(currentTargetAngle+180) : currentTargetAngle;
+        turnController.setSetpoint(currentTargetAngle);
         turnController.enable();
     }
 
@@ -131,7 +131,7 @@ public class TurnToAngle extends Command implements PIDOutput {
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return (Math.abs(Robot.ahrs.getYaw() - targetAngle) < kToleranceDegrees) && turnController.onTarget();
+        return (Math.abs(Robot.ahrs.getYaw() - turnController.getSetpoint()) < kToleranceDegrees) && turnController.onTarget();
     }
 
     // Called once after isFinished returns true
