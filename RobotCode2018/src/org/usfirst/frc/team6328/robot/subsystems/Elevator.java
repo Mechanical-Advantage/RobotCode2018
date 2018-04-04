@@ -300,7 +300,7 @@ public class Elevator extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			return Math.abs(getPosition()-target) <= allowableError;
 		}
-		return false;
+		return true;
 	}
 	
 	/**
