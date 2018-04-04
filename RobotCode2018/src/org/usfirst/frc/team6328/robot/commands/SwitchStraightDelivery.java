@@ -18,7 +18,7 @@ public class SwitchStraightDelivery extends CommandGroup {
 		addSequential(new DriveDistanceOnHeading(switchDistance-RobotMap.robotLength, 0));
 		addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 		addSequential(new ExtendIntake());
-		addSequential(new EjectCube(ejectSpeed));
+		addSequential(new EjectCubeForTime(ejectSpeed));
 		addSequential(new DriveDistanceOnHeading(-backUpDistance, 0, backUpTolerance, 0, 0));
 		addSequential(new SetElevatorPosition(ElevatorPosition.GROUND));
 	}

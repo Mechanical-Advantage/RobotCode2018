@@ -24,7 +24,7 @@ public class CenterAuto extends CommandGroup {
 			addSequential(new RunMotionProfileOnRio("centerTo" + sideString + "Switch", false, true, false, true));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
-			addSequential(new EjectCube(ejectSpeed));
+			addSequential(new EjectCubeForTime(ejectSpeed));
 			addSequential(new DriveDistanceOnHeading(-backUpDistance, 0, backUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			double turn = switchSide == OwnedSide.LEFT ? -90 : 90;

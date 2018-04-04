@@ -78,7 +78,7 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new TurnToAngle(heading, true));
 			addSequential(new DriveForTime(2, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
-			addSequential(new EjectCube(switchEndSpeed));
+			addSequential(new EjectCubeForTime(switchEndSpeed));
 			addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? -90 : 90, endSwitchBackUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(0, true));
@@ -90,7 +90,7 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
-			addSequential(new EjectCube(switchEndSpeed));
+			addSequential(new EjectCubeForTime(switchEndSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? 90 : -90, endSwitchBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -104,7 +104,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
 			addSequential(new ExtendIntake());
-			addSequential(new EjectCube(scaleFrontSpeed));
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -118,7 +118,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new TimedLift());
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.IF_FLAT)); // convergence disabled if on platform
 			addSequential(new ExtendIntake());
-			addSequential(new EjectCube(scaleFrontSpeed));
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -136,7 +136,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
-			addSequential(new EjectCube(switchFrontSpeed));
+			addSequential(new EjectCubeForTime(switchFrontSpeed));
 			addSequential(new DriveDistanceOnHeading(-frontSwitchBackUpDistance, 180, frontSwitchBackUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
@@ -167,7 +167,7 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new TurnToAngle(0, true));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToScaleDistance, 0));
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
-			addSequential(new EjectCube(scaleFrontSpeed));
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new TurnToAngle(180, true));
@@ -184,7 +184,7 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new SetElevatorPosition(ElevatorPosition.SWITCH));
 			addSequential(new DriveDistanceOnHeading(cubePickUpToSwitchDistance, 180));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
-			addSequential(new EjectCube(switchFrontSpeed));
+			addSequential(new EjectCubeForTime(switchFrontSpeed));
 			addSequential(new DriveDistanceOnHeading(-frontSwitchBackUpDistance, 180, frontSwitchBackUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
