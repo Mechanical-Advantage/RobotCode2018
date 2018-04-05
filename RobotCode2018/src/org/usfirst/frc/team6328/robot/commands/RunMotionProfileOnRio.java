@@ -43,6 +43,8 @@ public class RunMotionProfileOnRio extends Command {
 	private double initialProfileYaw;
 	private double initialPositionLeft, initialPositionRight;
 	private double gyroHeading;
+	private double desiredHeading;
+	private double angleDifference;
 	private double positionErrorLeftPositive, positionErrorLeftNegative, positionErrorRightPositive,
 		positionErrorRightNegative, yawErrorPositive, yawErrorNegative;
 	private int trajectoryLength;
@@ -213,10 +215,10 @@ public class RunMotionProfileOnRio extends Command {
     		double r = rightFollower.calculate(Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
     		
     		gyroHeading = Pathfinder.boundHalfDegrees(Robot.ahrs.getYaw()-initialYaw);
-        	double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)); // Pathfinder native headings are in radians
+        	desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)); // Pathfinder native headings are in radians
         	desiredHeading*= flipLeftRight ? -1 : 1;
         	
-        	double angleDifference = Pathfinder.boundHalfDegrees(desiredHeading - gyroHeading);
+        angleDifference = Pathfinder.boundHalfDegrees(desiredHeading - gyroHeading);
         	
         	// At end, load less aggressive parameters for final adjustment
         	if (!leftFollower.isFinished()) {
@@ -264,8 +266,8 @@ public class RunMotionProfileOnRio extends Command {
 	        	SmartDashboard.putNumber("Profile Current Position Left", Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft);
 	        	SmartDashboard.putNumber("Profile Current Position Right", Robot.driveSubsystem.getDistanceRight()-initialPositionRight);
 	        	SmartDashboard.putString("Profile Heading Graph", Robot.genGraphStr(
-	        			Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())), gyroHeading));
-	        	SmartDashboard.putNumber("Profile Target Heading", Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())));
+	        			desiredHeading, gyroHeading));
+	        	SmartDashboard.putNumber("Profile Target Heading", desiredHeading);
 	        	SmartDashboard.putNumber("Profile Current Heading", gyroHeading);
 	        	
 	        	SmartDashboard.putNumber("Profile P output", kP.get()*((leftFollower.getLastError()+rightFollower.getLastError())/2));
@@ -281,8 +283,8 @@ public class RunMotionProfileOnRio extends Command {
     		// current segment and heading should be same on left and right, only check one
     		// At end of profile only correct angle
 		return leftFollower.isFinished() && !(endConverge == ConvergenceMode.IF_FLAT && tilted) && (endConverge == ConvergenceMode.NEVER || !enableGyroCorrection ||
-				(Math.abs(gyroHeading-Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading())))
-				<=AngleErrorThreshold.get()));
+				(Math.abs(angleDifference))
+				<=AngleErrorThreshold.get());
     }
 
     // Called once after isFinished returns true
@@ -293,7 +295,7 @@ public class RunMotionProfileOnRio extends Command {
     		if (RobotMap.tuningMode) {
     			System.out.printf("DLeft: %f, DRight: %f, Yaw: %f, Target Yaw: %f, Target DLeft: %f, Target DRight: %f\n",
     					Robot.driveSubsystem.getDistanceLeft()-initialPositionLeft, Robot.driveSubsystem.getDistanceRight()-initialPositionRight, gyroHeading,
-    					Pathfinder.boundHalfDegrees(Pathfinder.r2d(leftFollower.getHeading()-initialProfileYaw)), leftFollower.getSegment().position, rightFollower.getSegment().position);
+    					desiredHeading, leftFollower.getSegment().position, rightFollower.getSegment().position);
     			System.out.printf("Errors: Lp: %f, Ln: %f, Rp: %f, Rn: %f, Yp: %f, Yn: %f\n",
     					positionErrorLeftPositive/trajectoryLength, positionErrorLeftNegative/trajectoryLength,
     					positionErrorRightPositive/trajectoryLength, positionErrorRightNegative/trajectoryLength,
