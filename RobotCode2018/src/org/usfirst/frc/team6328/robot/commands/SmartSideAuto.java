@@ -87,7 +87,7 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide(boolean enableBackup) {
-			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, true));
+			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, false));
 			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
 			addSequential(new ExtendIntake());
 			addSequential(new EjectCubeForTime(switchEndSpeed));
@@ -108,7 +108,7 @@ public class SmartSideAuto extends InstantCommand {
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
-				addSequential(new TurnToAngle(-135, true));
+				addSequential(new TurnToAngle(-165, true));
 			}
 		}
 	}
@@ -159,9 +159,9 @@ public class SmartSideAuto extends InstantCommand {
 	private class SwitchSameSideTwoCube extends CommandGroup {
 		public SwitchSameSideTwoCube() {
 			addSequential(new SwitchSameSide(false));
-			addSequential(new RunMotionProfileOnRio("sideSwitchPrepareCrossing", leftSide, true, true, true));
+			addSequential(new RunMotionProfileOnRio("sideSwitchPrepareCrossing", leftSide, true, true, false));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
-			addSequential(new RunMotionProfileOnRio("sideSwitchCross", leftSide, true, false, true));
+			addSequential(new RunMotionProfileOnRio("sideSwitchCross", leftSide, true, false, false));
 			addSequential(new DriveToCube());
 			addParallel(new SetElevatorPosition(ElevatorPosition.DRIVE));
 			addSequential(new TurnToAngle(0, true));
@@ -177,7 +177,7 @@ public class SmartSideAuto extends InstantCommand {
 	private class ScaleSameSideTwoCube extends CommandGroup {
 		public ScaleSameSideTwoCube() {
 			addSequential(new ScaleSameSide(false));
-			addSequential(new RunMotionProfileOnRio("scalePrepareCrossing", leftSide, true, true, true));
+			addSequential(new RunMotionProfileOnRio("scalePrepareCrossing", leftSide, true, true, false));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
 			addSequential(new DriveDistanceOnHeading(scaleCrossDistance, -90));
 			addSequential(new DriveToCube());
