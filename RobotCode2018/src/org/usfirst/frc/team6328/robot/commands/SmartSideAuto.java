@@ -108,7 +108,8 @@ public class SmartSideAuto extends InstantCommand {
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
-				addSequential(new TurnToAngle(-165, true));
+				int invert = leftSide ? -1 : 1;
+				addSequential(new TurnToAngle(-165*invert, true));
 			}
 		}
 	}
@@ -122,7 +123,8 @@ public class SmartSideAuto extends InstantCommand {
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
-				addSequential(new TurnToAngle(160, true));
+				int invert = leftSide ? -1 : 1;
+				addSequential(new TurnToAngle(160*invert, true));
 			}
 		}
 	}
