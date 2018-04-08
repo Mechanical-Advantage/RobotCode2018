@@ -31,17 +31,27 @@ public class Spork extends Subsystem {
 	private static final boolean reverseOutputLeft = false;
 	private static final boolean reverseOutputRight = false;
 	private static final double liftSpeed = 0.7;
-	private static final double resetSpeed = 0.5;
-	private static final int resetTarget = 0;
-	private static final int resetTolerance = 100;
-	private static final int sideDifferenceTolerance = 0;
+	private static final double retractSpeedSlow = 0.2;
+	private static final double retractSpeedFast = 0.5;
+	private static final int sideDifferenceTolerance = 0; // Ticks
+	private static final double rightPercent = 1; // Right percent of left adjustment
+	// Slack parameters are measured from 0 (after deploy)
+	private static final int rightDeploySlack = 0;
+	private static final int leftDeploySlack = 0;
+	private static final int rightLiftSlack = 0;
+	private static final int leftLiftSlack = 0;
+	private static final double slackWindSpeed = 0.5;
 
 	private TalonSRX leftTalon;
 	private TalonSRX rightTalon;
 	private DoubleSolenoid lockSolenoid;
 	private boolean leftTalonEnabled = true;
 	private boolean rightTalonEnabled = true;
-	private double setpoint;
+	private double leftSetpoint;
+	private double rightSetpoint;
+	
+	public LeftSpork leftSpork = new LeftSpork();
+	public RightSpork rightSpork = new RightSpork();
 	
 	public Spork() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
@@ -83,6 +93,8 @@ public class Spork extends Subsystem {
 			rightTalon.configPeakCurrentDuration(peakCurrentLimitDuration, configTimeout);
 			rightTalon.configContinuousCurrentLimit(continuousCurrentLimit, configTimeout);
 			rightTalon.enableCurrentLimit(enableCurrentLimit);
+			
+			lockSolenoid.set(Value.kForward);
 		}
 	}
 	
@@ -90,7 +102,7 @@ public class Spork extends Subsystem {
 	public void periodic() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			int leftPosition = leftTalon.getSelectedSensorPosition(0);
-			int rightPosition = rightTalon.getSelectedSensorPosition(0);
+			double rightPosition = rightTalon.getSelectedSensorPosition(0)*rightPercent;
 			if (leftPosition >= rightPosition + sideDifferenceTolerance) {
 				leftTalonEnabled = false;
 				rightTalonEnabled = true;
@@ -109,12 +121,12 @@ public class Spork extends Subsystem {
 	
 	private void updateTalonSetpoints() {
 		if (leftTalonEnabled) {
-			leftTalon.set(ControlMode.PercentOutput, setpoint);
+			leftTalon.set(ControlMode.PercentOutput, leftSetpoint);
 		} else {
 			leftTalon.neutralOutput();
 		}
 		if (rightTalonEnabled) {
-			rightTalon.set(ControlMode.PercentOutput, setpoint);
+			rightTalon.set(ControlMode.PercentOutput, rightSetpoint*rightPercent);
 		} else {
 			rightTalon.neutralOutput();
 		}
@@ -132,38 +144,146 @@ public class Spork extends Subsystem {
 		}
 	}
 	
-	public void lift() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && lockSolenoid.get() == Value.kReverse) {
-			setpoint = liftSpeed;
-			updateTalonSetpoints();
-		}
-	}
-	
-	public void reset() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && lockSolenoid.get() == Value.kReverse) {
-			setpoint = resetSpeed;
-			updateTalonSetpoints();
-		}
-	}
-	
-	public boolean isResetComplete() {
+	public boolean isDeployed() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			return Math.abs(leftTalon.getSelectedSensorPosition(0)-resetTarget) <= resetTolerance && 
-					Math.abs(rightTalon.getSelectedSensorPosition(0)-resetTarget) <= resetTolerance;
+			return lockSolenoid.get() == Value.kReverse;
 		}
 		return false;
+	}
+	
+	public void lift() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			leftSetpoint = liftSpeed;
+			rightSetpoint = liftSpeed;
+			updateTalonSetpoints();
+		}
+	}
+	
+	public void retractSlowLeft() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			leftSetpoint = retractSpeedSlow;
+			updateTalonSetpoints();
+		}
+	}
+	public void retractSlowRight() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			rightSetpoint = retractSpeedSlow;
+			updateTalonSetpoints();
+		}
+	}
+	public void retractFastLeft() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			leftSetpoint = retractSpeedFast;
+			updateTalonSetpoints();
+		}
+	}
+	public void retractFastRight() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			rightSetpoint = retractSpeedFast;
+			updateTalonSetpoints();
+		}
+	}
+	
+	public void windSlackLeft() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			leftSetpoint = slackWindSpeed;
+			updateTalonSetpoints();
+		}
+	}
+	public void windSlackRight() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			rightSetpoint = slackWindSpeed;
+			updateTalonSetpoints();
+		}
 	}
 
 	public void stop() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			leftTalon.neutralOutput();
-			rightTalon.neutralOutput();
+			leftSetpoint = 0;
+			rightSetpoint = 0;
+			leftTalonEnabled = false;
+			rightTalonEnabled = false;
+			updateTalonSetpoints();
 		}
+	}
+	public void stopLeft() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			leftSetpoint = 0;
+			leftTalonEnabled = false;
+			updateTalonSetpoints();
+		}
+	}
+	public void stopRight() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			rightSetpoint = 0;
+			rightTalonEnabled = false;
+			updateTalonSetpoints();
+		}
+	}
+	
+	public void resetEncoders() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			leftTalon.setSelectedSensorPosition(0, 0, configTimeout);
+			rightTalon.setSelectedSensorPosition(0, 0, configTimeout);
+		}
+	}
+	
+	public boolean isLeftDeploySlackWound() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && 
+				leftTalon.getSelectedSensorPosition(0) >= leftDeploySlack) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isRightDeploySlackWound() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && 
+				rightTalon.getSelectedSensorPosition(0) >= rightDeploySlack) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isLeftLiftSlackWound() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && 
+				leftTalon.getSelectedSensorPosition(0) >= leftLiftSlack) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isRightLiftSlackWound() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && 
+				rightTalon.getSelectedSensorPosition(0) >= rightLiftSlack) {
+			return true;
+		}
+		return false;
 	}
 
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
+	}
+	
+	// These subsystems do nothing but should be used as requirements so left and right are managed separately
+	public static class LeftSpork extends Subsystem {
+		
+		private LeftSpork() {
+			
+		}
+
+		@Override
+		protected void initDefaultCommand() {
+			
+		}
+	}
+	public static class RightSpork extends Subsystem {
+		
+		private RightSpork() {
+			
+		}
+
+		@Override
+		protected void initDefaultCommand() {
+			
+		}
 	}
 }
 

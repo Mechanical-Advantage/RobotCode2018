@@ -14,10 +14,13 @@ import org.usfirst.frc.team6328.robot.commands.CloseIntake;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
+import org.usfirst.frc.team6328.robot.commands.LiftSpork;
 import org.usfirst.frc.team6328.robot.commands.OpenIntake;
 import org.usfirst.frc.team6328.robot.commands.PulseIntake;
-import org.usfirst.frc.team6328.robot.commands.ReleaseSpork;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
+import org.usfirst.frc.team6328.robot.commands.RetractSpork;
+import org.usfirst.frc.team6328.robot.commands.RetractSpork.SporkRetractSpeed;
+import org.usfirst.frc.team6328.robot.commands.RetractSpork.SporkSide;
 import org.usfirst.frc.team6328.robot.commands.SetCamera;
 import org.usfirst.frc.team6328.robot.commands.SetElevatorPosition;
 import org.usfirst.frc.team6328.robot.commands.SwitchElevatorGear;
@@ -25,6 +28,7 @@ import org.usfirst.frc.team6328.robot.commands.SwitchGear;
 import org.usfirst.frc.team6328.robot.commands.ThrowCube;
 import org.usfirst.frc.team6328.robot.commands.ToggleGear;
 import org.usfirst.frc.team6328.robot.commands.ToggleIntakeRetracted;
+import org.usfirst.frc.team6328.robot.commands.ToggleSporkDeploy;
 import org.usfirst.frc.team6328.robot.subsystems.DriveTrain.DriveGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
@@ -121,8 +125,14 @@ public class OI {
 	private Button intakeOpen = new JoystickButton(oiController2, 2);
 	
 	// Spork
-	private MultiButtonTrigger releaseSpork = new MultiButtonTrigger(new JoystickButton(leftController, 11), 
-			new JoystickButton(rightController, 6));
+	private MultiButtonTrigger deploySporkToggle = new MultiButtonTrigger(new JoystickButton(leftController, 7), 
+			new JoystickButton(rightController, 10));
+	private JoystickButton liftSporkLeft = new JoystickButton(leftController, 10);
+	private JoystickButton liftSporkRight = new JoystickButton(rightController, 7);
+	private JoystickButton retractSporkLeftSlow = new JoystickButton(leftController, 11);
+	private JoystickButton retractSporkLeftFast = new JoystickButton(leftController, 6);
+	private JoystickButton retractSporkRightSlow = new JoystickButton(rightController, 11);
+	private JoystickButton retractSporkRightFast = new JoystickButton(rightController, 6);
 	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
@@ -169,7 +179,14 @@ public class OI {
 		elevScaleH.whenReleased(new SetElevatorPosition(ElevatorPosition.DRIVE));
 		elevClimbGrab.whenPressed(new SetElevatorPosition(ElevatorPosition.CLIMB_GRAB));
 		
-		releaseSpork.whenPressed(new ReleaseSpork());
+		deploySporkToggle.whenPressed(new ToggleSporkDeploy());
+		LiftSpork liftCommand = new LiftSpork();
+		liftSporkLeft.whileHeld(liftCommand);
+		liftSporkRight.whileHeld(liftCommand);
+		retractSporkLeftSlow.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.SLOW));
+		retractSporkLeftFast.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.FAST));
+		retractSporkRightSlow.whileHeld(new RetractSpork(SporkSide.RIGHT, SporkRetractSpeed.SLOW));
+		retractSporkRightFast.whileHeld(new RetractSpork(SporkSide.RIGHT, SporkRetractSpeed.FAST));
 	}
 	
 	public double getLeftAxis() {
