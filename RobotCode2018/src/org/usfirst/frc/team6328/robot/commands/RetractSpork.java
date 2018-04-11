@@ -65,7 +65,14 @@ public class RetractSpork extends Command {
 
 	// Called once after isFinished returns true
 	protected void end() {
-		Robot.spork.stop();
+		switch (side) {
+		case LEFT:
+			Robot.spork.stopLeft();
+			break;
+		case RIGHT:
+			Robot.spork.stopRight();
+			break;
+		}
 	}
 
 	// Called when another command which requires one or more of the same

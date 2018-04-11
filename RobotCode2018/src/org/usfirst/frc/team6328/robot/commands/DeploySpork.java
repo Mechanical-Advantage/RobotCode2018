@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
  */
 public class DeploySpork extends CommandGroup {
 
-	private static final double deployWait = 0.5;
+	private static final double deployWait = 1.5;
 
 	public DeploySpork() {
 		addSequential(new ReleaseSolenoid());

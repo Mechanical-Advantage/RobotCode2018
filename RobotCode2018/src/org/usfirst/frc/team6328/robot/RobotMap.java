@@ -137,6 +137,11 @@ public class RobotMap {
 			intakeOpenSolenoid2 = 7;
 			intakeSensor = 1;
 			tapeSensor = 2;
+			sporkLeft = 9;
+			sporkRight = 8;
+			sporkLockPCM = 0;
+			sporkLockSolenoid1 = 4;
+			sporkLockSolenoid2 = 5;
 			robotLength = 32+6;
 			robotWidth = 27+6;
 			break;

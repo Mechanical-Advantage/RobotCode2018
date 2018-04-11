@@ -19,10 +19,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Spork extends Subsystem {
 	
 	private static final int configTimeout = 0;
-	private static final boolean enableCurrentLimit = false;
-	private static final int continuousCurrentLimit = 35;
+	private static final boolean enableCurrentLimit = true;
+	private static final int continuousCurrentLimit = 30;
 	private static final int peakCurrentLimit = 50;
-	private static final int peakCurrentLimitDuration = 2000; // ms
+	private static final int peakCurrentLimitDuration = 1000; // ms
 	private static final FeedbackDevice encoderType = FeedbackDevice.CTRE_MagEncoder_Relative;
 	private static final int leftStartingPosition = 0; // Ticks
 	private static final int rightStartingPosition = 0; // Ticks
@@ -31,9 +31,9 @@ public class Spork extends Subsystem {
 	private static final boolean reverseOutputLeft = false;
 	private static final boolean reverseOutputRight = false;
 	private static final double liftSpeed = 0.7;
-	private static final double retractSpeedSlow = 0.2;
-	private static final double retractSpeedFast = 0.5;
-	private static final int sideDifferenceTolerance = 0; // Ticks
+	private static final double retractSpeedSlow = -0.2;
+	private static final double retractSpeedFast = -0.5;
+	private static final int sideDifferenceTolerance = 12; // Ticks
 	private static final double rightPercent = 1; // Right percent of left adjustment
 	// Slack parameters are measured from 0 (after deploy)
 	private static final int rightDeploySlack = 0;
@@ -201,22 +201,18 @@ public class Spork extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftSetpoint = 0;
 			rightSetpoint = 0;
-			leftTalonEnabled = false;
-			rightTalonEnabled = false;
 			updateTalonSetpoints();
 		}
 	}
 	public void stopLeft() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			leftSetpoint = 0;
-			leftTalonEnabled = false;
 			updateTalonSetpoints();
 		}
 	}
 	public void stopRight() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			rightSetpoint = 0;
-			rightTalonEnabled = false;
 			updateTalonSetpoints();
 		}
 	}
