@@ -9,6 +9,7 @@ package org.usfirst.frc.team6328.robot;
 
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
+import org.usfirst.frc.team6328.robot.commands.AutoClimb;
 import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.CloseIntake;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
@@ -167,7 +168,7 @@ public class OI {
 		intakeOpen.whenReleased(new CloseIntake());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			climb.whenPressed(new Climb());
+			climb.whenPressed(new AutoClimb());
 		}
 		
 		elevGround.whenPressed(new SetElevatorPosition(ElevatorPosition.GROUND));
