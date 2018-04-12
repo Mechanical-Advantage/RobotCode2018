@@ -2,6 +2,7 @@ package org.usfirst.frc.team6328.robot.commands;
 
 import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
+import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorGear;
 import org.usfirst.frc.team6328.robot.subsystems.Elevator.ElevatorPosition;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -36,6 +37,7 @@ public class AutoClimb extends CommandGroup {
 		addSequential(new DriveDistanceOnHeading(backupDistance*-1));
 		addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 		addSequential(new DriveDistanceOnHeading(forwardDistance));
+		addSequential(new SwitchElevatorGear(ElevatorGear.LOW));
 		addSequential(new SetLED(false));
 	}
 	
