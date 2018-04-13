@@ -72,8 +72,8 @@ public class RobotMap {
 	public static int tapeSensor;
 	public static double robotWidth;
 	public static double robotLength;
-	public static final boolean tuningMode = true;
-	public static final RobotType robot = RobotType.ROBOT_2017;
+	public static final boolean tuningMode = false;
+	public static final RobotType robot = RobotType.ORIGINAL_ROBOT_2018;
 	
 	public RobotMap() {
 		switch (robot) {
@@ -133,8 +133,8 @@ public class RobotMap {
 			intakeRetractSolenoid1 = 4;
 			intakeRetractSolenoid2 = 5;
 			intakeOpenPCM = 1;
-			intakeOpenSolenoid1 = 6;
-			intakeOpenSolenoid2 = 7;
+			intakeOpenSolenoid1 = 7;
+			intakeOpenSolenoid2 = 6;
 			intakeSensor = 1;
 			tapeSensor = 2;
 			sporkLeft = 9;
