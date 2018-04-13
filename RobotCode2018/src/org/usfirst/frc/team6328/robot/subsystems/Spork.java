@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.subsystems;
 
+import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 
@@ -28,12 +29,12 @@ public class Spork extends Subsystem {
 	private static final int rightStartingPosition = 0; // Ticks
 	private static final boolean reverseSensorLeft = false;
 	private static final boolean reverseSensorRight = false;
-	private static final boolean reverseOutputLeft = false;
+	private static final boolean reverseOutputLeft = true;
 	private static final boolean reverseOutputRight = false;
 	private static final double liftSpeed = 0.7;
 	private static final double retractSpeedSlow = -0.2;
 	private static final double retractSpeedFast = -0.5;
-	private static final int sideDifferenceTolerance = 12; // Ticks
+	private static final int sideDifferenceTolerance = 100; // Ticks
 	private static final double rightPercent = 1; // Right percent of left adjustment
 	// Slack parameters are measured from 0 (after deploy)
 	private static final int rightDeploySlack = 0;
@@ -45,10 +46,11 @@ public class Spork extends Subsystem {
 	private TalonSRX leftTalon;
 	private TalonSRX rightTalon;
 	private DoubleSolenoid lockSolenoid;
-	private boolean leftTalonEnabled = true;
-	private boolean rightTalonEnabled = true;
+	private double leftTalonMultiplier = 1;
+	private double rightTalonMultiplier = 1;
 	private double leftSetpoint;
 	private double rightSetpoint;
+	private boolean enableSideLimits = true;
 	
 	public LeftSpork leftSpork = new LeftSpork();
 	public RightSpork rightSpork = new RightSpork();
@@ -103,33 +105,27 @@ public class Spork extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
 			int leftPosition = leftTalon.getSelectedSensorPosition(0);
 			double rightPosition = rightTalon.getSelectedSensorPosition(0)*rightPercent;
-			if (leftPosition >= rightPosition + sideDifferenceTolerance) {
-				leftTalonEnabled = false;
-				rightTalonEnabled = true;
+			double lowPercent = Robot.map(Math.abs(rightPosition - leftPosition), 0, sideDifferenceTolerance, 1, 0);
+			lowPercent = lowPercent < 0 ? 0 : lowPercent;
+			if (enableSideLimits && leftPosition > rightPosition) {
+				leftTalonMultiplier = lowPercent;
+				rightTalonMultiplier = 1;
 				updateTalonSetpoints();
-			} else if (rightPosition >= leftPosition + sideDifferenceTolerance) {
-				rightTalonEnabled = false;
-				leftTalonEnabled = true;
+			} else if (enableSideLimits && rightPosition > leftPosition) {
+				rightTalonMultiplier = lowPercent;
+				leftTalonMultiplier = 1;
 				updateTalonSetpoints();
 			} else {
-				rightTalonEnabled = true;
-				leftTalonEnabled = true;
+				rightTalonMultiplier = 1;
+				leftTalonMultiplier = 1;
 				updateTalonSetpoints();
 			}
 		}
 	}
-	
+
 	private void updateTalonSetpoints() {
-		if (leftTalonEnabled) {
-			leftTalon.set(ControlMode.PercentOutput, leftSetpoint);
-		} else {
-			leftTalon.neutralOutput();
-		}
-		if (rightTalonEnabled) {
-			rightTalon.set(ControlMode.PercentOutput, rightSetpoint*rightPercent);
-		} else {
-			rightTalon.neutralOutput();
-		}
+		leftTalon.set(ControlMode.PercentOutput, leftSetpoint*leftTalonMultiplier);
+		rightTalon.set(ControlMode.PercentOutput, rightSetpoint*rightPercent*rightTalonMultiplier);
 	}
 	
 	public void releaseLock() {
@@ -155,6 +151,23 @@ public class Spork extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
 			leftSetpoint = liftSpeed;
 			rightSetpoint = liftSpeed;
+			enableSideLimits = true;
+			updateTalonSetpoints();
+		}
+	}
+	
+	public void liftLeft() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			leftSetpoint = liftSpeed;
+			enableSideLimits = false;
+			updateTalonSetpoints();
+		}
+	}
+	
+	public void liftRight() {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
+			rightSetpoint = liftSpeed;
+			enableSideLimits = false;
 			updateTalonSetpoints();
 		}
 	}
@@ -162,24 +175,28 @@ public class Spork extends Subsystem {
 	public void retractSlowLeft() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
 			leftSetpoint = retractSpeedSlow;
+			enableSideLimits = false;
 			updateTalonSetpoints();
 		}
 	}
 	public void retractSlowRight() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
 			rightSetpoint = retractSpeedSlow;
+			enableSideLimits = false;
 			updateTalonSetpoints();
 		}
 	}
 	public void retractFastLeft() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
 			leftSetpoint = retractSpeedFast;
+			enableSideLimits = false;
 			updateTalonSetpoints();
 		}
 	}
 	public void retractFastRight() {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && isDeployed()) {
 			rightSetpoint = retractSpeedFast;
+			enableSideLimits = false;
 			updateTalonSetpoints();
 		}
 	}
