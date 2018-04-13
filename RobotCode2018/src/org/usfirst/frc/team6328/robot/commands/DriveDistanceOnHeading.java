@@ -188,6 +188,9 @@ public class DriveDistanceOnHeading extends Command {
     		targetAngle = Robot.ahrs.getYaw();
     	}
     	
+    	// For reseting encoders, wheels need to not be moving, but they could be commanded to move from a previous command
+    	Robot.driveSubsystem.drive(0, 0);
+    	
     	distanceController = new PIDControllerFixed(kPDistance, kIDistance, kDDistance, kFDistance, pidSourceDistance, pidOutputDistance, kUpdatePeriodDistance);
     	turnController = new PIDControllerFixed(kPAngle, kIAngle, kDAngle, kFAngle, Robot.ahrs, pidOutputAngle);
     	distanceController.setOutputRange(-1, 1);
