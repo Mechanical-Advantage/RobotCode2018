@@ -41,6 +41,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -168,7 +169,7 @@ public class OI {
 		intakeOpen.whenReleased(new CloseIntake());
 		ejectCubeTime.whenPressed(new EjectCubeForTime());
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
-			climb.whenPressed(new AutoClimb());
+			climb.toggleWhenPressed(new AutoClimb());
 		}
 		
 		elevGround.whenPressed(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -182,6 +183,7 @@ public class OI {
 		
 		deploySporkToggle.whenPressed(new ToggleSporkDeploy());
 		LiftSpork liftCommand = new LiftSpork();
+		SmartDashboard.putData("Spork Balanced Lift", liftCommand);
 		liftSporkLeft.whileHeld(new LiftSporkSide(SporkSide.LEFT));
 		liftSporkRight.whileHeld(new LiftSporkSide(SporkSide.RIGHT));
 		retractSporkLeftSlow.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.SLOW));
