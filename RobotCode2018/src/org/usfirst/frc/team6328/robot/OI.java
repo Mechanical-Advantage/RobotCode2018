@@ -10,12 +10,12 @@ package org.usfirst.frc.team6328.robot;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
 import org.usfirst.frc.team6328.robot.commands.ArmMoveAndReset;
 import org.usfirst.frc.team6328.robot.commands.AutoClimb;
-import org.usfirst.frc.team6328.robot.commands.Climb;
 import org.usfirst.frc.team6328.robot.commands.CloseIntake;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
 import org.usfirst.frc.team6328.robot.commands.LiftSpork;
+import org.usfirst.frc.team6328.robot.commands.LiftSporkSide;
 import org.usfirst.frc.team6328.robot.commands.OpenIntake;
 import org.usfirst.frc.team6328.robot.commands.PulseIntake;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
@@ -132,8 +132,8 @@ public class OI {
 	private JoystickButton liftSporkRight = new JoystickButton(rightController, 7);
 	private JoystickButton retractSporkLeftSlow = new JoystickButton(leftController, 11);
 	private JoystickButton retractSporkLeftFast = new JoystickButton(leftController, 6);
-	private JoystickButton retractSporkRightSlow = new JoystickButton(rightController, 11);
-	private JoystickButton retractSporkRightFast = new JoystickButton(rightController, 6);
+	private JoystickButton retractSporkRightSlow = new JoystickButton(rightController, 6);
+	private JoystickButton retractSporkRightFast = new JoystickButton(rightController, 11);
 	
 	NetworkTable ledTable;
 	NetworkTableEntry ledEntry;
@@ -182,8 +182,8 @@ public class OI {
 		
 		deploySporkToggle.whenPressed(new ToggleSporkDeploy());
 		LiftSpork liftCommand = new LiftSpork();
-		liftSporkLeft.whileHeld(liftCommand);
-		liftSporkRight.whileHeld(liftCommand);
+		liftSporkLeft.whileHeld(new LiftSporkSide(SporkSide.LEFT));
+		liftSporkRight.whileHeld(new LiftSporkSide(SporkSide.RIGHT));
 		retractSporkLeftSlow.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.SLOW));
 		retractSporkLeftFast.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.FAST));
 		retractSporkRightSlow.whileHeld(new RetractSpork(SporkSide.RIGHT, SporkRetractSpeed.SLOW));
@@ -253,7 +253,7 @@ public class OI {
 	}
 	
 	public double getEjectForce() {
-		return map(oiController2.getRawAxis(1), -1, 1, ejectSliderMin, 1);
+		return Robot.map(oiController2.getRawAxis(1), -1, 1, ejectSliderMin, 1);
 	}
 	
 	public boolean isShiftingEnabled() {
@@ -282,10 +282,5 @@ public class OI {
 	public enum OILED {
 		CUBE_SENSE_1, CUBE_SENSE_2, CUBE_SENSE_3, INTAKE_OPEN, INTAKE_RETRACT, INTAKE_OFF, INTAKE_ON, ELEVATOR_LOW_GEAR, ELEVATOR_HIGH_GEAR,
 		ELEVATOR_BRAKE, CLIMB, ELEVATOR_GROUND, ELEVATOR_SWITCH, ELEVATOR_DRIVE, ELEVATOR_SCALE_LOW, ELEVATOR_SCALE_HIGH, CLIMB_GRAB
-	}
-	
-	private double map(double x, double in_min, double in_max, double out_min, double out_max)
-	{
-	  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}
 }
