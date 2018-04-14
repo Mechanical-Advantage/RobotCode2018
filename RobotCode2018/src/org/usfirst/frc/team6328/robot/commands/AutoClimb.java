@@ -54,4 +54,10 @@ public class AutoClimb extends CommandGroup {
 			Robot.oi.updateLED(OILED.CLIMB, state);
 		}
 	}
+	
+	@Override
+	protected void interrupted() {
+		super.interrupted();
+		Robot.oi.updateLED(OILED.CLIMB, false);
+	}
 }
