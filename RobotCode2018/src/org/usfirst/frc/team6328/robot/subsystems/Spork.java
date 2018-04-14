@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -34,8 +35,8 @@ public class Spork extends Subsystem {
 	private static final double liftSpeed = 0.7;
 	private static final double retractSpeedSlow = -0.2;
 	private static final double retractSpeedFast = -0.5;
-	private static final int sideDifferenceTolerance = 100; // Ticks
-	private static final double rightPercent = 1; // Right percent of left adjustment
+	private static final int sideDifferenceScalar = 120; // Ticks, difference at which other side drops to zero
+	private static final double rightPercent = 0.82; // Right percent of left adjustment
 	// Slack parameters are measured from 0 (after deploy)
 	private static final int rightDeploySlack = 0;
 	private static final int leftDeploySlack = 0;
@@ -102,17 +103,21 @@ public class Spork extends Subsystem {
 	
 	@Override
 	public void periodic() {
-		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 && DriverStation.getInstance().isEnabled()) {
 			int leftPosition = leftTalon.getSelectedSensorPosition(0);
-			double rightPosition = rightTalon.getSelectedSensorPosition(0)*rightPercent;
-			double lowPercent = Robot.map(Math.abs(rightPosition - leftPosition), 0, sideDifferenceTolerance, 1, 0);
+			int rightPosition = rightTalon.getSelectedSensorPosition(0);
+			double lowPercent = Robot.map(Math.abs(rightPosition - leftPosition), 0, sideDifferenceScalar, 1, 0);
+//			System.out.println("Motor difference is " + Math.abs(rightPosition - leftPosition));
 			lowPercent = lowPercent < 0 ? 0 : lowPercent;
+//			lowPercent *= lowPercent;
 			if (enableSideLimits && leftPosition > rightPosition) {
 				leftTalonMultiplier = lowPercent;
+//				System.out.println("Multipling left side by " + lowPercent);
 				rightTalonMultiplier = 1;
 				updateTalonSetpoints();
 			} else if (enableSideLimits && rightPosition > leftPosition) {
 				rightTalonMultiplier = lowPercent;
+//				System.out.println("Multipling right side by " + lowPercent);
 				leftTalonMultiplier = 1;
 				updateTalonSetpoints();
 			} else {
