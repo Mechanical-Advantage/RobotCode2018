@@ -20,7 +20,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 76;
+	public static final int waypointVersion = 78;
 	
 	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 200); // jerk actually matters
@@ -93,11 +93,11 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	// 0,0 is center of field along starting wall
 	    	// Points are defined from robot center
 	    	
-//	    	points = new Waypoint[] {
-//	    			new Waypoint(0, 0, 0),
-//	    			new Waypoint(120, 60, Pathfinder.d2r(90))
-//	    	};
-//	    	generateProfile("test10forward5right");
+	    	points = new Waypoint[] {
+	    			new Waypoint(0, 0, 0),
+	    			new Waypoint(120, 60, Pathfinder.d2r(90))
+	    	};
+	    	generateProfile("test10forward5right");
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
@@ -181,11 +181,11 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	};
 	    	generateProfile("centerToLeftSwitch");
 	    	
-//	    	points = new Waypoint[] {
-//	    			new Waypoint(0, 0, 0),
-//	    			new Waypoint(8*12, 0, 0)
-//	    	};
-//	    	generateProfile("8straight");
+	    	points = new Waypoint[] {
+	    			new Waypoint(0, 0, 0),
+	    			new Waypoint(8*12, 0, 0)
+	    	};
+	    	generateProfile("8straight");
     	
 //    	Example custom config
 //    	config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC,

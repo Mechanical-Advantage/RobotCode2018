@@ -58,7 +58,6 @@ public class RunMotionProfileOnRio extends Command {
 	
 	/*
      * Tuning Notes:
-     * High P to keep up with trajectory
      * Tune wheelbase with gyro correction disabled until heading is about accurate
      * D should be significantly lower than P
      * Too much D will overcorrect, robot will go too fast, not much is needed, in my initial test, any causes problems
@@ -105,15 +104,15 @@ public class RunMotionProfileOnRio extends Command {
 			kPAngleAdjust.setDefault(1);
 			break;
 		case ROBOT_2017:
-			// tuned using max velocity: 100, accel: 55, jerk: 2700
-			kP.setDefault(15); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
+			// tuned using max velocity: 100, accel: 55, jerk: 200
+			kP.setDefault(8); // No oscillation at 10, 15 has some but D might help, 11 on 1/26
 			kD.setDefault(0);
 			AngleErrorThreshold.setDefault(1.5);
-			wheelbase.setDefault(/*23*/21); // 18 measured, 19.5 at low speed
-			kPAngle.setDefault(2.5);
+			wheelbase.setDefault(22); // 18 measured, 19.5 at low speed
+			kPAngle.setDefault(3);
 			kPAngleAdjust.setDefault(0.1);
-			kV.setDefault(0.7);
-			kA.setDefault(0.2);
+			kV.setDefault(0.982);
+			kA.setDefault(0.09);
 			break;
 		case ORIGINAL_ROBOT_2018:
 			kP.setDefault(3);
