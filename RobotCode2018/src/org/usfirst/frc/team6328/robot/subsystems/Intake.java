@@ -123,7 +123,6 @@ public class Intake extends Subsystem {
 			leftTalon.set(ControlMode.PercentOutput, speed);
 			rightTalon.set(ControlMode.PercentOutput, speed);
 			Robot.oi.updateLED(OILED.INTAKE_ON, true);
-			Robot.oi.updateLED(OILED.INTAKE_OFF, false);
 		}
 	}
 
@@ -144,7 +143,6 @@ public class Intake extends Subsystem {
 			leftTalon.neutralOutput();
 			rightTalon.neutralOutput();
 			Robot.oi.updateLED(OILED.INTAKE_ON, false);
-			Robot.oi.updateLED(OILED.INTAKE_OFF, true);
 		}
 	}
 

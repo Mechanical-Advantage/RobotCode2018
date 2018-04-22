@@ -14,10 +14,10 @@ import org.usfirst.frc.team6328.robot.commands.CloseIntake;
 import org.usfirst.frc.team6328.robot.commands.DriveToCube;
 import org.usfirst.frc.team6328.robot.commands.EjectCubeForTime;
 import org.usfirst.frc.team6328.robot.commands.IntakeCube;
+import org.usfirst.frc.team6328.robot.commands.IntakeHold;
 import org.usfirst.frc.team6328.robot.commands.LiftSpork;
 import org.usfirst.frc.team6328.robot.commands.LiftSporkSide;
 import org.usfirst.frc.team6328.robot.commands.OpenIntake;
-import org.usfirst.frc.team6328.robot.commands.PulseIntake;
 import org.usfirst.frc.team6328.robot.commands.ResetArm;
 import org.usfirst.frc.team6328.robot.commands.RetractSpork;
 import org.usfirst.frc.team6328.robot.commands.RetractSpork.SporkRetractSpeed;
@@ -161,9 +161,8 @@ public class OI {
 			lowerArm.whenPressed(new ResetArm());
 		}
 		IntakeCube intakeCommand = new IntakeCube(false);
-		runIntake.whenPressed(intakeCommand);
 		runIntake.whileHeld(intakeCommand);
-		stopIntake.whenPressed(new PulseIntake());
+		stopIntake.whileHeld(new IntakeHold());
 		retractIntake.whenPressed(new ToggleIntakeRetracted());
 		intakeOpen.whenPressed(new OpenIntake());
 		intakeOpen.whenReleased(new CloseIntake());
