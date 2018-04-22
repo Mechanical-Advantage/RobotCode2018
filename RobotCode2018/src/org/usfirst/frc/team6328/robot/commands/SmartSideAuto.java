@@ -25,6 +25,8 @@ public class SmartSideAuto extends InstantCommand {
 	private static final double scaleFrontSpeed = 0.3;
 	private static final double switchFrontSpeed = 0.5;
 	private static final double switchEndSpeed = 0.8;
+	private static final double sameSwitchExtendDelay = 2;
+	private static final double sameSwitchEjectDelay = 1;
 		
 	private boolean leftSide;
 	private Command command;
@@ -51,6 +53,9 @@ public class SmartSideAuto extends InstantCommand {
 				command = new ScaleSameSide(true);
 			}
 			break;
+		case SCALE_END:
+			command = new ScaleSameSideEnd();
+			break;
 		case SWITCH_OPPOSITE:
 			command = new SwitchOppositeSide();
 			break;
@@ -76,8 +81,8 @@ public class SmartSideAuto extends InstantCommand {
 			addSequential(new RunMotionProfileOnRio("sideToOppositeSwitch", leftSide, true, false, false));
 			double heading = leftSide ? -90 : 90;
 			addSequential(new TurnToAngle(heading, true));
+			addParallel(new ExtendIntake());
 			addSequential(new DriveForTime(2, DriveGear.HIGH, 0.15, 0.15));
-			addSequential(new ExtendIntake());
 			addSequential(new EjectCubeForTime(switchEndSpeed));
 			addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? -90 : 90, endSwitchBackUpTolerance, 0, 0));
 			addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -87,10 +92,8 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class SwitchSameSide extends CommandGroup {
 		public SwitchSameSide(boolean enableBackup) {
+			addParallel(new SwitchIntakeControl());
 			addSequential(new RunMotionProfileOnRio("sideToSwitch", leftSide, true, false, false));
-			addSequential(new DriveForTime(1, DriveGear.HIGH, 0.15, 0.15));
-			addSequential(new ExtendIntake());
-			addSequential(new EjectCubeForTime(switchEndSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-endSwitchBackUpDistance, leftSide ? 90 : -90, endSwitchBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -101,9 +104,8 @@ public class SmartSideAuto extends InstantCommand {
 	
 	private class ScaleSameSide extends CommandGroup {
 		public ScaleSameSide(boolean enableBackup) {
-			addParallel(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addParallel(new RaiseAndExtendIntake());
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
-			addSequential(new ExtendIntake());
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
@@ -114,11 +116,18 @@ public class SmartSideAuto extends InstantCommand {
 		}
 	}
 	
+	private class ScaleSameSideEnd extends CommandGroup {
+		public ScaleSameSideEnd() {
+			addParallel(new RaiseAndExtendIntake());
+			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));
+		}
+	}
+	
 	private class ScaleOppositeSide extends CommandGroup {
 		public ScaleOppositeSide(boolean enableBackup) {
 			addParallel(new TimedLift());
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.IF_FLAT)); // convergence disabled if on platform
-			addSequential(new ExtendIntake());
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
@@ -195,11 +204,27 @@ public class SmartSideAuto extends InstantCommand {
 	private class TimedLift extends CommandGroup {
 		public TimedLift() {
 			addSequential(new Delay(6));
+			addSequential(new RaiseAndExtendIntake());
+		}
+	}
+	
+	private class RaiseAndExtendIntake extends CommandGroup {
+		public RaiseAndExtendIntake() {
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addSequential(new ExtendIntake());
+		}
+	}
+	
+	private class SwitchIntakeControl extends CommandGroup {
+		public SwitchIntakeControl() {
+			addSequential(new Delay(sameSwitchExtendDelay));
+			addSequential(new ExtendIntake());
+			addSequential(new Delay(sameSwitchEjectDelay));
+			addSequential(new EjectCubeForTime(switchEndSpeed));
 		}
 	}
 	
 	public enum AutoDestination {
-		SWITCH_SAME, SWITCH_OPPOSITE, SCALE_SAME, SCALE_OPPOSITE
+		SWITCH_SAME, SWITCH_OPPOSITE, SCALE_SAME, SCALE_END, SCALE_OPPOSITE
 	}
 }

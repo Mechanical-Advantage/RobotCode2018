@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.TimedCommand;
  */
 public class ExtendIntake extends TimedCommand {
 	
-	private static final double time = 1;
+	private static final double time = 0.5;
 
 	public ExtendIntake() {
 		super("ExtendIntake", time);

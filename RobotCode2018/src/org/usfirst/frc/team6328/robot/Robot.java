@@ -137,6 +137,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("Auto Priority", autoPriorityChooser);
         SmartDashboard.putBoolean("Enable 2nd Cube", true);
         SmartDashboard.putBoolean("Priority Force", false);
+        SmartDashboard.putBoolean("Prefer Scale End", false);
         
      // if the current waypoint version is old, re-generate profiles
         BufferedReader waypointVersionReader;
@@ -246,6 +247,7 @@ public class Robot extends TimedRobot {
 		AutoPriority priority = autoPriorityChooser.getSelected();
 		boolean twoCubeEnabled = SmartDashboard.getBoolean("Enable 2nd Cube", true);
 		boolean force = SmartDashboard.getBoolean("Priority Force", false);
+		boolean preferScaleEnd = SmartDashboard.getBoolean("Prefer Scale End", false);
 		
 		Command crossLineCommand = new CrossLine();
 		
@@ -287,7 +289,7 @@ public class Robot extends TimedRobot {
 					AutoTruthTable.SelectedAutoDestinations dests = AutoTruthTable.findRow(
 							startingPosition.equals(switchSide), startingPosition.equals(scaleSide), 
 							crossMiddle, priority == AutoPriority.SWITCH, priority == AutoPriority.SCALE, 
-							twoCubeEnabled, force);
+							twoCubeEnabled, force, preferScaleEnd);
 					if (dests != null) {
 						if (dests.getDest1() == null) {
 							// No first destination means cross line

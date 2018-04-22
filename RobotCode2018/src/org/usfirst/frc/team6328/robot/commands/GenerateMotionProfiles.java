@@ -33,6 +33,9 @@ public class GenerateMotionProfiles extends InstantCommand {
 	private static final double switchCenterDistance = 168; // Distance from wall to center of switch
 	private static final double switchWidth = 153.5;
 	private static final double halfSwitchWidth = switchWidth/2;
+	private static final double scaleWidth = 180;
+	private static final double halfScaleWidth = scaleWidth/2;
+	private static final double scaleCenterDistance = 299.65+(48/2);
 	private static final double plateCenterDistance = 54; // Distance from center of field to center of plates on switch
 	private static final double exchangeRampOffset = -12; // Distance from center of field of edge of exchange ramp
 	
@@ -44,15 +47,21 @@ public class GenerateMotionProfiles extends InstantCommand {
 	private Waypoint sideStart;
 	private Waypoint centerStart;
 	private Waypoint switchSide;
+	private Waypoint switchSideIn;
 	private Waypoint switchFront;
+	private Waypoint switchFrontIn;
 	private Waypoint switchFrontOpposite;
+	private Waypoint switchFrontOppositeIn;
 	@SuppressWarnings("unused")
 	private Waypoint switchBack;
 	private Waypoint scaleFront;
 	@SuppressWarnings("unused")
 	private Waypoint scaleFrontOpposite;
+	private Waypoint scaleSide;
 	@SuppressWarnings("unused")
 	private Waypoint sideSwitchPrepareCrossingPoint;
+	private Waypoint alongSwitch;
+	private Waypoint alongSwitchFar;
 	
 	Waypoint[] points;
 
@@ -77,12 +86,18 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	 sideStart = new Waypoint(RobotMap.robotLength/2, 132-RobotMap.robotWidth/2, 0);
 	    	 centerStart = new Waypoint(RobotMap.robotLength/2, exchangeRampOffset+(RobotMap.robotWidth/2), 0);
 	    	 switchSide = new Waypoint(switchCenterDistance, halfSwitchWidth+(RobotMap.robotLength/2), Pathfinder.d2r(-90));
-	    	 switchFront = new Waypoint(140-(RobotMap.robotLength/2), plateCenterDistance, 0);
+	    	 switchSideIn = new Waypoint(switchSide.x, switchSide.y-12, switchSide.angle); // 1 foot into switch
+	    	 switchFront = new Waypoint(switchCenterDistance-28-(RobotMap.robotLength/2), plateCenterDistance, 0);
+	    	 switchFrontIn = new Waypoint(switchFront.x+12, switchFront.y, switchFront.angle); // 1 foot into switch
 	    	 switchFrontOpposite = new Waypoint(switchCenterDistance-28-(RobotMap.robotLength/2), plateCenterDistance*-1, 0);
+	    	 switchFrontOppositeIn = new Waypoint(switchFrontOpposite.x+12, switchFrontOpposite.y, switchFrontOpposite.angle); // 1 foot into switch
 	    	 switchBack = new Waypoint(switchCenterDistance+28+(RobotMap.robotLength/2), plateCenterDistance, Pathfinder.d2r(180));
 	    	 scaleFront = new Waypoint(300-(RobotMap.robotLength/2), 90-12, Pathfinder.d2r(-25));
 	    	 scaleFrontOpposite = new Waypoint(scaleFront.x, scaleFront.y*-1, Pathfinder.d2r(3));
+	    	 scaleSide = new Waypoint(scaleCenterDistance, halfScaleWidth+(RobotMap.robotLength/2), Pathfinder.d2r(-90));
 	    	 sideSwitchPrepareCrossingPoint = new Waypoint(switchCenterDistance+120, halfSwitchWidth+32, Pathfinder.d2r(/*-135*/180));
+	    	 alongSwitch = new Waypoint(switchCenterDistance, halfSwitchWidth+18+(RobotMap.robotWidth/2), 0); // Left edge of robot 18 in. from switch
+	    	 alongSwitchFar = new Waypoint(switchCenterDistance, halfSwitchWidth+36+(RobotMap.robotWidth/2), 0); // Left edge of robot 36 in. from switch
     }
 
     // Called once when the command executes
@@ -104,13 +119,13 @@ public class GenerateMotionProfiles extends InstantCommand {
 //	    			new Waypoint(switchCenterDistance-42.875, 150-RobotMap.robotWidth/2, 0),
 	    			new Waypoint((switchCenterDistance-42.875)+21.4375, halfSwitchWidth+(RobotMap.robotLength/2)+36.37, Pathfinder.d2r(-30)),
 //	    			new Waypoint((switchCenterDistance-42.875)+36.37, halfSwitchWidth+(RobotMap.robotLength/2)+21.4375, Pathfinder.d2r(-60)),
-	    			switchSide
+	    			switchSideIn
 	    	};
 	    	generateProfile("sideToSwitch");
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
-	    			new Waypoint(switchCenterDistance, halfSwitchWidth+36+(RobotMap.robotWidth/2), 0), // Left edge of robot 36 in. from switch
+	    			alongSwitchFar,
 	    			new Waypoint(/*switchCenterDistance+28+25.5*/230, 0, Pathfinder.d2r(-90)),
 	    			new Waypoint(/*switchCenterDistance+28+25.5*/230, -66, Pathfinder.d2r(-90)),
 	    			new Waypoint(switchCenterDistance+36, (halfSwitchWidth+(RobotMap.robotWidth/2)+28)*-1, Pathfinder.d2r(180)),
@@ -126,20 +141,27 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
-	    			new Waypoint(switchCenterDistance, 76.75+18+(RobotMap.robotWidth/2), 0), // Left edge of robot 18 in. from switch
+	    			alongSwitch,
 	    			scaleFront
 	    	};
 	    	generateProfile("sideToScale");
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
-	    			new Waypoint(switchCenterDistance, 76.75+36+(RobotMap.robotWidth/2), 0), // Left edge of robot 36 in. from switch
+	    			alongSwitchFar,
 	    			new Waypoint(/*switchCenterDistance+28+25.5*/230, 30, Pathfinder.d2r(-90)),
 	    			new Waypoint(/*switchCenterDistance+28+25.5*/230, 0, Pathfinder.d2r(-90)),
 	    			new Waypoint(/*switchCenterDistance+28+25.5*/230, -60, Pathfinder.d2r(-90)),
 	    			scaleFrontOpposite
 	    	};
 	    	generateProfile("sideToOppositeScale");
+	    	
+	    	points = new Waypoint[] {
+	    			sideStart,
+	    			alongSwitch,
+	    			scaleSide
+	    	};
+	    	generateProfile("sideToScaleEnd");
 	    	
 	    	points = new Waypoint[] {
 	    			switchSide,
@@ -171,13 +193,13 @@ public class GenerateMotionProfiles extends InstantCommand {
 //	    	
 	    	points = new Waypoint[] {
 	    			centerStart,
-	    			switchFront
+	    			switchFrontIn
 	    	};
 	    	generateProfile("centerToRightSwitch");
 	    	
 	    	points = new Waypoint[] {
 	    			centerStart,
-	    			switchFrontOpposite
+	    			switchFrontOppositeIn
 	    	};
 	    	generateProfile("centerToLeftSwitch");
 	    	
