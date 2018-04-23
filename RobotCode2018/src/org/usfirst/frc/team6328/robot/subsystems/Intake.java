@@ -4,6 +4,8 @@ import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 import org.usfirst.frc.team6328.robot.RobotMap;
 import org.usfirst.frc.team6328.robot.RobotMap.RobotType;
+import org.usfirst.frc.team6328.robot.commands.IntakeHoldWhileElevatorLifted;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -95,6 +97,7 @@ public class Intake extends Subsystem {
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
 		//setDefaultCommand(new MySpecialCommand());
+		setDefaultCommand(new IntakeHoldWhileElevatorLifted());
 	}
 	
 	public void initLEDs() {
