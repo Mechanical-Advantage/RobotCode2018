@@ -20,7 +20,7 @@ public class GenerateMotionProfiles extends InstantCommand {
 	// IMPORTANT!
 	// increment this by 1 every time the waypoints are changed
 	// the robot will re-generate profiles if this is greater than saved
-	public static final int waypointVersion = 84;
+	public static final int waypointVersion = 86;
 	
 	private final Trajectory.Config stdConfig2017 = new Trajectory.Config(Trajectory.FitMethod.HERMITE_QUINTIC,
 			Trajectory.Config.SAMPLES_HIGH, 0.02, 100, 55, 200); // jerk actually matters
@@ -158,7 +158,8 @@ public class GenerateMotionProfiles extends InstantCommand {
 	    	
 	    	points = new Waypoint[] {
 	    			sideStart,
-	    			alongSwitch,
+	    			new Waypoint(192, sideStart.y+16, 0),
+	    			new Waypoint(scaleCenterDistance-21.4375-(RobotMap.robotLength/2), sideStart.y+12, Pathfinder.d2r(-30)),
 	    			scaleSide
 	    	};
 	    	generateProfile("sideToScaleEnd");

@@ -281,9 +281,10 @@ public class RunMotionProfileOnRio extends Command {
     		boolean tilted = Math.abs(Robot.ahrs.getRoll()) >= tiltThreshold || Math.abs(Robot.ahrs.getPitch()) >= tiltThreshold;
     		// current segment and heading should be same on left and right, only check one
     		// At end of profile only correct angle
-		return leftFollower.isFinished() && !(endConverge == ConvergenceMode.IF_FLAT && tilted) && (endConverge == ConvergenceMode.NEVER || !enableGyroCorrection ||
-				(Math.abs(angleDifference))
-				<=AngleErrorThreshold.get());
+		return leftFollower.isFinished() && 
+				!(endConverge == ConvergenceMode.IF_FLAT && tilted) && 
+				(endConverge == ConvergenceMode.NEVER || !enableGyroCorrection ||
+				Math.abs(angleDifference) <=AngleErrorThreshold.get());
     }
 
     // Called once after isFinished returns true
