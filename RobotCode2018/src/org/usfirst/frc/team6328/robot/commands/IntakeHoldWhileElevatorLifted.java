@@ -48,6 +48,7 @@ public class IntakeHoldWhileElevatorLifted extends Command {
 	// Called once after isFinished returns true
 	protected void end() {
 		Robot.intake.stop();
+		Robot.oi.updateLED(OILED.INTAKE_OFF, false);
 	}
 
 	// Called when another command which requires one or more of the same
