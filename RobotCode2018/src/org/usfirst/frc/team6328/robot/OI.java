@@ -97,7 +97,7 @@ public class OI {
 	private Button openLoopDrive = new JoystickButton(oiController2, 10);
 	private Button driveDisableSwitch = new JoystickButton(oiController2, 9);
 	private Button shiftDisableSwitch = new JoystickButton(oiController2, 8);
-	private Button cubeSenseDisableSwitch = new JoystickButton(oiController2, 7);
+	private Button autoHoldDisableSwitch = new JoystickButton(oiController2, 7);
 	private Button elevatorLimitDisableSwitch = new JoystickButton(oiController1, 12);
 	private Button elevatorDisableSwitch = new JoystickButton(oiController2, 6);
 	private Button driveToCube = new JoystickButton(rightController, 4);
@@ -262,7 +262,11 @@ public class OI {
 	}
 	
 	public boolean isCubeSensorEnabled() {
-		return !cubeSenseDisableSwitch.get();
+		return false;
+	}
+	
+	public boolean isAutoHoldEnabled() {
+		return !autoHoldDisableSwitch.get();
 	}
 	
 	public boolean isElevatorLimitEnabled() {

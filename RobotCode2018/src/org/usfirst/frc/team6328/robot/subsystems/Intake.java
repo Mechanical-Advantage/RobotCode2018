@@ -103,7 +103,7 @@ public class Intake extends Subsystem {
 	public void initLEDs() {
 		Robot.oi.updateLED(OILED.INTAKE_RETRACT, getRetracted());
 		Robot.oi.updateLED(OILED.INTAKE_OPEN, getOpen());
-		Robot.oi.updateLED(OILED.INTAKE_OFF, true);
+		Robot.oi.updateLED(OILED.INTAKE_OFF, false);
 		Robot.oi.updateLED(OILED.INTAKE_ON, false);
 	}
 	
@@ -125,7 +125,6 @@ public class Intake extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.set(ControlMode.PercentOutput, speed);
 			rightTalon.set(ControlMode.PercentOutput, speed);
-			Robot.oi.updateLED(OILED.INTAKE_ON, true);
 		}
 	}
 
@@ -145,7 +144,6 @@ public class Intake extends Subsystem {
 		if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018 || RobotMap.robot == RobotType.EVERYBOT_2018) {
 			leftTalon.neutralOutput();
 			rightTalon.neutralOutput();
-			Robot.oi.updateLED(OILED.INTAKE_ON, false);
 		}
 	}
 

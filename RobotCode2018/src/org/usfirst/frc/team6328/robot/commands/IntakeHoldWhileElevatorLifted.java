@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6328.robot.commands;
 
+import org.usfirst.frc.team6328.robot.OI.OILED;
 import org.usfirst.frc.team6328.robot.Robot;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -28,12 +29,14 @@ public class IntakeHoldWhileElevatorLifted extends Command {
 
 	// Called repeatedly when this Command is scheduled to run
 	protected void execute() {
-		if (intakeRunningLast && !Robot.intake.getRetracted() && Robot.elevator.getPosition() < elevatorHeight) {
+		if (intakeRunningLast && (Robot.elevator.getPosition() < elevatorHeight || !Robot.oi.isAutoHoldEnabled())) {
 			Robot.intake.stop();
 			intakeRunningLast = false;
-		} else if (!intakeRunningLast && !Robot.intake.getRetracted() && Robot.elevator.getPosition() >= elevatorHeight) {
+			Robot.oi.updateLED(OILED.INTAKE_OFF, false);
+		} else if (!intakeRunningLast && !Robot.intake.getRetracted() && Robot.elevator.getPosition() >= elevatorHeight && Robot.oi.isAutoHoldEnabled()) {
 			Robot.intake.intake(power);
 			intakeRunningLast = true;
+			Robot.oi.updateLED(OILED.INTAKE_OFF, true);
 		}
 	}
 
