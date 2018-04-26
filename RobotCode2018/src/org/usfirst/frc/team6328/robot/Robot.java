@@ -94,6 +94,7 @@ public class Robot extends TimedRobot {
 		oi = new OI();
 		elevator.initLEDs();
 		intake.initLEDs();
+		elevator.resetHeight();
 		joystickModeChooser = new SendableChooser<JoystickMode>();
 		
 		startingPositionChooser.addObject("Left", StartingPosition.LEFT);

@@ -184,6 +184,10 @@ public class Elevator extends Subsystem {
 	public void initLEDs() {
 		Robot.oi.updateLED(OILED.ELEVATOR_HIGH_GEAR, true);
 	}
+	
+	public void resetHeight() {
+		talonMaster.setSelectedSensorPosition(startingHeight, 0, configTimeout);
+	}
 
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
