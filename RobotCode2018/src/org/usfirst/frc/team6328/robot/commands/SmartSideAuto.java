@@ -26,7 +26,7 @@ public class SmartSideAuto extends InstantCommand {
 	private static final double switchFrontSpeed = 0.5;
 	private static final double switchEndSpeed = 0.8;
 	private static final double sameSwitchExtendDelay = 2;
-	private static final double sameSwitchEjectDelay = 1;
+	private static final double sameSwitchEjectDelay = 1.5;
 		
 	private boolean leftSide;
 	private Command command;
@@ -107,6 +107,10 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new RaiseAndExtendIntake());
 			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
+			/*addParallel(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
+			addSequential(new RunMotionProfileOnRio("sideToScale", leftSide, true, false, true));
+			addSequential(new ExtendIntake());
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));*/
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -132,6 +136,10 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new TimedLift());
 			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.ALWAYS)); // convergence disabled if on platform
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
+			/*addParallel(new TimedLift());
+			addSequential(new RunMotionProfileOnRio("sideToOppositeScale", leftSide, true, false, ConvergenceMode.IF_FLAT)); // convergence disabled if on platform
+			addSequential(new ExtendIntake());
+			addSequential(new EjectCubeForTime(scaleFrontSpeed));*/
 			if (enableBackup) {
 				addSequential(new DriveDistanceOnHeading(-scaleBackUpDistance, 0, scaleBackUpTolerance, 0, 0));
 				addParallel(new SetElevatorPosition(ElevatorPosition.GROUND));
@@ -208,6 +216,7 @@ public class SmartSideAuto extends InstantCommand {
 		public TimedLift() {
 			addSequential(new Delay(5));
 			addSequential(new RaiseAndExtendIntake());
+//			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 		}
 	}
 	
