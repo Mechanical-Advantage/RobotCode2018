@@ -16,9 +16,15 @@ public class SetElevatorPosition extends Command {
 	private ElevatorPosition targetPosition;
 	private boolean enableFinish;
 	private static final boolean motionMagic = false;
+	private double speed = bangBangSpeed;
 	
 	public SetElevatorPosition(ElevatorPosition position) {
 		this(position, true);
+	}
+	
+	public SetElevatorPosition(ElevatorPosition position, double speed) {
+		this(position, true);
+		this.speed = speed;
 	}
 
 	public SetElevatorPosition(ElevatorPosition position, boolean enableFinish) {
@@ -38,9 +44,9 @@ public class SetElevatorPosition extends Command {
 			Robot.elevator.setPosition(targetPositionInches);
 		} else {
 			if (targetPositionInches < Robot.elevator.getPosition()) {
-				Robot.elevator.driveOpenLoop(bangBangSpeed*-1);
+				Robot.elevator.driveOpenLoop(speed*-1);
 			} else if (targetPositionInches > Robot.elevator.getPosition()) {
-				Robot.elevator.driveOpenLoop(bangBangSpeed);
+				Robot.elevator.driveOpenLoop(speed);
 			}
 		}
 	}
