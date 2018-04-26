@@ -183,8 +183,8 @@ public class OI {
 		deploySporkToggle.whenPressed(new ToggleSporkDeploy());
 		LiftSpork liftCommand = new LiftSpork();
 		SmartDashboard.putData("Spork Balanced Lift", liftCommand);
-		liftSporkLeft.whileHeld(new LiftSporkSide(SporkSide.LEFT));
-		liftSporkRight.whileHeld(new LiftSporkSide(SporkSide.RIGHT));
+		liftSporkLeft.whileHeld(liftCommand);
+		liftSporkRight.whileHeld(liftCommand);
 		retractSporkLeftSlow.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.SLOW));
 		retractSporkLeftFast.whileHeld(new RetractSpork(SporkSide.LEFT, SporkRetractSpeed.FAST));
 		retractSporkRightSlow.whileHeld(new RetractSpork(SporkSide.RIGHT, SporkRetractSpeed.SLOW));
