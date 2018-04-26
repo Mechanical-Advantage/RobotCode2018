@@ -121,6 +121,9 @@ public class SmartSideAuto extends InstantCommand {
 			addParallel(new RaiseAndExtendIntake());
 			addSequential(new RunMotionProfileOnRio("sideToScaleEnd", leftSide, true, false, true));
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
+			addSequential(new DriveDistanceOnHeading(12, 2, 0, 0));
+			addSequential(new TurnToAngle(180));
+			addSequential(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
 	}
 	
