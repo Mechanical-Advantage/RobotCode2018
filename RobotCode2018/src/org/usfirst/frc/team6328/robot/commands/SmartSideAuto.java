@@ -123,10 +123,10 @@ public class SmartSideAuto extends InstantCommand {
 	private class ScaleSameSideEnd extends CommandGroup {
 		public ScaleSameSideEnd() {
 			addParallel(new RaiseAndExtendIntake());
-			addSequential(new RunMotionProfileOnRio("sideToScaleEnd", leftSide, true, false, true));
+			addSequential(new RunMotionProfileOnRio("sideToScaleEnd", leftSide, true, false, false));
 			addSequential(new EjectCubeForTime(scaleFrontSpeed));
 			addSequential(new DriveDistanceOnHeading(-12, 2, 0, 0));
-			addSequential(new TurnToAngle(180, true));
+//			addSequential(new TurnToAngle(180, true));
 			addSequential(new SetElevatorPosition(ElevatorPosition.GROUND));
 		}
 	}
@@ -215,7 +215,7 @@ public class SmartSideAuto extends InstantCommand {
 	private class TimedLift extends CommandGroup {
 		public TimedLift() {
 			addSequential(new Delay(5));
-			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH), 1);
+			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH, 1));
 			addSequential(new ExtendIntake());
 //			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 		}

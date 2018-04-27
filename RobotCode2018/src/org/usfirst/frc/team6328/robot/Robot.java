@@ -83,6 +83,11 @@ public class Robot extends TimedRobot {
 	SendableChooser<StartingPosition> startingPositionChooser = new SendableChooser<StartingPosition>();
 	SendableChooser<AutoMode> autoModeChooser = new SendableChooser<AutoMode>();
 	SendableChooser<AutoPriority> autoPriorityChooser = new SendableChooser<AutoPriority>();
+	
+	private int cyclesSinceCompCheck = 0;
+	private boolean compShortLast = false;
+	private boolean compRunLast = false;
+	private Compressor c;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -169,6 +174,8 @@ public class Robot extends TimedRobot {
 		if (RobotMap.robot == RobotType.ROBOT_2017) {
 			@SuppressWarnings("unused")
 			Compressor c = new Compressor();
+		} else if (RobotMap.robot == RobotType.ORIGINAL_ROBOT_2018) {
+			c = new Compressor();
 		}
 	}
 	
@@ -180,6 +187,25 @@ public class Robot extends TimedRobot {
 		} 
 		SmartDashboard.putBoolean("Tape Sensor", tapeSensorValue);
 		SmartDashboard.putBoolean("Cube Sensor", intake.getSensor());
+		
+		cyclesSinceCompCheck+=1;
+		if (cyclesSinceCompCheck >= 50) {
+			cyclesSinceCompCheck = 0;
+			if (!compShortLast && c.getCompressorShortedFault()) {
+				DriverStation.reportError("Comp short", false);
+				compShortLast = true;
+			} else if (compShortLast && !c.getCompressorShortedFault()) {
+				DriverStation.reportError("Comp short end", false);
+				compShortLast = false;
+			}
+			if (!compRunLast && c.enabled()) {
+				DriverStation.reportWarning("Comp start", false);
+				compRunLast = true;
+			} else if (compRunLast && !c.enabled()) {
+				DriverStation.reportWarning("Comp stop", false);
+				compRunLast = false;
+			}
+		}
 	}
 
 	/**
@@ -214,6 +240,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		Robot.driveSubsystem.enableBrakeMode(true);
+		elevator.resetHeight();
 		
 		// Zero Gyro
 		ahrs.zeroYaw();
