@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
  */
 public class AutoClimb extends CommandGroup {
 	
-	private static final double backupDistance = 10;
+	private static final double backupDistance = 10.5;
 	private static final double forwardDistance = 7.5;
 
 	public AutoClimb() {
