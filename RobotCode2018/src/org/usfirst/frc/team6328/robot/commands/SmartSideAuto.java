@@ -215,8 +215,8 @@ public class SmartSideAuto extends InstantCommand {
 	private class TimedLift extends CommandGroup {
 		public TimedLift() {
 			addSequential(new Delay(5));
+			addParallel(new ExtendIntake());
 			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH, 1));
-			addSequential(new ExtendIntake());
 //			addSequential(new SetElevatorPosition(ElevatorPosition.SCALE_HIGH));
 		}
 	}
